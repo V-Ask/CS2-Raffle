@@ -21,5 +21,4 @@ def create_app():
     def start_map():
         return '3'
 
-    
     return app
