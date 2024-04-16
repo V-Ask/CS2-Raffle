@@ -1,5 +1,4 @@
 import random
-from scraper.workshop_scraper import WorkshopMap, WorkshopScraper
 
 class Map:
     def __init__(self, name: str, id: str, image_url: str, weight: int) -> None:
@@ -20,11 +19,3 @@ class MapPool:
         options = [[map_] * map_.weight for map_ in self.maps]
         flattened = sum(options, [])
         return random.choices(flattened, length)
-    
-def scrape_to_map(scrape: WorkshopMap, id: str):
-    if scrape is None:
-        return None
-    return Map(scrape.name, id, scrape.image_url, 1)
-
-def get_workshop_scrape(url: str):
-    
