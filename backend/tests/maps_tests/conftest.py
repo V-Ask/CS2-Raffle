@@ -1,5 +1,5 @@
 import pytest
-from app.maps.workshop_scraper import get_workshop_item
+from src.raffle.maps.workshop_scraper import get_workshop_item
 
 @pytest.fixture
 def scrape():
