@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS, cross_origin
-from app.maps.map_pool import MapPool
+from raffle.maps.map_pool import MapPool
 import configparser
 
 config = configparser.ConfigParser()
