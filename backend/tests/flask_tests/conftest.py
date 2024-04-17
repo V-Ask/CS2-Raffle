@@ -1,5 +1,5 @@
 import pytest
-from raffle import app as flask_app
+from raffle.app import app as flask_app
 
 @pytest.fixture
 def app():

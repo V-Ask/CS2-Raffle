@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import configparser
 
@@ -18,7 +18,9 @@ def add_routes(app):
 
     @app.route('/submitmap', methods=['POST'])
     def submit_map():
-        return '1'
+        request_data = request.get_json()
+        url = request_data['url']
+        return request_data
 
     @app.route('/randommaps', methods=['GET'])
     def get_random_map_pool():
