@@ -1,9 +1,15 @@
-from flask import jsonify
+from flask import Flask, jsonify
+from flask_cors import CORS
 import configparser
 
 config = configparser.ConfigParser()
 
 config.read('config.ini')
+
+app = Flask(__name__)
+
+CORS(app, resources={r'/*': {'origins': '*'}})
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 def add_routes(app):
     @app.route('/test')
@@ -21,3 +27,7 @@ def add_routes(app):
     @app.route('/startmap', methods=['GET'])
     def start_map():
         return '3'
+    
+add_routes(app)
+if __name__ == '__main__':
+    app.run(debug=True)
