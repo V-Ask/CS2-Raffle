@@ -1,5 +1,3 @@
-from src.raffle.maps.workshop_scraper import WorkshopItem
-
 def test_not_none(scrape):
     assert not scrape is None
 
