@@ -1,4 +1,4 @@
-import random
+import random, json
 
 class Map:
     def __init__(self, name: str, id: str, image_url: str, weight: int) -> None:
@@ -19,3 +19,11 @@ class MapPool:
         options = [[map_] * map_.weight for map_ in self.maps]
         flattened = sum(options, [])
         return random.choices(flattened, length)
+    
+    def toJSON(self):
+        return json.dumps(
+            self,
+            default=lambda o: o.__dict__,
+            sort_keys=True,
+            indent=4
+        )
