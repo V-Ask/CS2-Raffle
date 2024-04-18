@@ -1,0 +1,1 @@
+from raffle.config import Config
