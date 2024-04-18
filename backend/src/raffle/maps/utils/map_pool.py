@@ -7,23 +7,25 @@ class Map:
         self.image_url = image_url
         self.weight = weight
 
+    def increse_weight(self):
+        self.weight += 1
+
 class MapPool:
     def __init__(self) -> None:
-        self.maps = set()
+        self.maps = dict()
 
     def add_map(self, map: Map):
         if not map is None:
-            self.maps.add(map)
+            self.maps[map.id] = map
+
+    def remove_map(self, id: str):
+        self.maps(id, None)
+    
+    def increase_played_weight(self, id: str):
+        if id in self.maps:
+            self.maps[id].increse_weight()
 
     def get_reel(self, length: int):
-        options = [[map_] * map_.weight for map_ in self.maps]
+        options = [[map_] * map_.weight for map_ in self.maps.values()]
         flattened = sum(options, [])
         return random.choices(flattened, length)
-    
-    def toJSON(self):
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__,
-            sort_keys=True,
-            indent=4
-        )
