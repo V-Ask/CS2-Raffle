@@ -1,4 +1,4 @@
-from utils import map_pool, workshop_scraper
+from .utils import map_pool, workshop_scraper
 
 def workshop_item_to_map(item: workshop_scraper.WorkshopItem) -> map_pool.Map:
     return map_pool.Map(item.name, item.id, item.image_url, 1)

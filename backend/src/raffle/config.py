@@ -2,22 +2,21 @@ from configparser import ConfigParser
 import os
 
 class Config:
-    def __init__(self) -> None:
+    def __init__(self, name) -> None:
         config = ConfigParser()
-        if not os.path.exists('config.ini'):
+        if not os.path.exists(name):
             print(f'No Config-file on disc, please fill out configs for proper server management')
             config['Host Settings'] = {
                 'username': '',
                 'password': '',
-                'start_server_url': '',
-                'set_workshop_map_url': '',
+                'put_server_url': '',
                 'get_server_url': ''
-            }
-            config.write(open('config.ini', 'w'))
 
-        config.read('config.ini')
+            }
+            config.write(open(name, 'w'))
+
+        config.read(name)
         self.username = config.get('Host Settings', 'username')
         self.password = config.get('Host Settings', 'password')
-        self.start_server_url = config.get('Host Settings', 'start_server_url')
-        self.set_workshop_map_url = config.get('Host Settings', 'set_workshop_map_url')
+        self.put_server_url = config.get('Host Settings', 'put_server_url')
         self.get_server_url = config.get('Host Settings', 'get_server_url')
