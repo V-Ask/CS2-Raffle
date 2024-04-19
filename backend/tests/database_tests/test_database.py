@@ -1,4 +1,4 @@
-from raffle.maps import database_manager
+from raffle import database_manager
 
 def test_test():
     a = database_manager.create_conn()
