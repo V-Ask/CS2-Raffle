@@ -7,5 +7,4 @@ def test_workshop_post(client):
         data=dumps(data),
         content_type='application/json'
     )
-    print(resp)
     assert True == True

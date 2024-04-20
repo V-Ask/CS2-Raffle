@@ -5,7 +5,7 @@ import warnings
 
 class __AbstractServerManager(ABC):
     @abstractmethod
-    def get_server_ip(self):
+    def get_server_conn(self):
         pass
 
     @abstractmethod
@@ -22,7 +22,7 @@ class EmptyServerManager(__AbstractServerManager):
     def set_map(self, _):
         self.__report_err()
 
-    def get_server_ip(self):
+    def get_server_conn(self):
         self.__report_err()
         return ''
     
@@ -33,7 +33,7 @@ class ServerManager(__AbstractServerManager):
         self.put_server_url = put_server_url
         self.get_server_url = get_server_url
 
-    def get_server_ip(self):
+    def get_server_conn(self):
         resp = requests.get(
             self.get_server_url,
             auth=self.authentication,
@@ -42,14 +42,17 @@ class ServerManager(__AbstractServerManager):
             warnings.warn(f'Error: Received status code {resp.status_code} from {self.get_server_url}:\n\t {resp.text}')
             return
         output = resp.json()
-        return ('%s:%s' % output['ip'], output['ports']['game'])
+        return resp.status_code, ('connect %s:%s; password %s' % (output['ip'], output['ports']['game'], output['cs2_settings']['password']))
     
     def set_map(self, workshop_id):
-        payload = payload = "-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"csgo_settings.maps_source\"\r\n\r\nworkshop_single_map\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"csgo_settings.workshop_start_map_id\"\r\n\r\n%s\r\n-----011000010111000001101001--" % workshop_id
-        headers = {"content-type": "multipart/form-data; boundary=---011000010111000001101001"}
+        headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        data = f"cs2_settings.maps_source=workshop_single_map&autostop=false&csgo_settings.workshop_id={workshop_id}&cs2_settings.workshop_single_map_id={workshop_id}"
         resp = requests.put(
             self.put_server_url, 
-            data=payload, 
+            data=data, 
             headers=headers,
             auth=self.authentication)
         if resp.status_code != 200:

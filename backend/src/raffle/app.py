@@ -2,6 +2,9 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import configparser
 
+PUT_TEST = False
+GET_TEST = False
+
 config = configparser.ConfigParser()
 
 config.read('config.ini')
