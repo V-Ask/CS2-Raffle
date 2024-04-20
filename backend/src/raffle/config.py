@@ -13,6 +13,9 @@ class Config:
                 'get_server_url': ''
 
             }
+            config['Database Settings'] = {
+                'database_name': 'map_database.db'
+            }
             config.write(open(name, 'w'))
 
         config.read(name)
@@ -20,3 +23,5 @@ class Config:
         self.password = config.get('Host Settings', 'password')
         self.put_server_url = config.get('Host Settings', 'put_server_url')
         self.get_server_url = config.get('Host Settings', 'get_server_url')
+
+config = Config('config.ini')
