@@ -13,6 +13,7 @@ export default {
       const path = 'http://localhost:5000/test';
       axios.get(path)
         .then((res) => {
+          console.log(res);
           this.msg = res.data;
         })
         .catch((error) => {

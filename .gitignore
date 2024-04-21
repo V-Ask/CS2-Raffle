@@ -183,3 +183,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 backend/config.ini
+backend/tests/rest_tests/rest_config.ini
+*.db

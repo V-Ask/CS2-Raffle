@@ -1,10 +1,11 @@
+run_server:
+	cd backend && export FLASK_APP=src/raffle/app.py && flask run
+
 run_client:
 	cd frontend && npm run dev
 
-python_reqs:
-	cd backend && pip install -r requirements.txt --user
+launch_website:
+	make run_server & make run_client
 
 npm_reqs:
 	cd frontend && npm install
-
-install_dependencies: python_reqs npm_reqs
