@@ -14,7 +14,7 @@ class Config:
 
             }
             config['Database Settings'] = {
-                'database_name': 'map_database.db'
+                'path': ''
             }
             config.write(open(name, 'w'))
 
@@ -23,5 +23,4 @@ class Config:
         self.password = config.get('Host Settings', 'password')
         self.put_server_url = config.get('Host Settings', 'put_server_url')
         self.get_server_url = config.get('Host Settings', 'get_server_url')
-
-config = Config('config.ini')
+        self.database_path = config.get('Database Settings', 'path')
