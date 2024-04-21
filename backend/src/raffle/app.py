@@ -17,7 +17,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def add_routes(app):
     @app.route('/test')
     def test():
-        return jsonify({'hello': 'world'})
+        return jsonify({'goodbye': 'world'})
 
     @app.route('/submitmap', methods=['POST'])
     def submit_map():
@@ -32,7 +32,7 @@ def add_routes(app):
     @app.route('/startmap', methods=['GET'])
     def start_map():
         return '3'
-    
+
 add_routes(app)
 if __name__ == '__main__':
     app.run(debug=True)

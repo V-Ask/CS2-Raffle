@@ -67,7 +67,6 @@ def create_server_manager(config) -> __AbstractServerManager:
         if value == '':
             missing_properties.append(field)
     if missing_properties:
-        warnings.warn(f'Missing Dathost Server Properties "{missing_properties}". Please fill these out in your "config.ini".')
         return EmptyServerManager(missing_properties)
     return ServerManager(config.username, config.password, 
                            config.put_server_url, config.get_server_url)
