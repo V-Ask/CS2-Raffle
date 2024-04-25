@@ -1,39 +1,15 @@
 import requests
-from abc import ABC, abstractmethod
 import warnings
 
-
-class __AbstractServerManager(ABC):
-    @abstractmethod
-    def get_server_conn(self):
-        pass
-
-    @abstractmethod
-    def set_map(self, workshop_id):
-        pass
-
-class EmptyServerManager(__AbstractServerManager):
-    def __init__(self, missing_properties) -> None:
-        self.err_msg = f'Missing Properties "{missing_properties}"'
-
-    def __report_err(self):
-        warnings.warn(self.err_msg)
-
-    def set_map(self, _):
-        self.__report_err()
-
-    def get_server_conn(self):
-        self.__report_err()
-        return ''
-    
-
-class ServerManager(__AbstractServerManager):
+class ServerManager:
     def __init__(self, username, password, put_server_url, get_server_url) -> None:
         self.authentication = (username, password)
         self.put_server_url = put_server_url
         self.get_server_url = get_server_url
 
     def get_server_conn(self):
+        if self.get_server_url == '':
+            warnings.warn(f'No GET Server URL provided. Please fill out your configs.')
         resp = requests.get(
             self.get_server_url,
             auth=self.authentication,
@@ -45,6 +21,8 @@ class ServerManager(__AbstractServerManager):
         return resp.status_code, ('connect %s:%s; password %s' % (output['ip'], output['ports']['game'], output['cs2_settings']['password']))
     
     def set_map(self, workshop_id):
+        if self.put_server_url == '':
+            warnings.warn(f'No PUT Server URL provided. Please fill out your configs.')
         headers = {
                 "Accept": "application/json",
                 "Content-Type": "application/x-www-form-urlencoded"
@@ -60,13 +38,6 @@ class ServerManager(__AbstractServerManager):
             return resp.status_code
         return resp.status_code
     
-def create_server_manager(config) -> __AbstractServerManager:
-    config_dict = config.__dict__
-    missing_properties = []
-    for field, value in config_dict.items():
-        if value == '':
-            missing_properties.append(field)
-    if missing_properties:
-        return EmptyServerManager(missing_properties)
+def create_server_manager(config):
     return ServerManager(config.username, config.password, 
                            config.put_server_url, config.get_server_url)
