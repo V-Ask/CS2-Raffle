@@ -29,23 +29,36 @@ def add_routes(app):
         map_manager.add_map(url)
         return "200"
 
-    @app.route('/allmaps', methods=['GET'])
-    def get_all_maps():
-        maps = map_manager.get_maps()
-        print(maps)
-        return jsonify(maps)
+    @app.route('/nonplayed', methods=['GET'])
+    def get_nonplayed():
+        maps = map_manager.get_nonplayed()
+        map_dict = [map.map_dict() for map in maps]
+        return jsonify(map_dict)
+
+    @app.route('/played', methods=['GET'])
+    def get_played():
+        maps = map_manager.get_played()
+        map_dict = [map.map_dict() for map in maps]
+        return jsonify(map_dict)
 
     @app.route('/randommaps', methods=['GET'])
     def get_random_map_pool():
         length = request.get_json()['reel_length']
         reel = map_manager.generate_reel(length)
-        return jsonify(reel)
+        reel_dict = [map.map_dict() for map in reel]
+        return jsonify(reel_dict)
 
     @app.route('/startmap', methods=['PUT'])
     def start_map():
         id = request.get_json()['workshop_id']
         map_manager.play_map(id)
         server_manager.set_map(id)
+        return "200"
+    
+    @app.route('/removemap', methods=['DELETE'])
+    def remove_map():
+        id = request.get_json()['workshop_id']
+        map_manager.remove_map(id)
         return "200"
 
 add_routes(app)

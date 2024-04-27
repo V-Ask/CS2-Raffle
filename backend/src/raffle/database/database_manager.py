@@ -13,48 +13,64 @@ class Database:
                                 image_url text,
                                 weight integer NOT NULL
                             );'''
+        sql_create_played_table = '''CREATE TABLE IF NOT EXISTS played_maps (
+                                name text,
+                                workshop_id text PRIMARY KEY,
+                                image_url text,
+                                weight integer NOT NULL
+                            );'''
         cursor = conn.cursor()
         try:
             cursor.execute(sql_create_table)
+            cursor.execute(sql_create_played_table)
         except Error as e:
             warn(e)
         cursor.close()
         conn.commit()
         conn.close()
 
-    def add_map(self, name_, name, url, weight):
+    def add_map(self, name, id, url, weight):
         sql_add_map = '''INSERT INTO maps(name, workshop_id, image_url, weight)
                     VALUES(?,?,?,?);'''
         conn = connect(self.database_path)
         cursor = conn.cursor()
         try:
-            data_tuple = (name_, name, url, weight)
+            data_tuple = (name, id, url, weight)
             cursor.execute(sql_add_map, data_tuple)
         except Error as e:
             warn(e)
         cursor.close()
         conn.commit()
         conn.close()
-
-    def get_maps(self):
-        sql_get_map = '''SELECT * FROM maps;'''
+    
+    def get_maps(self, map_table: str):
+        sql_get_map = f'''SELECT * FROM {map_table};'''
         conn = connect(self.database_path)
         cursor = conn.cursor()
         values = []
         try:
             values = cursor.execute(sql_get_map).fetchall()
         except Error as e:
-            warn(e)
+            warn(str(e))
         cursor.close()
         conn.close()
         return values
+
+    def get_nonplayed_maps(self):
+        return self.get_maps('maps')
+
+    def get_played_maps(self):
+        return self.get_maps('played_maps')
         
-    def remove_map(self, map_id):
+    def remove_map(self, name, id, url, weight):
         sql_delete_map = '''DELETE FROM maps WHERE workshop_id=?'''
+        sql_add_played = '''INSERT INTO played_maps(name, workshop_id, image_url, weight)
+                    VALUES(?,?,?,?);'''
         conn = connect(self.database_path)
         cursor = conn.cursor()
         try:
-            cursor.execute(sql_delete_map, (map_id, ))
+            cursor.execute(sql_delete_map, (id, ))
+            cursor.execute(sql_add_played, (name, id, url, weight))
             conn.commit()
         except Error as e:
             warn(e)
@@ -75,7 +91,6 @@ class Database:
         conn.close()
     
     def __init__(self, database_path) -> None:
-        print(database_path)
         self.database_path = database_path
         self.create_maps_table()
 

@@ -9,3 +9,8 @@ launch_website:
 
 npm_reqs:
 	cd frontend && npm install
+
+tmux:
+	tmux
+	tmux send-key C-b
+	tmux send-key %
