@@ -1,17 +1,38 @@
-<script setup>
-import { ref } from 'vue';
+<script>
+import axios from 'axios'
 
-const ITEMS_PER_PAGE = 5;
-const COPYRIGHT = "© All images from Counter-Strike 2 and the Steam Workshop are property of Valve Corporation. This website is not affiliated with Valve Corporation."
-
-var toggle = true
-const text = ref('Hello, Vue 3!')
-
-const handleClick = () => {
-  toggle = !toggle
-  text.value = toggle ? 'Hello, Vue 3!' : 'Hello, Vite!'
+export default {
+  data() {
+    return {
+      ITEMS_PER_PAGE: 5,
+      COPYRIGHT: "© All images from Counter-Strike 2 and the Steam Workshop are property of Valve Corporation. This website is not affiliated with Valve Corporation.",
+      nonplayed: [],
+      played: []
+    }
+  },
+  methods: {
+    getNonplayed() {
+      const path = 'http://localhost:5000/nonplayed'
+      axios.get(path)
+        .then((res) => {
+          this.nonplayed = res.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    getPlayed() {
+      const path = 'http://localhost:5000/played'
+      axios.get(path)
+        .then((res) => {
+          this.played = res.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }
 }
-
 
 </script>
 <style>

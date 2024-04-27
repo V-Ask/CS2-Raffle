@@ -33,7 +33,7 @@ def test_insert(path, database):
 def test_delete(path, database):
     connection = connect(path)
     database.add_map(test_map.name, test_map.id, test_map.image_url, test_map.weight)
-    database.remove_map(test_map.id)
+    database.remove_map(test_map.name, test_map.id, test_map.image_url, test_map.weight)
     cursor = connection.cursor()
     sql = '''SELECT count(*) FROM maps WHERE workshop_id = ?'''
     length = cursor.execute(sql, (test_map.id, )).fetchone()
