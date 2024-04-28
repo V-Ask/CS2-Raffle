@@ -1,36 +1,115 @@
 <script>
 import axios from 'axios'
+import { ref } from 'vue'
 
 export default {
   data() {
     return {
       ITEMS_PER_PAGE: 5,
       COPYRIGHT: "© All images from Counter-Strike 2 and the Steam Workshop are property of Valve Corporation. This website is not affiliated with Valve Corporation.",
+      inputText: ref(""),
       nonplayed: [],
-      played: []
+      played: [],
+      reel: []
     }
   },
   methods: {
-    getNonplayed() {
-      const path = 'http://localhost:5000/nonplayed'
+    async getTest() {
+      const path = 'http://localhost:5000/test';
+      axios.get(path, 
+        {
+          params: {
+            world: 'hello'
+          }
+        })
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    async getNonplayed() {
+      const path = 'http://localhost:5000/nonplayed';
       axios.get(path)
         .then((res) => {
+          console.log(res.data);
           this.nonplayed = res.data;
         })
         .catch((error) => {
           console.error(error);
         });
     },
-    getPlayed() {
-      const path = 'http://localhost:5000/played'
+    async getPlayed() {
+      const path = 'http://localhost:5000/played';
       axios.get(path)
         .then((res) => {
+          console.log(res.data);
           this.played = res.data;
         })
         .catch((error) => {
           console.error(error);
         });
+    },
+
+    async getReel(reel_length) {
+      const path = 'http://localhost:5000/randommaps';
+      axios.get(path, {
+        reel_length: reel_length
+      })
+        .then((res) => {
+          this.reel = res.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    async addMap() {
+      const path = 'http://localhost:5000/submitmap';
+      axios.post(path, {
+        workshop_url: this.inputText
+      })
+        .then(() => {
+          this.getNonplayed();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    async startMap(workshop_id) {
+      const path = 'http://localhost:5000/startmap';
+      axios.put(path, {
+        workshop_id: workshop_id
+      })
+        .then(() => {
+          this.getNonplayed();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    async removeMap(workshop_id) {
+      const path = 'http://localhost:5000/submitmap';
+      axios.post(path, {
+        workshop_id: workshop_id
+      })
+        .then(() => {
+          this.getNonplayed();
+          this.getPlayed();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
+  },
+  beforeMount() {
+    this.getTest();
+    this.getNonplayed();
+    this.getPlayed();
   }
 }
 
@@ -152,8 +231,8 @@ footer {
         <div class="input-container">
           <span>Add Map to Pool:</span>
           <div class="map-input">
-            <input type="text" placeholder="Insert Steam Workshop Link..." />
-            <input type="button" value="Submit" />
+            <input v-model="inputText" placeholder="Insert Steam Workshop Link..." />
+            <button @click="addMap()">Submit Map</button>
           </div>
         </div>
         <div class="roll-button">

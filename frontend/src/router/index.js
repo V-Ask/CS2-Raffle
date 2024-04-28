@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Raffle from '../components/Raffle.vue'
+import Raffle from '../components/RaffleComponent.vue'
 import Ping from '../components/Ping.vue'
 
 const router = createRouter({
