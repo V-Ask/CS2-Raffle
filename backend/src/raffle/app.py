@@ -20,7 +20,7 @@ server_manager = create_server_manager(config)
 def add_routes(app):
     @app.route('/test')
     def test():
-        return {'hello': request.get_json()['world']}
+        return {'hello': request.args.get('world')}
 
     @app.route('/submitmap', methods=['POST'])
     def submit_map():
