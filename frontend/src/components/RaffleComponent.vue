@@ -5,12 +5,12 @@ import { ref } from 'vue'
 export default {
   data() {
     return {
-      ITEMS_PER_PAGE: 5,
-      COPYRIGHT: "© All images from Counter-Strike 2 and the Steam Workshop are property of Valve Corporation. This website is not affiliated with Valve Corporation.",
       inputText: ref(""),
       nonplayed: [],
       played: [],
-      reel: []
+      reel: [],
+      COPYRIGHT: "© All images from Counter-Strike 2 and the Steam Workshop are property of Valve Corporation. This website is not affiliated with Valve Corporation.",
+      ITEMS_PER_PAGE: 5
     }
   },
   methods: {
@@ -112,6 +112,8 @@ export default {
     this.getPlayed();
   }
 }
+
+
 
 </script>
 <style>
