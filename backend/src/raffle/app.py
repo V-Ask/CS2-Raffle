@@ -27,7 +27,7 @@ def add_routes(app):
         request_data = request.get_json()
         url = request_data['workshop_url']
         map_manager.add_map(url)
-        return "200"
+        return 200
 
     @app.route('/nonplayed', methods=['GET'])
     def get_nonplayed():
@@ -53,13 +53,13 @@ def add_routes(app):
         id = request.get_json()['workshop_id']
         map_manager.play_map(id)
         server_manager.set_map(id)
-        return "200"
+        return 200
     
     @app.route('/removemap', methods=['DELETE'])
     def remove_map():
         id = request.get_json()['workshop_id']
         map_manager.remove_map(id)
-        return "200"
+        return 200
 
 add_routes(app)
 if __name__ == '__main__':
