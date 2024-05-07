@@ -19,10 +19,11 @@ class MapManager:
     def add_map(self, url: str):
         workshop_item = workshop_scraper.get_workshop_item(url)
         if workshop_item is None:
-            return
+            return False
         map = workshop_item_to_map(workshop_item)
         self.map_pool.add_map(map)
         self.database.add_map(map.name, map.id, map.image_url, map.weight)
+        return True
 
     def remove_map(self, id: str):
         map = self.map_pool.get_map(id)
@@ -38,7 +39,4 @@ class MapManager:
     
     def get_played(self):
         return list(self.map_pool.played_maps.values())
-    
-    def generate_reel(self, length):
-        return self.map_pool.get_reel(length)
     

@@ -7,7 +7,7 @@ class Map:
         self.image_url = image_url
         self.weight = weight
 
-    def increse_weight(self):
+    def increase_weight(self):
         self.weight += 1
 
     def map_dict(self):
@@ -38,13 +38,6 @@ class MapPool:
     def increase_played_weight(self, id: str):
         if id in self.maps:
             self.maps[id].increse_weight()
-
-    def get_reel(self, length: int):
-        if len(self.maps) == 0:
-            return []
-        options = [[map_] * map_.weight for map_ in self.maps.values()]
-        flattened = sum(options, [])
-        return random.choices(flattened, k=length)
     
     def increase_all_other_weights(self, excluded: str):
         for id in self.maps:

@@ -1,18 +1,29 @@
 <script>
-import axios from 'axios'
-import { ref } from 'vue'
+import axios from 'axios';
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/css/index.css'
+import ReelComponent from './ReelComponent.vue';
+import ServerManager from './ServerManager'
+import MapInputComponent from './MapInputComponent.vue';
 
+
+//TODO: Add frontend for starting maps and make warning errors stop (parse
+//errors as strings)
 export default {
   data() {
     return {
-      inputText: ref(""),
-      nonplayed: [],
-      played: [],
-      reel: [],
+      isLoading: false,
+      fullPage: true,
+      manager: new ServerManager(),
+      ITEMS_PER_PAGE: 5,
       COPYRIGHT: "© All images from Counter-Strike 2 and the Steam Workshop are property of Valve Corporation. This website is not affiliated with Valve Corporation.",
-      ITEMS_PER_PAGE: 5
     }
   },
+  components: {
+    Loading,
+    ReelComponent,
+    MapInputComponent
+},
   methods: {
     async getTest() {
       const path = 'http://localhost:5000/test';
@@ -30,90 +41,31 @@ export default {
         });
     },
 
-    async getNonplayed() {
-      const path = 'http://localhost:5000/nonplayed';
-      axios.get(path)
-        .then((res) => {
-          console.log(res.data);
-          this.nonplayed = res.data;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-    async getPlayed() {
-      const path = 'http://localhost:5000/played';
-      axios.get(path)
-        .then((res) => {
-          console.log(res.data);
-          this.played = res.data;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    async updateNonplayed() {
+      this.isLoading = true;
+      await this.manager.updateNonplayed();
+      this.isLoading = false;
     },
 
-    async getReel(reel_length) {
-      const path = 'http://localhost:5000/randommaps';
-      axios.get(path, {
-        reel_length: reel_length
-      })
-        .then((res) => {
-          this.reel = res.data;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    async updatePlayed() {
+      this.isLoading = true;
+      await this.manager.updatePlayed();
+      this.isLoading = false;
     },
 
     async addMap() {
-      const path = 'http://localhost:5000/submitmap';
-      axios.post(path, {
-        workshop_url: this.inputText
-      })
-        .then(() => {
-          this.getNonplayed();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-
-    async startMap(workshop_id) {
-      const path = 'http://localhost:5000/startmap';
-      axios.put(path, {
-        workshop_id: workshop_id
-      })
-        .then(() => {
-          this.getNonplayed();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      this.isLoading = true;
+      await this.manager.addMap(this.inputText);
+      this.isLoading = false;
     },
 
     async removeMap(workshop_id) {
-      const path = 'http://localhost:5000/submitmap';
-      axios.post(path, {
-        workshop_id: workshop_id
-      })
-        .then(() => {
-          this.getNonplayed();
-          this.getPlayed();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      this.isLoading = true;
+      await this.manager.removeMap(workshop_id);
+      this.isLoading = false;
     }
-  },
-  beforeMount() {
-    this.getTest();
-    this.getNonplayed();
-    this.getPlayed();
   }
 }
-
-
 
 </script>
 <style>
@@ -149,59 +101,6 @@ body {
   align-items: center;
 }
 
-.input-container {
-  width: 60vh;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.map-input {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.map-input>* {
-  width: 100%;
-  height: 100%;
-}
-
-.reel-container {
-  height: 151px;
-  position: relative;
-  width: calc(v-bind(ITEMS_PER_PAGE) * 268px);
-  border: 2px solid white;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.reel {
-  height: 100%;
-  display: flex;
-  animation: moveleft 2s linear 1s;
-}
-
-.reel>* {
-  flex: 0 0 268px;
-  background-image: url("https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg?t=1698860631");
-  background-size: 100%;
-  height: 100%;
-  margin: 0;
-  color: black;
-}
-
-@keyframes moveleft {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-2000px);
-  }
-}
-
 footer {
   position: fixed;
   bottom: 0;
@@ -213,33 +112,14 @@ footer {
   color: white;
 }
 </style>
+
 <template>
   <body>
+    <loading v-model:active="isLoading" :is-full-page="fullPage"/>
     <div class="background">
       <div class="blur">
-        <div class="reel-container">
-          <div class="reel">
-            <p>MAP</p>
-            <p>MAP</p>
-            <p>MAP</p>
-            <p>MAP</p>
-            <p>MAP</p>
-            <p>MAP</p>
-            <p>MAP</p>
-            <p>MAP</p>
-            <p>MAP</p>
-          </div>
-        </div>
-        <div class="input-container">
-          <span>Add Map to Pool:</span>
-          <div class="map-input">
-            <input v-model="inputText" placeholder="Insert Steam Workshop Link..." />
-            <button @click="addMap()">Submit Map</button>
-          </div>
-        </div>
-        <div class="roll-button">
-          <input type="button" value="Roll" />
-        </div>
+        <ReelComponent :ITEMS_PER_PAGE="ITEMS_PER_PAGE" :manager="manager"/>
+        <MapInputComponent :manager="manager"/>
       </div>
     </div>
   </body>

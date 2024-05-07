@@ -26,8 +26,8 @@ def add_routes(app):
     def submit_map():
         request_data = request.get_json()
         url = request_data['workshop_url']
-        map_manager.add_map(url)
-        return 200
+        valid = map_manager.add_map(url)
+        return "VALID" if valid else "INVALID"
 
     @app.route('/nonplayed', methods=['GET'])
     def get_nonplayed():
@@ -41,25 +41,20 @@ def add_routes(app):
         map_dict = [map.map_dict() for map in maps]
         return jsonify(map_dict)
 
-    @app.route('/randommaps', methods=['GET'])
-    def get_random_map_pool():
-        length = request.get_json()['reel_length']
-        reel = map_manager.generate_reel(length)
-        reel_dict = [map.map_dict() for map in reel]
-        return jsonify(reel_dict)
-
     @app.route('/startmap', methods=['PUT'])
     def start_map():
         id = request.get_json()['workshop_id']
-        map_manager.play_map(id)
+        remove = request.get_json()['remove']
+        if remove:
+            map_manager.play_map(id)
         server_manager.set_map(id)
-        return 200
+        return remove
     
     @app.route('/removemap', methods=['DELETE'])
     def remove_map():
         id = request.get_json()['workshop_id']
         map_manager.remove_map(id)
-        return 200
+        return '200'
 
 add_routes(app)
 if __name__ == '__main__':
