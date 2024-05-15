@@ -42,7 +42,7 @@ lxml==5.2.1
 MarkupSafe==2.1.5
 more-itertools==8.10.0
 netifaces==0.11.0
-oauthlib==3.2.0
+oauthlib==3.2.2
 packaging==24.0
 parsel==1.9.1
 platformdirs==4.2.0
