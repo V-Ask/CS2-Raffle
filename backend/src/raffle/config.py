@@ -16,11 +16,15 @@ class Config:
             config['Database Settings'] = {
                 'path': ''
             }
+            config['Server Settings'] = {
+                'server_password': ''
+            }
             config.write(open(name, 'w'))
 
         config.read(name)
-        self.username = config.get('Host Settings', 'username')
-        self.password = config.get('Host Settings', 'password')
-        self.put_server_url = config.get('Host Settings', 'put_server_url')
-        self.get_server_url = config.get('Host Settings', 'get_server_url')
-        self.database_path = config.get('Database Settings', 'path')
+        self.username = config.get('Host Settings', 'username', fallback='')
+        self.password = config.get('Host Settings', 'password', fallback='')
+        self.put_server_url = config.get('Host Settings', 'put_server_url', fallback='')
+        self.get_server_url = config.get('Host Settings', 'get_server_url', fallback='')
+        self.database_path = config.get('Database Settings', 'path', fallback='')
+        self.server_password = config.get('Server Settings', 'server_password', fallback='')
