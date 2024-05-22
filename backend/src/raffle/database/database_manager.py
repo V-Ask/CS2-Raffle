@@ -24,7 +24,7 @@ class Database:
             cursor.execute(sql_create_table)
             cursor.execute(sql_create_played_table)
         except Error as e:
-            warn(e)
+            warn(str(e))
         cursor.close()
         conn.commit()
         conn.close()
@@ -38,7 +38,7 @@ class Database:
             data_tuple = (name, id, url, weight)
             cursor.execute(sql_add_map, data_tuple)
         except Error as e:
-            warn(e)
+            warn(str(e))
         cursor.close()
         conn.commit()
         conn.close()
@@ -73,7 +73,7 @@ class Database:
             cursor.execute(sql_add_played, (name, id, url, weight))
             conn.commit()
         except Error as e:
-            warn(e)
+            warn(str(e))
         cursor.close()
         conn.close()
 
@@ -86,7 +86,7 @@ class Database:
             cursor.execute(sql_increase_weights, (excluded, ))
             conn.commit()
         except Error as e:
-            warn(e)
+            warn(str(e))
         cursor.close()
         conn.close()
     

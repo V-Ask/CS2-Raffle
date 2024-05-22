@@ -29,14 +29,16 @@ export default {
 
   methods: {
     async startMap() {
-      if(this.reel_status != 2) return; 
+      if(this.reel_status != 3) return; 
+      this.respawnReel();
       const path = 'http://localhost:5000/startmap';
       axios.put(path, {
-        workshop_id: this.reel[this.WINNER],
+        workshop_id: this.reel[this.WINNER]['id'],
         remove: this.remove_map
       })
         .then(() => {
           this.manager.updateNonplayed();
+          this.reel_status = ReelStatus.Pregen;
         })
         .catch((error) => {
           console.error(error);
@@ -62,7 +64,6 @@ export default {
           var clone = Array(map.weight).fill(map);
           reel_elements.push(...clone);
       });
-      console.log(reel_elements);
       let result = []
       while (result.length < REEL_SIZE) {
           const i = Math.floor(Math.random() * reel_elements.length);
@@ -73,6 +74,14 @@ export default {
       this.reel_winner = result[this.WINNER];
       this.isLoading = false;
       this.reel_status = ReelStatus.Gen;
+    },
+
+    respawnReel() {
+      if(this.reel_status != 3) return; 
+      if(this.remove_map) {
+        this.manager.removeMap(this.reel[this.WINNER]);
+      }
+      this.spawnReel();
     }
   }
 }

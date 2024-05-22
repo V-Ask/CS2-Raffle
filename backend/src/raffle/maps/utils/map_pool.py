@@ -1,5 +1,3 @@
-import random
-
 class Map:
     def __init__(self, name: str, id: int, image_url: str, weight: int) -> None:
         self.name = name
@@ -37,10 +35,10 @@ class MapPool:
     
     def increase_played_weight(self, id: str):
         if id in self.maps:
-            self.maps[id].increse_weight()
+            self.maps[id].increase_weight()
     
     def increase_all_other_weights(self, excluded: str):
         for id in self.maps:
             if id == excluded:
                 continue
-            self.maps[id] += 1
+            self.maps[id].increase_weight()

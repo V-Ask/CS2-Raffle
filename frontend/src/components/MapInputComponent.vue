@@ -11,7 +11,9 @@ export default {
     }
   },
   methods: {
-    
+    async add() {
+      
+    }
   },
   props: {
     manager: ServerManager

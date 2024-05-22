@@ -17,7 +17,8 @@ class Config:
                 'path': ''
             }
             config['Server Settings'] = {
-                'server_password': ''
+                'server_password': '',
+                'jwt_secret': 'b7f5785d498af7cb716fd38343f68f6836cdf3d0970d58d2741fe1150687c38e'
             }
             config.write(open(name, 'w'))
 
@@ -28,3 +29,4 @@ class Config:
         self.get_server_url = config.get('Host Settings', 'get_server_url', fallback='')
         self.database_path = config.get('Database Settings', 'path', fallback='')
         self.server_password = config.get('Server Settings', 'server_password', fallback='')
+        self.jwt_secret = config.get('Server Settings', 'jwt_secret', fallback='')
