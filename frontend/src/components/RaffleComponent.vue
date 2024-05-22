@@ -1,14 +1,11 @@
 <script>
-import axios from 'axios';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css'
 import ReelComponent from './ReelComponent.vue';
 import ServerManager from './ServerManager'
 import MapInputComponent from './MapInputComponent.vue';
 
-
-//TODO: Add frontend for starting maps and make warning errors stop (parse
-//errors as strings)
+//TODO: Fix loading
 export default {
   data() {
     return {
@@ -23,48 +20,7 @@ export default {
     Loading,
     ReelComponent,
     MapInputComponent
-},
-  methods: {
-    async getTest() {
-      const path = 'http://localhost:5000/test';
-      axios.get(path, 
-        {
-          params: {
-            world: 'hello'
-          }
-        })
-        .then((res) => {
-          console.log(res.data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-
-    async updateNonplayed() {
-      this.isLoading = true;
-      await this.manager.updateNonplayed();
-      this.isLoading = false;
-    },
-
-    async updatePlayed() {
-      this.isLoading = true;
-      await this.manager.updatePlayed();
-      this.isLoading = false;
-    },
-
-    async addMap() {
-      this.isLoading = true;
-      await this.manager.addMap(this.inputText);
-      this.isLoading = false;
-    },
-
-    async removeMap(workshop_id) {
-      this.isLoading = true;
-      await this.manager.removeMap(workshop_id);
-      this.isLoading = false;
-    }
-  }
+}
 }
 
 </script>
@@ -79,26 +35,6 @@ body {
 
 body {
   margin: 0;
-}
-
-.background {
-  height: 100vh;
-  background-image: url("https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg?t=1698860631");
-  background-attachment: fixed;
-  background-size: cover;
-  background-position: center top;
-}
-
-.blur {
-  height: 100%;
-  margin: 0;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 20px;
-  align-items: center;
 }
 
 footer {

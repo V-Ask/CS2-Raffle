@@ -8,3 +8,23 @@ button {
     border-color: black;
     border: 20px;
 }
+
+.background {
+    height: 100vh;
+    background-image: url("https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg?t=1698860631");
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center top;
+  }
+  
+  .blur {
+    height: 100%;
+    margin: 0;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+  }
