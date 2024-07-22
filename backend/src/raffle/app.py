@@ -26,8 +26,7 @@ def add_routes(app):
     @app.route('/submitmap', methods=['POST'])
     @jwt_required()
     def submit_map():
-        request_data = request.get_json()
-        url = request_data['workshop_url']
+        url = request.get_json()['data']['workshop_url']
         valid = map_manager.add_map(url)
         return "VALID" if valid else "INVALID"
 

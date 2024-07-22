@@ -7,19 +7,35 @@ export default {
   data () {
     return {
       inputText: ref(""),
-      selected_pool: 0,
+      selected_pool: ref(""),
     }
   },
   methods: {
-    async add() {
-      
+    async addMap() {
+      this.$emit("onLoading");
+      this.manager.addMap(this.inputText);
+      this.$emit("onFinishedLoading");
+    },
+
+    getMapList() {
+      switch(this.selected_pool) {
+        case "nonplayed":
+          return this.manager.nonplayed;
+        case "played":
+          return this.manager.played;
+        default:
+          console.log(this.selected_pool);
+          return [];
+      }
     }
   },
   props: {
     manager: ServerManager
   }, 
   beforeMount() {
-    this.manager.updateNonplayed()
+    this.$emit("onLoading");
+    this.manager.updateNonplayed();
+    this.$emit("onFinishedLoading");
   }
 }
 
@@ -93,15 +109,15 @@ export default {
   <span>Add Map to Pool:</span>
   <div class="map-input">
     <input v-model="inputText" placeholder="Insert Steam Workshop Link..." />
-    <button @click="addMap()">Submit Map</button>
+    <button @click="addMap">Submit Map</button>
   </div>
 </div>
-<div v-if="selected_pool === 0" class="map-container">
-  <img v-for="map in manager.nonplayed" :key="map.id"
-  v-on:click="removeMap(map.id)"  :src="map.image_url"/>
-</div>
-<div v-else class="map-container">
-  <img v-for="map in manager.played" :key="map.id"
-  v-on:click="removeMap(map.id)"  :src="map.image_url"/>
+<select v-model="selected_pool">
+  <option value="nonplayed">Non-Played</option>
+  <option value="played">Played</option>
+</select>
+<div class="map-container">
+  <img v-for="map in getMapList()" :key="map.id"
+  v-on:click="manager.removeMap(map.id)"  :src="map.image_url"/>
 </div>
 </template>
