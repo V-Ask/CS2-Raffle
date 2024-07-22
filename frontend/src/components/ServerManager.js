@@ -27,6 +27,7 @@ export default class ServerManager {
     const path = 'http://localhost:5000/nonplayed';
     axios.get(path)
       .then((res) => {
+        console.log(res);
         this.nonplayed = res.data;
       })
       .catch((error) => {
@@ -56,6 +57,7 @@ export default class ServerManager {
 
   async addMap(workshop_url) {
     const path = 'http://localhost:5000/submitmap';
+    console.log(workshop_url);
     axios.post(path, {
       data: { workshop_url: workshop_url }
     })
@@ -95,7 +97,7 @@ export default class ServerManager {
   }
 
   set played(played) {
-    this._nonplayed = played;
+    this._played = played;
   }
 
   set nonplayed(nonplayed) {

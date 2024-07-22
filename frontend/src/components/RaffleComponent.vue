@@ -6,10 +6,10 @@ import ServerManager from './ServerManager'
 import MapInputComponent from './MapInputComponent.vue';
 
 //TODO: Fix loading
+//Note: https://michaelnthiessen.com/pass-function-as-prop
 export default {
   data() {
     return {
-      isLoading: false,
       fullPage: true,
       manager: new ServerManager(),
       ITEMS_PER_PAGE: 5,
@@ -20,7 +20,12 @@ export default {
     Loading,
     ReelComponent,
     MapInputComponent
-}
+  },
+  methods: {
+    setLoading(isLoading) {
+      this.isLoading = isLoading;
+    }
+  }
 }
 
 </script>
@@ -54,8 +59,8 @@ footer {
     <loading v-model:active="isLoading" :is-full-page="fullPage"/>
     <div class="background">
       <div class="blur">
-        <ReelComponent :ITEMS_PER_PAGE="ITEMS_PER_PAGE" :manager="manager"/>
-        <MapInputComponent :manager="manager"/>
+        <ReelComponent @onLoading="setLoading(true)" @onFinishedLoading="setLoading(false)" :ITEMS_PER_PAGE="ITEMS_PER_PAGE" :manager="manager"/>
+        <MapInputComponent @onLoading="setLoading(true)" @onFinishedLoading="setLoading(false)" :manager="manager"/>
       </div>
     </div>
   </body>

@@ -1,6 +1,7 @@
 <script>
 import axios from 'axios'
 import ServerManager from './ServerManager';
+import { defineComponent } from 'vue';
 
 const REEL_SIZE = 100;
 const ReelStatus = {
@@ -10,7 +11,8 @@ const ReelStatus = {
   Picked: 3
 }
 
-export default {
+export default defineComponent({
+  emits: ['busy', 'free'],
   data() {
     return {
       STARTING_OFFSET: 2,
@@ -84,7 +86,7 @@ export default {
       this.spawnReel();
     }
   }
-}
+})
 </script>
 
 <style>
