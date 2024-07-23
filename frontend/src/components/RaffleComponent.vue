@@ -11,6 +11,7 @@ export default {
   data() {
     return {
       fullPage: true,
+      isLoading: true,
       manager: new ServerManager(),
       ITEMS_PER_PAGE: 5,
       COPYRIGHT: "© All images from Counter-Strike 2 and the Steam Workshop are property of Valve Corporation. This website is not affiliated with Valve Corporation.",
@@ -60,7 +61,7 @@ footer {
     <div class="background">
       <div class="blur">
         <ReelComponent @onLoading="setLoading(true)" @onFinishedLoading="setLoading(false)" :ITEMS_PER_PAGE="ITEMS_PER_PAGE" :manager="manager"/>
-        <MapInputComponent @onLoading="setLoading(true)" @onFinishedLoading="setLoading(false)" :manager="manager"/>
+        <MapInputComponent @onLoading="this.setLoading(true)" @onFinishedLoading="this.setLoading(false)" :manager="manager"/>
       </div>
     </div>
   </body>
