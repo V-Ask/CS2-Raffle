@@ -12,7 +12,6 @@ const ReelStatus = {
 }
 
 export default defineComponent({
-  emits: ['busy', 'free'],
   data() {
     return {
       STARTING_OFFSET: 2,
@@ -28,20 +27,20 @@ export default defineComponent({
     ITEMS_PER_PAGE: Number,
     manager: ServerManager
   },
-
+  emits: ['onLoading', 'onFinishedLoading'],
   methods: {
     async startMap() {
+      const winner_id = this.reel[this.WINNER]['id']
       if(this.reel_status != 3) return; 
-      this.respawnReel();
       const path = 'http://localhost:5000/startmap';
-      axios.put(path, {
-        workshop_id: this.reel[this.WINNER]['id'],
+      this.$emit("onLoading");
+      return axios.put(path, {
+        workshop_id: winner_id,
         remove: this.remove_map
       })
-        .then(() => {
-          this.manager.updateNonplayed();
-          this.reel_status = ReelStatus.Pregen;
-        })
+        .then(() => this.remove_map ? this.manager.removeMap(winner_id) : Promise.resolve())
+        .then(() => this.reel_status = ReelStatus.Pregen)
+        .then(() => this.$emit("onFinishedLoading"))
         .catch((error) => {
           console.error(error);
         });
@@ -58,6 +57,7 @@ export default defineComponent({
 
     spawnReel() {
       if(this.manager.nonplayed.length < 1) {
+          alert("No Workshop maps in the playlist!");
           return;
       }
       let reel_elements = []
@@ -76,14 +76,6 @@ export default defineComponent({
       this.reel_winner = result[this.WINNER];
       this.isLoading = false;
       this.reel_status = ReelStatus.Gen;
-    },
-
-    respawnReel() {
-      if(this.reel_status != 3) return; 
-      if(this.remove_map) {
-        this.manager.removeMap(this.reel[this.WINNER]);
-      }
-      this.spawnReel();
     }
   }
 })

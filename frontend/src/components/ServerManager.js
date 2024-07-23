@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+//TODO: Optimizations: We do not need to pair every post/put with a get request,
+//if we already know the result
 export default class ServerManager {
   constructor() {
     this._nonplayed = [];
@@ -25,7 +27,7 @@ export default class ServerManager {
 
   async updateNonplayed() {
     const path = 'http://localhost:5000/nonplayed';
-    axios.get(path)
+    return axios.get(path)
       .then((res) => {
         console.log(res);
         this.nonplayed = res.data;
@@ -44,7 +46,7 @@ export default class ServerManager {
       return;
     }
     const path = 'http://localhost:5000/played';
-    axios.get(path)
+    return axios.get(path)
       .then((res) => {
         this.played = res.data;
       })
@@ -58,7 +60,7 @@ export default class ServerManager {
   async addMap(workshop_url) {
     const path = 'http://localhost:5000/submitmap';
     console.log(workshop_url);
-    axios.post(path, {
+    return axios.post(path, {
       data: { workshop_url: workshop_url }
     })
       .then(() => {
@@ -78,7 +80,7 @@ export default class ServerManager {
       return;
     }
     const path = 'http://localhost:5000/removemap';
-    axios.delete(path, {
+    return axios.delete(path, {
       data: {workshop_id: workshop_id}
     })
       .then(() => {

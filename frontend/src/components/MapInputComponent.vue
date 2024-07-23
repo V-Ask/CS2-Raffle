@@ -3,18 +3,34 @@ import ServerManager from './ServerManager';
 import { ref } from 'vue';
 
 
+//TODO: Be able to add played maps to nonplayed
 export default {
   data () {
     return {
       inputText: ref(""),
-      selected_pool: ref(""),
+      selected_pool: ref("nonplayed"),
     }
   },
+  emits: ['onLoading', 'onFinishedLoading'],
   methods: {
-    async addMap() {
+    async addMap(input) {
+      return this.manager.addMap(input)
+    },
+
+    async addInputMap() {
       this.$emit("onLoading");
-      this.manager.addMap(this.inputText);
-      this.$emit("onFinishedLoading");
+      return this.addMap(this.inputText)
+      .then(() => this.$emit("onFinishedLoading"))
+    },
+
+    async removeMap(id) {
+      if(this.selected_pool === "played") {
+        return this.submitMapId(id);
+      } else {
+        this.$emit("onLoading");
+        this.manager.removeMap(id)
+          .then(() => this.$emit("onFinishedLoading"));
+      }
     },
 
     getMapList() {
@@ -32,10 +48,11 @@ export default {
   props: {
     manager: ServerManager
   }, 
-  beforeMount() {
+  async mounted() {
     this.$emit("onLoading");
-    this.manager.updateNonplayed();
-    this.$emit("onFinishedLoading");
+    return this.manager.updateNonplayed()
+      .then(() => this.manager.updatePlayed())
+      .then(() => this.$emit("onFinishedLoading"));
   }
 }
 
@@ -109,7 +126,7 @@ export default {
   <span>Add Map to Pool:</span>
   <div class="map-input">
     <input v-model="inputText" placeholder="Insert Steam Workshop Link..." />
-    <button @click="addMap">Submit Map</button>
+    <button @click="addInputMap">Submit Map</button>
   </div>
 </div>
 <select v-model="selected_pool">
@@ -118,6 +135,6 @@ export default {
 </select>
 <div class="map-container">
   <img v-for="map in getMapList()" :key="map.id"
-  v-on:click="manager.removeMap(map.id)"  :src="map.image_url"/>
+  v-on:click="removeMap(map.id)"  :src="map.image_url"/>
 </div>
 </template>
