@@ -25,7 +25,7 @@ export default {
 
     async removeMap(id) {
       if(this.selected_pool === "played") {
-        return this.submitMapId(id);
+        return this.manager.unplayMap(id);
       } else {
         this.$emit("onLoading");
         this.manager.removeMap(id)

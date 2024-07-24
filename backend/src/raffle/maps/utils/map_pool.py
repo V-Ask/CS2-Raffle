@@ -33,9 +33,11 @@ class MapPool:
             self.played_maps[id] = map
             del self.maps[id]
     
-    def increase_played_weight(self, id: str):
-        if id in self.maps:
-            self.maps[id].increase_weight()
+    def unplay_map(self, id: str):
+        if id in self.played_maps:
+            map = self.played_maps[id]
+            self.maps[id] = map
+            del self.played_maps[id]
     
     def increase_all_other_weights(self, excluded: str):
         for id in self.maps:
