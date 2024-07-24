@@ -74,7 +74,7 @@ export default class ServerManager {
   }
 
   async removeMap(workshop_id) {
-    let token = localStorage.getItem('access_token')
+    let token = localStorage.getItem('access_token');
     if (token === null) {
       window.location.href = '/login';
       return;
@@ -89,7 +89,28 @@ export default class ServerManager {
       })
       .catch((error) => {
         if(error.response.status === 401) {
-          window.location.href = '/login'
+          window.location.href = '/login';
+        } else console.error(error);
+      });
+  }
+
+  async unplayMap(workshop_id) {
+    let token = localStorage.getItem('access_token');
+    if (token === null) {
+      window.location.href = '/login';
+      return;
+    }
+    const path = 'http://localhost:5000/unplaymap';
+    return axios.put(path, {
+      data: {workshop_id: workshop_id}
+    })
+      .then(() => {
+        this.updateNonplayed();
+        this.updatePlayed();
+      })
+      .catch((error) => {
+        if(error.response.status === 401) {
+          window.location.href = '/login';
         } else console.error(error);
       });
   }

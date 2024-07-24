@@ -62,6 +62,13 @@ def add_routes(app):
         map_manager.remove_map(id)
         return jsonify(), 201
     
+    @app.route('/unplaymap', methods=['PUT'])
+    @jwt_required()
+    def unplay_map():
+        id = request.get_json()['data']['workshop_id']
+        map_manager.unplay_map(id)
+        return jsonify(), 201
+    
     @app.route('/auth', methods=['GET'])
     @jwt_required()
     def auth():

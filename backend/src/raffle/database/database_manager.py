@@ -77,6 +77,19 @@ class Database:
         cursor.close()
         conn.close()
 
+    def unplay_map(self, name, id, url, weight):
+        sql_delete_map = '''DELETE FROM played_maps WHERE workshop_id=?'''
+        conn = connect(self.database_path)
+        cursor = conn.cursor()
+        try:
+            cursor.execute(sql_delete_map, (id, ))
+            conn.commit()
+        except Error as e:
+            warn(str(e))
+        cursor.close()
+        conn.close()
+        self.add_map(name, id, url, weight)
+
     def increase_all_other_weights(self, excluded: str):
         sql_increase_weights = '''UPDATE maps SET weight = weight + 1 WHERE
                                workshop_id != ?;'''
