@@ -1,9 +1,9 @@
 <script>
 import ServerManager from './ServerManager';
+import MapComponent from './MapComponent.vue';
 import { ref } from 'vue';
 
 
-//TODO: Be able to add played maps to nonplayed
 export default {
   data () {
     return {
@@ -12,6 +12,9 @@ export default {
     }
   },
   emits: ['onLoading', 'onFinishedLoading'],
+  components: {
+    MapComponent
+  },
   methods: {
     async addMap(input) {
       return this.manager.addMap(input)
@@ -24,11 +27,12 @@ export default {
     },
 
     async removeMap(id) {
+      this.$emit("onLoading");
       if(this.selected_pool === "played") {
-        return this.manager.unplayMap(id);
+        return this.manager.unplayMap(id)
+          .then(() => this.$emit("onFinishedLoading"));
       } else {
-        this.$emit("onLoading");
-        this.manager.removeMap(id)
+        return this.manager.removeMap(id)
           .then(() => this.$emit("onFinishedLoading"));
       }
     },
@@ -90,7 +94,6 @@ export default {
 .map-container >* {
   flex: 0 0 1;
   margin: 2px;
-  height: 200px;
 }
 
 ::-webkit-scrollbar {
@@ -122,19 +125,18 @@ export default {
 </style>
 
 <template>
-<div class="input-container">
-  <span>Add Map to Pool:</span>
-  <div class="map-input">
-    <input v-model="inputText" placeholder="Insert Steam Workshop Link..." />
-    <button @click="addInputMap">Submit Map</button>
+  <div class="input-container">
+    <span>Add Map to Pool:</span>
+    <div class="map-input">
+      <input v-model="inputText" placeholder="Insert Steam Workshop Link..." />
+      <button @click="addInputMap">Submit Map</button>
+    </div>
   </div>
-</div>
-<select v-model="selected_pool">
-  <option value="nonplayed">Non-Played</option>
-  <option value="played">Played</option>
-</select>
-<div class="map-container">
-  <img v-for="map in getMapList()" :key="map.id"
-  v-on:click="removeMap(map.id)"  :src="map.image_url"/>
-</div>
+  <select v-model="selected_pool">
+    <option value="nonplayed">Non-Played</option>
+    <option value="played">Played</option>
+  </select>
+  <div class="map-container">
+    <MapComponent v-for="map in getMapList()" :key="map.id" :name_="map.name" :image_url="map.image_url"/>
+  </div>
 </template>

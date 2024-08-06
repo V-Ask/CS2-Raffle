@@ -27,8 +27,8 @@ def add_routes(app):
     @jwt_required()
     def submit_map():
         url = request.get_json()['data']['workshop_url']
-        valid = map_manager.add_map(url)
-        return "VALID" if valid else "INVALID"
+        map = map_manager.add_map(url)
+        return jsonify(map.map_dict())
 
     @app.route('/nonplayed', methods=['GET'])
     @jwt_required()

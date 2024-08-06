@@ -5,8 +5,6 @@ import ReelComponent from './ReelComponent.vue';
 import ServerManager from './ServerManager'
 import MapInputComponent from './MapInputComponent.vue';
 
-//TODO: Fix loading
-//Note: https://michaelnthiessen.com/pass-function-as-prop
 export default {
   data() {
     return {
