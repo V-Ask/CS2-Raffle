@@ -1,4 +1,5 @@
 <script>
+//TODO: Finish components
 export default {
     props: {
         image_url: String,
