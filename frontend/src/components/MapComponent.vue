@@ -1,10 +1,13 @@
 <script>
 //TODO: Finish components
 export default {
+    data() {
+        
+    },
     props: {
         image_url: String,
         name_: String, 
-
+        weight: Number
     },
     emits: ['onRemove']
 }
@@ -52,6 +55,7 @@ export default {
             and rarity</span>
             <div id="name-overlay">
                 <span>{{this.name_}}</span>
+                <span>{{this.weight}}</span>
             </div>
         </div>
 

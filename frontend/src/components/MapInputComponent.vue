@@ -40,6 +40,7 @@ export default {
     getMapList() {
       switch(this.selected_pool) {
         case "nonplayed":
+          console.log(this.manager.nonplayed);
           return this.manager.nonplayed;
         case "played":
           return this.manager.played;
@@ -137,6 +138,6 @@ export default {
     <option value="played">Played</option>
   </select>
   <div class="map-container">
-    <MapComponent v-for="map in getMapList()" :key="map.id" :name_="map.name" :image_url="map.image_url"/>
+    <MapComponent v-for="map in getMapList()" :key="map.id" :name_="map.name" :image_url="map.image_url" :weight="map.weight"/>
   </div>
 </template>
