@@ -3,7 +3,8 @@ import ServerManager from './ServerManager';
 import MapComponent from './MapComponent.vue';
 import { ref } from 'vue';
 
-
+//TODO: Add functionality to purge maps from database and add proper colors to
+//signify rarity
 export default {
   data () {
     return {
