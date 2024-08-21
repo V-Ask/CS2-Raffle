@@ -62,15 +62,17 @@ class Database:
     def get_played_maps(self):
         return self.get_maps('played_maps')
         
-    def remove_map(self, name, id, url, weight):
+    def play_map(self, name, id, url, weight):
         sql_delete_map = '''DELETE FROM maps WHERE workshop_id=?'''
         sql_add_played = '''INSERT INTO played_maps(name, workshop_id, image_url, weight)
                     VALUES(?,?,?,?);'''
+        sql_increase_weights = '''UPDATE maps SET weight = weight + 1'''
         conn = connect(self.database_path)
         cursor = conn.cursor()
         try:
             cursor.execute(sql_delete_map, (id, ))
             cursor.execute(sql_add_played, (name, id, url, weight))
+            cursor.execute(sql_increase_weights)
             conn.commit()
         except Error as e:
             warn(str(e))
@@ -89,19 +91,6 @@ class Database:
         cursor.close()
         conn.close()
         self.add_map(name, id, url, weight)
-
-    def increase_all_other_weights(self, excluded: str):
-        sql_increase_weights = '''UPDATE maps SET weight = weight + 1 WHERE
-                               workshop_id != ?;'''
-        conn = connect(self.database_path)
-        cursor = conn.cursor()
-        try:
-            cursor.execute(sql_increase_weights, (excluded, ))
-            conn.commit()
-        except Error as e:
-            warn(str(e))
-        cursor.close()
-        conn.close()
     
     def __init__(self, database_path) -> None:
         self.database_path = database_path

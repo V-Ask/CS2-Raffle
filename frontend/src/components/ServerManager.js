@@ -6,6 +6,7 @@ export default class ServerManager {
   constructor() {
     this._nonplayed = [];
     this._played = [];
+    this.totalweight = 0;
     axios.interceptors.request.use((config) => {
       const token = localStorage.getItem('access_token');
       if (token) {
@@ -27,9 +28,13 @@ export default class ServerManager {
 
   async updateNonplayed() {
     const path = 'http://localhost:5000/nonplayed';
+    this.totalweight = 0;
     return axios.get(path)
       .then((res) => {
         this.nonplayed = res.data;
+        for(var map in res.data) {
+          this.totalweight += res.data[map].weight;
+        }
       })
       .catch((error) => {
         if(error.response.status === 401) {
@@ -62,7 +67,7 @@ export default class ServerManager {
       data: { workshop_url: workshop_url }
     })
       .then(res => {
-        this.nonplayed.push(res.data);
+        this.nonplayed[res.data['id']] = res.data;
       })
       .catch((error) => {
         if(error.response.status === 401) {
@@ -81,15 +86,21 @@ export default class ServerManager {
       window.location.href = '/login';
       return;
     }
-    const path = 'http://localhost:5000/removemap';
-    return axios.delete(path, {
+    const path = 'http://localhost:5000/playmap';
+    return axios.put(path, {
       data: {workshop_id: workshop_id}
     })
       .then(() => {
-        this.updateNonplayed();
-        this.updatePlayed();
+        this._played[workshop_id] = this._nonplayed[workshop_id];
+        this.totalweight -= this._nonplayed[workshop_id].weight;
+        delete this._nonplayed[workshop_id];
+        for (const map_id in this._nonplayed) {
+          this._nonplayed[map_id].weight++;
+          this.totalweight++;
+        }
       })
       .catch((error) => {
+        console.error(error)
         if(error.response.status === 401) {
           window.location.href = '/login';
         } else console.error(error);

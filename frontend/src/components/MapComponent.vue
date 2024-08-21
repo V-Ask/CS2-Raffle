@@ -8,14 +8,14 @@ export default {
         played: Boolean,
         active_color: String
     },
-    emits: ['mapRemoved', 'mapToggle'],
+    emits: ['mapRemoved', 'mapToggle', 'playMap'],
     methods: {
         getUrl() {
             return "https://steamcommunity.com/sharedfiles/filedetails/?id=" + this.id;
         },
 
         getPlayedText() {
-            if(played) return "Not Played?"
+            if(this.played) return "Not Played?"
             return "Already Played?"
         }
     }
@@ -91,19 +91,15 @@ export default {
     background-color: rgb(93,121,174);
 }
 
-#removebtn {
+#playmap {
+    background-color: #109856;
+}
+
+.button-overlay {
     cursor: pointer;
 }
 
-#removetxt {
-    user-select: none;
-}
-
-#playedbtn {
-    cursor: pointer;
-}
-
-#playedtxt {
+.nonselectable {
     user-select: none;
 }
 
@@ -116,15 +112,20 @@ export default {
         <img id="image" :src="this.image_url"/>
         <div class="overlay">
             <div class="buttons">
-                <div id="remove">
-                    <font-awesome-icon id="removebtn" :icon="['fas', 'trash']"
-                    size="5x" @click="this.$emit('mapRemoved', this.id)"/>
-                    <span id="removetxt">Remove Map</span>
+                <div id="remove" class="button-overlay" @click="this.$emit('mapRemoved', this.id)">
+                    <font-awesome-icon :icon="['fas', 'trash']"
+                    size="5x"/>
+                    <span class="nonselectable">Remove Map</span>
                 </div>
-                <div id="played">
-                    <font-awesome-icon id="playedbtn" :icon="['fas', 'gamepad']"
-                    size="5x" @click="this.$emit('mapToggle', this.id)"/>
-                    <span id="playedtxt">Already Played?</span>
+                <div id="played" class="button-overlay" @click="this.$emit('mapToggle', this.id)">
+                    <font-awesome-icon :icon="['fas', 'gamepad']"
+                    size="5x" />
+                    <span class="nonselectable">{{ getPlayedText() }}</span>
+                </div>
+                <div id="playmap" class="button-overlay" @click="this.$emit('playMap', this.id)">
+                    <font-awesome-icon :icon="['fas', 'play']"
+                    size="5x" />
+                    <span class="nonselectable">Play Map</span>
                 </div>
             </div>
             <div class="info">

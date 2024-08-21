@@ -25,19 +25,15 @@ class MapManager:
         self.database.add_map(map.name, map.id, map.image_url, map.weight)
         return map
 
-    def remove_map(self, id: str):
+    def play_map(self, id: str):
         map = self.map_pool.get_map(id)
-        self.map_pool.remove_map(id)
-        self.database.remove_map(map.name, map.id, map.image_url, map.weight)
+        self.map_pool.play_map(id)
+        self.database.play_map(map.name, id, map.image_url, map.weight)
 
     def unplay_map(self, id: str):
         map = self.map_pool.get_map(id)
         self.map_pool.unplay_map(id)
         self.database.unplay_map(map.name, map.id, map.image_url, map.weight)
-
-    def play_map(self, id: str):
-        self.map_pool.increase_all_other_weights(id)
-        self.database.increase_all_other_weights(id)
 
     def get_nonplayed(self):
         return list(self.map_pool.maps.values())
