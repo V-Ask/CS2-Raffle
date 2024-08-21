@@ -72,6 +72,10 @@ export default class ServerManager {
   }
 
   async removeMap(workshop_id) {
+
+  }
+
+  async playMap(workshop_id) {
     let token = localStorage.getItem('access_token');
     if (token === null) {
       window.location.href = '/login';
