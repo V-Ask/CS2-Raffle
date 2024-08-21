@@ -10,6 +10,8 @@ export default {
     return {
       inputText: ref(""),
       selected_pool: ref("nonplayed"),
+      rarity_percents: [0.0026, 0.0064, 0.032, 0.1598, 0.8],
+      rarity_colors: ["#E4AE33","#EB4B4B", "#D32CE6", "#8847FF", "#4B69FF"]
     }
   },
   emits: ['onLoading', 'onFinishedLoading'],
@@ -24,7 +26,10 @@ export default {
     async addInputMap() {
       this.$emit("onLoading");
       return this.addMap(this.inputText)
-      .then(() => this.$emit("onFinishedLoading"))
+      .then(() => {
+        this.inputText = "";
+        this.$emit("onFinishedLoading");
+      });
     },
 
     async toggleMap(id) {
@@ -44,19 +49,26 @@ export default {
         .then(() => this.$emit("onFinishedLoading"));
     },
 
-    getColor(id) {
-      return '#ccba7c'
+    getColor(weight) {
+      if(this.selected_pool === "played") return '#ccba7c';
+      const ratio = (weight + 0.0) / this.manager.totalweight;
+      var acc_percentage = 0;
+      for (let i = 0; i < this.rarity_percents.length; i++) {
+        acc_percentage += this.rarity_percents[i];
+
+        if(acc_percentage >= ratio) return this.rarity_colors[i];
+      }
+      console.log('here!!')
+      return this.rarity_colors[this.rarity_colors.length];
     },
 
     getMapList() {
       switch(this.selected_pool) {
         case "nonplayed":
-          console.log(this.manager.nonplayed);
           return this.manager.nonplayed;
         case "played":
           return this.manager.played;
         default:
-          console.log(this.selected_pool);
           return [];
       }
     }
@@ -151,7 +163,7 @@ export default {
   <div class="map-container">
     <MapComponent v-for="map in getMapList()" :key="map.id" :name_="map.name"
     :image_url="map.image_url" :weight="map.weight" :id="map.id"
-    :played="this.selected_pool == 'played'" :active_color="getColor(map.id)"
+    :played="this.selected_pool == 'played'" :active_color="getColor(map.weight)"
     @mapRemoved="(id) => deleteMap(id)" @mapToggle="(id) => toggleMap(id)"/>
   </div>
 </template>

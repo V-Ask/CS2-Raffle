@@ -62,10 +62,11 @@ export default defineComponent({
       }
       let reel_elements = []
       this.isLoading = true;
-      this.manager.nonplayed.forEach(map => {
-          var clone = Array(map.weight).fill(map);
-          reel_elements.push(...clone);
-      });
+      for (const map_id in this.manager.nonplayed) {
+        const map = this.manager.nonplayed[map_id];
+        var clone = Array(map.weight).fill(map);
+        reel_elements.push(...clone);
+      }
       let result = []
       while (result.length < REEL_SIZE) {
           const i = Math.floor(Math.random() * reel_elements.length);

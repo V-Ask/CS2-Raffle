@@ -34,14 +34,14 @@ def add_routes(app):
     @jwt_required()
     def get_nonplayed():
         maps = map_manager.get_nonplayed()
-        map_dict = [map.map_dict() for map in maps]
+        map_dict = {map.id:map.map_dict() for map in maps}
         return jsonify(map_dict)
 
     @app.route('/played', methods=['GET'])
     @jwt_required()
     def get_played():
         maps = map_manager.get_played()
-        map_dict = [map.map_dict() for map in maps]
+        map_dict = {map.id:map.map_dict() for map in maps}
         return jsonify(map_dict)
 
     @app.route('/startmap', methods=['PUT'])
@@ -50,16 +50,16 @@ def add_routes(app):
         id = request.get_json()['workshop_id']
         remove = request.get_json()['remove']
         if remove:
-            map_manager.remove_map(id)
+            map_manager.play_map(id)
         map_manager.play_map(id)
         server_manager.set_map(id)
         return jsonify(), 201
     
-    @app.route('/removemap', methods=['DELETE'])
+    @app.route('/playmap', methods=['PUT'])
     @jwt_required()
-    def remove_map():
-        id = request.get_json()['workshop_id']
-        map_manager.remove_map(id)
+    def play_map():
+        id = request.get_json()['data']['workshop_id']
+        map_manager.play_map(id)
         return jsonify(), 201
     
     @app.route('/unplaymap', methods=['PUT'])
