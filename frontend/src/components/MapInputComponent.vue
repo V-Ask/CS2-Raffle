@@ -26,15 +26,25 @@ export default {
       .then(() => this.$emit("onFinishedLoading"))
     },
 
-    async removeMap(id) {
+    async toggleMap(id) {
       this.$emit("onLoading");
       if(this.selected_pool === "played") {
         return this.manager.unplayMap(id)
           .then(() => this.$emit("onFinishedLoading"));
       } else {
-        return this.manager.removeMap(id)
+        return this.manager.playMap(id)
           .then(() => this.$emit("onFinishedLoading"));
       }
+    },
+
+    async deleteMap(id) {
+      this.$emit("onLoading");
+      return this.manager.deleteMap(id)
+        .then(() => this.$emit("onFinishedLoading"));
+    },
+
+    getColor(id) {
+      return '#ccba7c'
     },
 
     getMapList() {
@@ -138,6 +148,9 @@ export default {
     <option value="played">Played</option>
   </select>
   <div class="map-container">
-    <MapComponent v-for="map in getMapList()" :key="map.id" :name_="map.name" :image_url="map.image_url" :weight="map.weight"/>
+    <MapComponent v-for="map in getMapList()" :key="map.id" :name_="map.name"
+    :image_url="map.image_url" :weight="map.weight" :id="map.id"
+    :played="this.selected_pool == 'played'" :active_color="getColor(map.id)"
+    @mapRemoved="(id) => deleteMap(id)" @mapToggle="(id) => toggleMap(id)"/>
   </div>
 </template>
