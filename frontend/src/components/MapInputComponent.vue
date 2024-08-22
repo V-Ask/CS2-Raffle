@@ -49,6 +49,12 @@ export default {
         .then(() => this.$emit("onFinishedLoading"));
     },
 
+    async startMap(id) {
+      this.$emit("onLoading");
+      return this.manager.startMap(id)
+        .then(() => this.$emit("onFinishedLoading"));
+    },
+
     getColor(weight) {
       if(this.selected_pool === "played") return '#ccba7c';
       const ratio = (weight + 0.0) / this.manager.totalweight;
@@ -164,6 +170,7 @@ export default {
     <MapComponent v-for="map in getMapList()" :key="map.id" :name_="map.name"
     :image_url="map.image_url" :weight="map.weight" :id="map.id"
     :played="this.selected_pool == 'played'" :active_color="getColor(map.weight)"
-    @mapRemoved="(id) => deleteMap(id)" @mapToggle="(id) => toggleMap(id)"/>
+    @mapRemoved="(id) => deleteMap(id)" @mapToggle="(id) => toggleMap(id)"
+    @startMap="(id) => startMap(id)"/>
   </div>
 </template>

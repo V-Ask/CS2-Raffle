@@ -30,12 +30,14 @@ def test_insert(path, database):
     assert url == test_map.image_url
     assert weight == test_map.weight
 
-def test_delete(path, database):
+def test_play(path, database):
     connection = connect(path)
     database.add_map(test_map.name, test_map.id, test_map.image_url, test_map.weight)
-    database.remove_map(test_map.name, test_map.id, test_map.image_url, test_map.weight)
     cursor = connection.cursor()
     sql = '''SELECT count(*) FROM maps WHERE workshop_id = ?'''
+    length = cursor.execute(sql, (test_map.id, )).fetchone()
+    assert length[0] == 1
+    database.play_map(test_map.name, test_map.id, test_map.image_url, test_map.weight)
     length = cursor.execute(sql, (test_map.id, )).fetchone()
     cursor.close()
     assert length[0] <= 0

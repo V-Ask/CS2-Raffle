@@ -1,15 +1,16 @@
 import pytest
 from sqlite3 import connect
 from raffle import database_manager
+import os
 
 @pytest.fixture
 def path():
     return 'tests/database_tests/test_database_with_table.db'
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def database(path):
     database = database_manager.Database(path)
-    return database
+    yield database
 
 @pytest.fixture(autouse=True)
 def reset_db(path: str):

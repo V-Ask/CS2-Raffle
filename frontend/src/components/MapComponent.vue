@@ -8,7 +8,7 @@ export default {
         played: Boolean,
         active_color: String
     },
-    emits: ['mapRemoved', 'mapToggle', 'playMap'],
+    emits: ['mapRemoved', 'mapToggle', 'startMap'],
     methods: {
         getUrl() {
             return "https://steamcommunity.com/sharedfiles/filedetails/?id=" + this.id;
@@ -122,7 +122,7 @@ export default {
                     size="5x" />
                     <span class="nonselectable">{{ getPlayedText() }}</span>
                 </div>
-                <div id="playmap" class="button-overlay" @click="this.$emit('playMap', this.id)">
+                <div id="playmap" class="button-overlay" @click="this.$emit('startMap', this.id)">
                     <font-awesome-icon :icon="['fas', 'play']"
                     size="5x" />
                     <span class="nonselectable">Play Map</span>

@@ -76,7 +76,7 @@ export default class ServerManager {
       });
   }
 
-  async removeMap(workshop_id) {
+  async deleteMap(workshop_id) {
 
   }
 
@@ -126,6 +126,22 @@ export default class ServerManager {
           window.location.href = '/login';
         } else console.error(error);
       });
+  }
+
+  async startMap(workshop_id) {
+    let token = localStorage.getItem('access_token');
+    if (token === null) {
+      window.location.href = '/login';
+      return;
+    }
+    const path = 'http://localhost:5000/startmap';
+    return axios.post(path, {
+      data: {workshop_id: workshop_id}
+    }).catch((error) => {
+      if(error.response.status === 401) {
+        window.location.href = '/login';
+      } else console.error(error);
+    });
   }
 
   get played() {
