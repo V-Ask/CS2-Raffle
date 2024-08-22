@@ -44,14 +44,10 @@ def add_routes(app):
         map_dict = {map.id:map.map_dict() for map in maps}
         return jsonify(map_dict)
 
-    @app.route('/startmap', methods=['PUT'])
+    @app.route('/startmap', methods=['POST'])
     @jwt_required()
     def start_map():
-        id = request.get_json()['workshop_id']
-        remove = request.get_json()['remove']
-        if remove:
-            map_manager.play_map(id)
-        map_manager.play_map(id)
+        id = request.get_json()['data']['workshop_id']
         server_manager.set_map(id)
         return jsonify(), 201
     

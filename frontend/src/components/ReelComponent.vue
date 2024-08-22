@@ -1,7 +1,7 @@
 <script>
 import axios from 'axios'
 import ServerManager from './ServerManager';
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 const REEL_SIZE = 100;
 const ReelStatus = {
@@ -20,7 +20,7 @@ export default defineComponent({
       reel: [],
       reel_winner: undefined,
       reel_status: ReelStatus.Pregen,
-      remove_map: true
+      remove_map: ref(true)
     }
   },
   props: {
@@ -28,22 +28,15 @@ export default defineComponent({
     manager: ServerManager
   },
   emits: ['onLoading', 'onFinishedLoading'],
+  //TODO: Make wheel reset after adding map
   methods: {
     async startMap() {
-      const winner_id = this.reel[this.WINNER]['id']
-      if(this.reel_status != 3) return; 
-      const path = 'http://localhost:5000/startmap';
-      this.$emit("onLoading");
-      return axios.put(path, {
-        workshop_id: winner_id,
-        remove: this.remove_map
-      })
-        .then(() => this.remove_map ? this.manager.removeMap(winner_id) : Promise.resolve())
-        .then(() => this.reel_status = ReelStatus.Pregen)
-        .then(() => this.$emit("onFinishedLoading"))
-        .catch((error) => {
-          console.error(error);
-        });
+      this.$emit("onLoading")
+      return this.manager.startMap(this.reel_winner.id)
+          .then(() => {
+            if(this.remove_map) this.manager.playMap(this.reel_winner.id).then(() => this.$emit("onFinishedLoading"));
+            else this.$emit("onFinishedLoading")
+          });
     },
 
     spin() {
