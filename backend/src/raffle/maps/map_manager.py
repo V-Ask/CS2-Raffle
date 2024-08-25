@@ -24,6 +24,10 @@ class MapManager:
         self.map_pool.add_map(map)
         self.database.add_map(map.name, map.id, map.image_url, map.weight)
         return map
+    
+    def del_map(self, played: bool, id: str):
+        self.map_pool.del_map(played, id)
+        self.database.del_map(played, id)
 
     def play_map(self, id: str):
         map = self.map_pool.get_map(id)

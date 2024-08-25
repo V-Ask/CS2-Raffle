@@ -44,8 +44,9 @@ export default {
     },
 
     async deleteMap(id) {
+      if(!confirm('Warning: This will delete the map and its weight PERMANENTLY. Are you sure?')) return;
       this.$emit("onLoading");
-      return this.manager.deleteMap(id)
+      return this.manager.deleteMap(id, this.selected_pool)
         .then(() => this.$emit("onFinishedLoading"));
     },
 
@@ -64,8 +65,7 @@ export default {
 
         if(acc_percentage >= ratio) return this.rarity_colors[i];
       }
-      console.log('here!!')
-      return this.rarity_colors[this.rarity_colors.length];
+      return this.rarity_colors[this.rarity_colors.length - 1];
     },
 
     getMapList() {

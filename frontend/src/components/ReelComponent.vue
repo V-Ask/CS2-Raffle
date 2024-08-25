@@ -8,7 +8,8 @@ const ReelStatus = {
   Pregen: 0,
   Gen: 1,
   Rolling: 2,
-  Picked: 3
+  Picked: 3,
+  Started: 4
 }
 
 export default defineComponent({
@@ -28,10 +29,11 @@ export default defineComponent({
     manager: ServerManager
   },
   emits: ['onLoading', 'onFinishedLoading'],
-  //TODO: Make wheel reset after adding map
+
   methods: {
     async startMap() {
-      this.$emit("onLoading")
+      this.reel_status = ReelStatus.Pregen;
+      this.$emit("onLoading");
       return this.manager.startMap(this.reel_winner.id)
           .then(() => {
             if(this.remove_map) this.manager.playMap(this.reel_winner.id).then(() => this.$emit("onFinishedLoading"));
@@ -49,7 +51,7 @@ export default defineComponent({
     },
 
     spawnReel() {
-      if(this.manager.nonplayed.length < 1) {
+      if(Object.keys(this.manager.nonplayed).length === 0) {
           alert("No Workshop maps in the playlist!");
           return;
       }
@@ -171,5 +173,8 @@ export default defineComponent({
           </div>
         </div>
     </div>
-    <button v-if="reel_status === 1" @click="spin">Roll</button>
+    <div id="button-container">
+      <button v-if="reel_status === 1" @click="spin">Roll</button>
+    </div>
+    
 </template>
