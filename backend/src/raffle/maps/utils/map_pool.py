@@ -26,14 +26,22 @@ class MapPool:
         if id in self.played_maps:
             return self.played_maps[id]
         return None
+    
+    def del_map(self, played: bool, id: str):
+        if played and id in self.played_maps:
+            del self.played_maps[id]
+            return
+        if not played and id in self.maps:
+            del self.maps[id]
+
 
     def play_map(self, id: str):
         if id in self.maps:
             map = self.maps[id]
             self.played_maps[id] = map
             del self.maps[id]
-        for id in self.maps:
-            self.maps[id].weight += 1
+            for id in self.maps:
+                self.maps[id].weight += 1
     
     def unplay_map(self, id: str):
         if id in self.played_maps:

@@ -11,6 +11,7 @@ def path():
 def database(path):
     database = database_manager.Database(path)
     yield database
+    os.remove('tests/database_tests/test_database_with_table.db')
 
 @pytest.fixture(autouse=True)
 def reset_db(path: str):

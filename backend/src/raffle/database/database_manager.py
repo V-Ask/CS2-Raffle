@@ -61,16 +61,28 @@ class Database:
 
     def get_played_maps(self):
         return self.get_maps('played_maps')
+
+    def del_map(self, played: bool, id: str):
+        pool = 'played_maps' if played else 'maps'
+        sql_delete_map = f'''DELETE FROM {pool} WHERE workshop_id=?'''
+        conn = connect(self.database_path)
+        cursor = conn.cursor()
+        try:
+            cursor.execute(sql_delete_map, (id, ))
+            conn.commit()
+        except Error as e:
+            warn(str(e))
+        cursor.close()
+        conn.close()
         
     def play_map(self, name, id, url, weight):
-        sql_delete_map = '''DELETE FROM maps WHERE workshop_id=?'''
+        self.del_map(False, id)
         sql_add_played = '''INSERT INTO played_maps(name, workshop_id, image_url, weight)
                     VALUES(?,?,?,?);'''
         sql_increase_weights = '''UPDATE maps SET weight = weight + 1'''
         conn = connect(self.database_path)
         cursor = conn.cursor()
         try:
-            cursor.execute(sql_delete_map, (id, ))
             cursor.execute(sql_add_played, (name, id, url, weight))
             cursor.execute(sql_increase_weights)
             conn.commit()
@@ -80,16 +92,7 @@ class Database:
         conn.close()
 
     def unplay_map(self, name, id, url, weight):
-        sql_delete_map = '''DELETE FROM played_maps WHERE workshop_id=?'''
-        conn = connect(self.database_path)
-        cursor = conn.cursor()
-        try:
-            cursor.execute(sql_delete_map, (id, ))
-            conn.commit()
-        except Error as e:
-            warn(str(e))
-        cursor.close()
-        conn.close()
+        self.del_map(True, id)
         self.add_map(name, id, url, weight)
     
     def __init__(self, database_path) -> None:

@@ -76,8 +76,27 @@ export default class ServerManager {
       });
   }
 
-  async deleteMap(workshop_id) {
-
+  async deleteMap(workshop_id, pool) {
+    const played = pool == 'played' ? true : false
+    let token = localStorage.getItem('access_token');
+    if(token === null) {
+      window.location.href = '/login';
+      return;
+    }
+    const path = 'http://localhost:5000/deletemap';
+    return axios.delete(path, {
+      data: {workshop_id: workshop_id, played: played}
+    })
+      .then(() => {
+        if(played) delete this._played[workshop_id];
+        else delete this._nonplayed[workshop_id];
+      })
+      .catch((error) => {
+        console.error(error)
+        if(error.response.status === 401) {
+          window.location.href = '/login';
+        } else console.error(error);
+      });
   }
 
   async playMap(workshop_id) {
