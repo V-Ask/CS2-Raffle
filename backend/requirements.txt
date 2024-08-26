@@ -44,7 +44,7 @@ six==1.16.0
 soupsieve==2.5
 tldextract==5.1.2
 tomli==2.0.1
-Twisted==24.3.0
+Twisted==24.7.0
 typing_extensions==4.11.0
 urllib3==2.2.2
 w3lib==2.1.2
