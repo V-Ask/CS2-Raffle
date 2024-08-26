@@ -37,7 +37,7 @@ PyJWT==2.8.0
 pyOpenSSL==24.1.0
 pytest==8.1.1
 queuelib==1.6.2
-requests==2.31.0
+requests==2.32.2
 requests-file==2.0.0
 service-identity==24.1.0
 six==1.16.0
