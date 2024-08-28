@@ -39,6 +39,13 @@ def refresh_jwt(response):
         return response
 
 def add_routes(app):
+    @app.route('/test')
+    def hello():
+        return "hi", 201
+
+    @app.route('/')
+    def test():
+        return "What are you doing here??"
 
     @app.route('/submitmap', methods=['POST'])
     @jwt_required()
@@ -65,8 +72,8 @@ def add_routes(app):
     @jwt_required()
     def start_map():
         id = request.get_json()['data']['workshop_id']
-        server_manager.set_map(id)
-        return jsonify(), 201
+        resp = server_manager.set_map(id)
+        return jsonify(resp.text), resp.status_code
     
     @app.route('/deletemap', methods=['DELETE'])
     @jwt_required()
@@ -109,6 +116,3 @@ def add_routes(app):
         return jsonify({'success': True, 'token': access_token}), 200
 
 add_routes(app)
-
-if __name__ == '__main__':
-    app.run(debug=True)

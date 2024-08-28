@@ -1,0 +1,24 @@
+version: '3'
+services:
+  server:
+    image: backend
+    build: ./backend/
+    container_name: backend
+    volumes:
+      - database:/src/raffle.db
+    ports:
+      - 5000:5000
+    
+  nginx:
+    image: frontend
+    container_name: frontend
+    build: ./frontend/
+    restart: always
+    ports:
+      - 8000:80
+    depends_on:
+      - server
+    environment:
+      - BACKEND_URL=https://localhost:5000
+volumes:
+  database:

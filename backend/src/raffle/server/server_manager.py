@@ -33,10 +33,7 @@ class ServerManager:
             data=data, 
             headers=headers,
             auth=self.authentication)
-        if resp.status_code != 200:
-            warnings.warn(f'Error: Received status code {resp.status_code} from {self.get_server_url}:\n\t {resp.text}')
-            return resp.status_code
-        return resp.status_code
+        return resp
     
 def create_server_manager(config):
     return ServerManager(config.username, config.password, 
