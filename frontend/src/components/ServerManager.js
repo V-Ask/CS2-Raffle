@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseURL = process.env.BACKEND_URL || '/api';
+const baseURL = '/api';
 
 export default class ServerManager {
   constructor() {
