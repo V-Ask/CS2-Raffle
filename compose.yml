@@ -31,8 +31,13 @@ services:
       - POSTGRES_DB=lucky_db
       - POSTGRES_USER_FILE=/run/secrets/user
       - POSTGRES_PASSWORD_FILE=/run/secrets/pass
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+      - ./database-setup/init.sql:/docker-entrypoint-initdb.d/init.sql
 secrets:
   user:
     file: ./user.txt
   pass:
     file: ./pass.txt
+volumes:
+  postgresql_data:
