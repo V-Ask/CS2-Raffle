@@ -14,8 +14,7 @@ builder.Services.AddCors();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme)
-    .AddBearerToken(IdentityConstants.BearerScheme);
+builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
 
 builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<LuckyDbContext>()
@@ -41,6 +40,7 @@ app.ApplyMigrations();
 app.UseHttpsRedirection();
 
 app.MapIdentityApi<User>();
+app.MapControllers();
 
 app.Run();
 

@@ -8,14 +8,4 @@ public class LuckyDbContext(DbContextOptions<LuckyDbContext> options) : Identity
 {
     public DbSet<WorkshopMap> Maps { get; set; }
     public DbSet<WorkshopPlaylist> Playlists { get; set; }
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
-        builder.Entity<User>()
-            .HasMany(e => e.Playlists)
-            .WithOne(e => e.Author)
-            .HasForeignKey(e => e.AuthorId)
-            .HasPrincipalKey(e => e.Id);
-    }
 }
