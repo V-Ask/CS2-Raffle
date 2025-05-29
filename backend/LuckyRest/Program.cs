@@ -1,4 +1,5 @@
 using LuckyRest.Database;
+using LuckyRest.Database.Entities;
 using LuckyRest.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

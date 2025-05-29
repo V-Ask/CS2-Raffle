@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using LuckyRest.Database;
 using LuckyRest.Database.DTOs;
 using LuckyRest.Database.DTOs.Actions;
+using LuckyRest.Database.DTOs.Models;
 using LuckyRest.Database.DTOs.Results;
 using LuckyRest.Database.Entities;
 using LuckyRest.Services;
@@ -54,11 +55,10 @@ namespace LuckyRest.Controllers
             var user = await userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var map = await workshopMapService.AddWorkshopMap(addMapToPlaylistDto.WorkshopMapId, user.Id,
-                addMapToPlaylistDto.WorkshopPlaylistId);
+            var map = await workshopMapService.AddWorkshopMap(addMapToPlaylistDto.WorkshopMapId);
             var result = await workshopPlaylistService.AddMapToPlaylist(user.Id, addMapToPlaylistDto);
             if (result.Status == ServiceResultStatus.NoContent) return NoContent();
-            return CreatedAtAction("GetWorkshopPlaylist", new { id = result.Data?.WorkshopMap.MapId },
+            return CreatedAtAction("GetWorkshopPlaylist", new { id = result.Data?.WorkshopPlaylistMap.WorkshopPlaylist.Id },
                 map);
         }
 

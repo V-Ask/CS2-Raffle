@@ -2,6 +2,7 @@
 using LuckyRest.Database.DAOs;
 using LuckyRest.Database.DTOs;
 using LuckyRest.Database.DTOs.Actions;
+using LuckyRest.Database.DTOs.Models;
 using LuckyRest.Database.DTOs.Results;
 using LuckyRest.Database.Entities;
 using LuckyRest.Utils;
@@ -12,19 +13,34 @@ using WorkshopScraper.Scraper;
 
 namespace LuckyRest.Services;
 
-public class WorkshopPlaylistService(WorkshopPlaylistDao workshopPlaylistDao, WorkshopMapDao workshopMapDao)
+public class WorkshopPlaylistService(
+    WorkshopPlaylistDao workshopPlaylistDao,
+    WorkshopMapDao workshopMapDao,
+    WorkshopPlaylistMapDao workshopPlaylistMapDao)
 {
     public async Task<ServiceResult<AddMapToPlaylistResultDto>> AddMapToPlaylist(string userId,
         AddMapToPlaylistDto addMapToPlaylistDto)
     {
-        var map = await workshopMapDao.GetWorkshopMap(addMapToPlaylistDto.WorkshopMapId);
         var playlist = await workshopPlaylistDao.GetWorkshopPlaylist(userId, addMapToPlaylistDto.WorkshopPlaylistId);
-        if (playlist == null || map == null)
+        if (playlist == null)
         {
             return ServiceResult.NotFound.WithData<AddMapToPlaylistResultDto>(null);
         }
 
-        playlist.Maps.Add(map);
+        var map = await workshopMapDao.GetWorkshopMap(addMapToPlaylistDto.WorkshopMapId);
+        if (map == null)
+        {
+            return ServiceResult.NotFound.WithData<AddMapToPlaylistResultDto>(null);
+        }
+
+        var playlistMap = new WorkshopPlaylistMap
+        {
+            WorkshopMap = map,
+            WorkshopPlaylist = playlist
+        };
+        await workshopPlaylistMapDao.PostWorkshopPlaylistMap(playlistMap);
+        playlist.PlaylistMaps.Add(playlistMap);
+        
         var result =
             await workshopPlaylistDao.PutWorkshopPlaylist(userId, addMapToPlaylistDto.WorkshopPlaylistId, playlist);
         if (!result)
@@ -34,7 +50,7 @@ public class WorkshopPlaylistService(WorkshopPlaylistDao workshopPlaylistDao, Wo
 
         return ServiceResult.Success.WithData(new AddMapToPlaylistResultDto
         {
-            WorkshopMap = WorkshopMapDto.FromEntity(map)
+            WorkshopPlaylistMap = WorkshopPlaylistMapDto.FromEntity(playlistMap)
         });
     }
 
@@ -45,7 +61,7 @@ public class WorkshopPlaylistService(WorkshopPlaylistDao workshopPlaylistDao, Wo
         return new WorkshopPlaylistDto
         {
             CollectionName = workshopPlaylist.CollectionName,
-            Maps = workshopPlaylist.Maps.Select(WorkshopMapDto.FromEntity).ToList(),
+            Maps = workshopPlaylist.PlaylistMaps.Select(WorkshopPlaylistMapDto.FromEntity).ToList(),
         };
     }
 

@@ -1,6 +1,8 @@
-﻿namespace LuckyRest.Database.DTOs.Results;
+﻿using LuckyRest.Database.DTOs.Models;
+
+namespace LuckyRest.Database.DTOs.Results;
 
 public class AddMapToPlaylistResultDto
 {
-    public required WorkshopMapDto WorkshopMap { get; set; }
+    public required WorkshopPlaylistMapDto WorkshopPlaylistMap { get; set; }
 }

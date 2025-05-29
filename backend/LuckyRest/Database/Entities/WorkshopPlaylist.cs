@@ -9,8 +9,9 @@ public class WorkshopPlaylist
     public int WorkshopPlaylistId { get; set; }
     [StringLength(50)]
     public string CollectionName { get; set; } = string.Empty;
-    public IList<WorkshopMap> Maps { get; set; } = new List<WorkshopMap>();
-    
-    public string AuthorId { get; set; }
-    public User Author { get; set; }
+    public IList<WorkshopPlaylistMap> PlaylistMaps { get; set; } = new List<WorkshopPlaylistMap>();
+
+    [StringLength(500)]
+    public required string AuthorId { get; set; } = string.Empty;
+    public required User Author { get; set; }
 }

@@ -28,16 +28,7 @@ public class WorkshopMapDao(LuckyDbContext dbContext)
         await dbContext.SaveChangesAsync();
         return true;
     }
-
-    public async Task<bool> AddPlaylistToMap(int workshopMapId, WorkshopPlaylist playlist)
-    {
-        var map = await dbContext.Maps.FindAsync(workshopMapId);
-        if (map == null) return false;
-        map.Playlists.Add(playlist);
-        await PutWorkshopMap(workshopMapId, map);
-        return true;
-    }
-
+    
     public bool MapExists(int workshopMapId)
     {
         return dbContext.Maps.Any(x => x.WorkshopMapId == workshopMapId);

@@ -11,5 +11,5 @@ public class WorkshopMap
     public string ImageUrl { get; set; } = string.Empty;
     [StringLength(600)]
     public string Description { get; set; } = string.Empty;
-    public IList<WorkshopPlaylist> Playlists { get; set; } = new List<WorkshopPlaylist>();
+    public IList<WorkshopPlaylistMap> Playlists { get; set; } = new List<WorkshopPlaylistMap>();
 }

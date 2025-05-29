@@ -1,6 +1,6 @@
 ﻿using LuckyRest.Database.Entities;
 
-namespace LuckyRest.Database.DTOs;
+namespace LuckyRest.Database.DTOs.Models;
 
 public class WorkshopMapDto
 {

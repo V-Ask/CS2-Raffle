@@ -22,62 +22,7 @@ namespace LuckyRest.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("LuckyRest.Database.Entities.WorkshopMap", b =>
-                {
-                    b.Property<int>("WorkshopMapId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WorkshopMapId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(600)
-                        .HasColumnType("character varying(600)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("WorkshopMapId");
-
-                    b.ToTable("Maps");
-                });
-
-            modelBuilder.Entity("LuckyRest.Database.Entities.WorkshopPlaylist", b =>
-                {
-                    b.Property<int>("WorkshopPlaylistId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WorkshopPlaylistId"));
-
-                    b.Property<string>("AuthorId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CollectionName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("WorkshopPlaylistId");
-
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("CollectionName", "AuthorId")
-                        .IsUnique();
-
-                    b.ToTable("Playlists");
-                });
-
-            modelBuilder.Entity("LuckyRest.Database.User", b =>
+            modelBuilder.Entity("LuckyRest.Database.Entities.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -139,6 +84,83 @@ namespace LuckyRest.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("LuckyRest.Database.Entities.WorkshopMap", b =>
+                {
+                    b.Property<int>("WorkshopMapId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WorkshopMapId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(600)
+                        .HasColumnType("character varying(600)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("WorkshopMapId");
+
+                    b.ToTable("Maps");
+                });
+
+            modelBuilder.Entity("LuckyRest.Database.Entities.WorkshopPlaylist", b =>
+                {
+                    b.Property<int>("WorkshopPlaylistId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WorkshopPlaylistId"));
+
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("CollectionName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("WorkshopPlaylistId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("CollectionName", "AuthorId")
+                        .IsUnique();
+
+                    b.ToTable("Playlists");
+                });
+
+            modelBuilder.Entity("LuckyRest.Database.Entities.WorkshopPlaylistMap", b =>
+                {
+                    b.Property<int>("WorkshopPlaylistId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WorkshopMapId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("HasPlayed")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Weight")
+                        .HasColumnType("integer");
+
+                    b.HasKey("WorkshopPlaylistId", "WorkshopMapId");
+
+                    b.HasIndex("WorkshopMapId");
+
+                    b.ToTable("PlaylistMaps");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -273,30 +295,34 @@ namespace LuckyRest.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("WorkshopMapWorkshopPlaylist", b =>
-                {
-                    b.Property<int>("MapsWorkshopMapId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PlaylistsWorkshopPlaylistId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("MapsWorkshopMapId", "PlaylistsWorkshopPlaylistId");
-
-                    b.HasIndex("PlaylistsWorkshopPlaylistId");
-
-                    b.ToTable("WorkshopMapWorkshopPlaylist");
-                });
-
             modelBuilder.Entity("LuckyRest.Database.Entities.WorkshopPlaylist", b =>
                 {
-                    b.HasOne("LuckyRest.Database.User", "Author")
+                    b.HasOne("LuckyRest.Database.Entities.User", "Author")
                         .WithMany("Playlists")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("LuckyRest.Database.Entities.WorkshopPlaylistMap", b =>
+                {
+                    b.HasOne("LuckyRest.Database.Entities.WorkshopMap", "WorkshopMap")
+                        .WithMany("Playlists")
+                        .HasForeignKey("WorkshopMapId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LuckyRest.Database.Entities.WorkshopPlaylist", "WorkshopPlaylist")
+                        .WithMany("PlaylistMaps")
+                        .HasForeignKey("WorkshopPlaylistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkshopMap");
+
+                    b.Navigation("WorkshopPlaylist");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -310,7 +336,7 @@ namespace LuckyRest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("LuckyRest.Database.User", null)
+                    b.HasOne("LuckyRest.Database.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -319,7 +345,7 @@ namespace LuckyRest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("LuckyRest.Database.User", null)
+                    b.HasOne("LuckyRest.Database.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -334,7 +360,7 @@ namespace LuckyRest.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LuckyRest.Database.User", null)
+                    b.HasOne("LuckyRest.Database.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -343,31 +369,26 @@ namespace LuckyRest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("LuckyRest.Database.User", null)
+                    b.HasOne("LuckyRest.Database.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WorkshopMapWorkshopPlaylist", b =>
-                {
-                    b.HasOne("LuckyRest.Database.Entities.WorkshopMap", null)
-                        .WithMany()
-                        .HasForeignKey("MapsWorkshopMapId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LuckyRest.Database.Entities.WorkshopPlaylist", null)
-                        .WithMany()
-                        .HasForeignKey("PlaylistsWorkshopPlaylistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("LuckyRest.Database.User", b =>
+            modelBuilder.Entity("LuckyRest.Database.Entities.User", b =>
                 {
                     b.Navigation("Playlists");
+                });
+
+            modelBuilder.Entity("LuckyRest.Database.Entities.WorkshopMap", b =>
+                {
+                    b.Navigation("Playlists");
+                });
+
+            modelBuilder.Entity("LuckyRest.Database.Entities.WorkshopPlaylist", b =>
+                {
+                    b.Navigation("PlaylistMaps");
                 });
 #pragma warning restore 612, 618
         }

@@ -2,6 +2,7 @@
 using LuckyRest.Database.DAOs;
 using LuckyRest.Database.DTOs;
 using LuckyRest.Database.DTOs.Actions;
+using LuckyRest.Database.DTOs.Models;
 using LuckyRest.Database.DTOs.Results;
 using LuckyRest.Database.Entities;
 using LuckyRest.Utils;
@@ -21,28 +22,20 @@ public class WorkshopMapService(WorkshopMapDao workshopMapDao, WorkshopPlaylistD
             : ServiceResult.Success.WithData(WorkshopMapDto.FromEntity(map));
     }
 
-    public async Task<ServiceResult<WorkshopMapDto>> AddWorkshopMap(int workshopMapId, string userId, int playlistId)
+    public async Task<ServiceResult<WorkshopMapDto>> AddWorkshopMap(int workshopMapId)
     {
-        var playlist = await workshopPlaylistDao.GetWorkshopPlaylist(userId, playlistId);
-        if (playlist == null)
-        {
-            return ServiceResult.NotFound.WithData<WorkshopMapDto>(null);
-        }
         if (workshopMapDao.MapExists(workshopMapId))
         {
-            await workshopMapDao.AddPlaylistToMap(workshopMapId, playlist);
             return await GetWorkshopMap(workshopMapId);
         }
 
-        var playlists = new List<WorkshopPlaylist> { playlist };
         var scraper = new SteamWorkshopScraper(GenericScraper.Load(WORKSHOP_ROUTE + workshopMapId));
         var map = new WorkshopMap
         {
             WorkshopMapId = workshopMapId,
             Description = scraper.GetDescription() ?? "",
             Name = scraper.GetTitle() ?? "",
-            ImageUrl = scraper.GetImageUrl() ?? "",
-            Playlists = playlists,
+            ImageUrl = scraper.GetImageUrl() ?? ""
         };
         await workshopMapDao.PostWorkshopMap(map);
         return ServiceResult.Success.WithData(WorkshopMapDto.FromEntity(map));

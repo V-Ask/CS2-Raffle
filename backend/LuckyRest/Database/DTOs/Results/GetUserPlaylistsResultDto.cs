@@ -1,4 +1,6 @@
-﻿namespace LuckyRest.Database.DTOs.Results;
+﻿using LuckyRest.Database.DTOs.Models;
+
+namespace LuckyRest.Database.DTOs.Results;
 
 public class GetUserPlaylistsResultDto
 {
