@@ -12,17 +12,17 @@ public partial class SteamWorkshopScraper(IScraper scraper) : IWorkshopScraper
 
     public string? GetTitle()
     {
-        return scraper.GetSingleElement(".workshopTitle")?.InnerText;
+        return scraper.GetSingleElement("//div[contains(@class, 'workshopItemTitle')]")?.InnerText;
     }
 
     public string? GetImageUrl()
     {
-        return scraper.GetSingleElement(".workshopItemPreviewImageMain")?.ImageSource;
+        return scraper.GetSingleElement("//img[contains(@class, 'workshopItemPreviewImageMain')]")?.ImageSource;
     }
 
     public string? GetDescription()
     {
-        return scraper.GetSingleElement(".workshopItemDescription")?.InnerText;
+        return scraper.GetSingleElement("//div[contains(@class, 'workshopItemDescription')]")?.InnerText;
     }
 
     public string? GetUuid()
@@ -39,4 +39,6 @@ public partial class SteamWorkshopScraper(IScraper scraper) : IWorkshopScraper
     private static partial Regex WorkshopRegex();
 }
 
-public class LinkIsNotWorkshopException : Exception { }
+public class LinkIsNotWorkshopException : Exception
+{
+}

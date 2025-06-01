@@ -23,7 +23,7 @@ public class SteamWorkshopScraperTest
     public void TestGetTitle()
     {
         // arrange
-        _mockScraper.Setup(x => x.GetSingleElement(".workshopTitle")).Returns(_mockHtmlNodeWrapper.Object);
+        _mockScraper.Setup(x => x.GetSingleElement("//div[contains(@class, 'workshopItemTitle')]")).Returns(_mockHtmlNodeWrapper.Object);
         // act
         var result = _steamWorkshopScraper.GetTitle();
         // assert
@@ -35,7 +35,7 @@ public class SteamWorkshopScraperTest
     public void TestGetDescription()
     {
         // arrange
-        _mockScraper.Setup(x => x.GetSingleElement(".workshopItemDescription")).Returns(_mockHtmlNodeWrapper.Object);
+        _mockScraper.Setup(x => x.GetSingleElement("//div[contains(@class, 'workshopItemDescription')]")).Returns(_mockHtmlNodeWrapper.Object);
         // act
         var result = _steamWorkshopScraper.GetDescription();
         // assert
@@ -46,7 +46,7 @@ public class SteamWorkshopScraperTest
     public void TestGetImageUrl()
     {
         // arrange
-        _mockScraper.Setup(x => x.GetSingleElement(".workshopItemPreviewImageMain")).Returns(_mockHtmlNodeWrapper.Object);
+        _mockScraper.Setup(x => x.GetSingleElement("//img[contains(@class, 'workshopItemPreviewImageMain')]")).Returns(_mockHtmlNodeWrapper.Object);
         // act
         var result = _steamWorkshopScraper.GetImageUrl();
         // assert
