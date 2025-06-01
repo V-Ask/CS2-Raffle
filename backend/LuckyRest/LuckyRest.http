@@ -1,0 +1,6 @@
+@LuckyRest_HostAddress = http://localhost:5019
+
+GET {{LuckyRest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
