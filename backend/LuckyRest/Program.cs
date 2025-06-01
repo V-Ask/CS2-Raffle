@@ -26,6 +26,8 @@ builder.Services.AddDbContext<LuckyDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
 });
 
+builder.AddScopes();
+
 var app = builder.Build();
 
 app.UseCors(options => options.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod());
@@ -35,7 +37,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-app.ApplyMigrations();
+    // app.ApplyMigrations();
 }
 
 app.UseHttpsRedirection();

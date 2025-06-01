@@ -1,17 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using LuckyRest.Database;
-using LuckyRest.Database.DTOs;
-using LuckyRest.Database.DTOs.Actions;
 using LuckyRest.Database.DTOs.Models;
 using LuckyRest.Database.DTOs.Results;
 using LuckyRest.Database.Entities;
-using LuckyRest.Services;
+using LuckyRest.Services.WorkshopMapService;
+using LuckyRest.Services.WorkshopPlaylistService;
 using LuckyRest.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -22,13 +14,13 @@ namespace LuckyRest.Controllers
     [ApiController]
     [Authorize]
     public class PlaylistController(
-        WorkshopPlaylistService workshopPlaylistService,
-        WorkshopMapService workshopMapService,
+        IWorkshopPlaylistService workshopPlaylistService,
+        IWorkshopMapService workshopMapService,
         UserManager<User> userManager)
         : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<WorkshopPlaylistDto>> GetWorkshopPlaylist(int workshopPlaylistId)
+        public async Task<ActionResult<WorkshopPlaylistDto>> GetWorkshopPlaylist(Guid workshopPlaylistId)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
@@ -38,32 +30,48 @@ namespace LuckyRest.Controllers
         }
 
         [HttpGet]
+        [Route("all")]
         public async Task<ActionResult<GetUserPlaylistsResultDto>> GetUserPlaylists()
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
             var playlists = await workshopPlaylistService.GetWorkshopPlaylists(user.Id);
-            return playlists;
+            if(playlists.Data == null) return StatusCode(StatusCodes.Status500InternalServerError);
+            return playlists.Data;
         }
 
         // POST: api/Playlist
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
+        [Route("add")]
         public async Task<ActionResult<WorkshopMapDto>> AddMapToWorkshopPlaylist(
-            AddMapToPlaylistDto addMapToPlaylistDto)
+             Guid workshopPlaylistId, long workshopMapId)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var map = await workshopMapService.AddWorkshopMap(addMapToPlaylistDto.WorkshopMapId);
-            var result = await workshopPlaylistService.AddMapToPlaylist(user.Id, addMapToPlaylistDto);
+            var map = await workshopMapService.AddWorkshopMap(workshopMapId);
+            var result = await workshopPlaylistService.AddMapToPlaylist(user.Id, workshopPlaylistId, workshopMapId);
             if (result.Status == ServiceResultStatus.NoContent) return NoContent();
             return CreatedAtAction("GetWorkshopPlaylist", new { id = result.Data?.WorkshopPlaylistMap.WorkshopPlaylist.Id },
-                map);
+                map.Data);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<WorkshopPlaylistDto>> CreateWorkshopPlaylist(string collectionName)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+            var playlist = await workshopPlaylistService.CreatePlaylist(user, collectionName);
+            if (playlist.Status == ServiceResultStatus.Exists)
+            {
+                return Conflict();
+            }
+            return CreatedAtAction("GetWorkshopPlaylist", new { id = playlist.Data?.Id }, playlist.Data);
         }
 
         [HttpDelete]
-        public async Task<ActionResult> DeleteWorkshopPlaylist(int workshopPlaylistId)
+        public async Task<ActionResult> DeleteWorkshopPlaylist(Guid workshopPlaylistId)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();

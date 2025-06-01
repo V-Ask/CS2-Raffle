@@ -7,7 +7,7 @@ public class WorkshopMapDto
     public string Name { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public int MapId { get; set; }
+    public long MapId { get; set; }
 
     public static WorkshopMapDto FromEntity(WorkshopMap? workshopMap)
     {

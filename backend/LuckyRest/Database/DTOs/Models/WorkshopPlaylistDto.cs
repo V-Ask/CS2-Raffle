@@ -5,7 +5,7 @@ namespace LuckyRest.Database.DTOs.Models;
 public class WorkshopPlaylistDto
 {
     public string CollectionName { get; set; } = string.Empty;
-    public int Id { get; set; } 
+    public Guid Id { get; set; } 
     public IList<WorkshopPlaylistMapDto> Maps { get; set; } = new List<WorkshopPlaylistMapDto>();
 
     public static WorkshopPlaylistDto FromEntity(WorkshopPlaylist entity)

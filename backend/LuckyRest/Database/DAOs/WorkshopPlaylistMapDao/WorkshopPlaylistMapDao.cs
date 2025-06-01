@@ -1,13 +1,11 @@
-﻿using LuckyRest.Database.DTOs.Models;
-using LuckyRest.Database.Entities;
-using LuckyRest.Utils;
+﻿using LuckyRest.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace LuckyRest.Database.DAOs;
+namespace LuckyRest.Database.DAOs.WorkshopPlaylistMapDao;
 
-public class WorkshopPlaylistMapDao(LuckyDbContext dbContext)
+public class WorkshopPlaylistMapDao(LuckyDbContext dbContext) : IWorkshopPlaylistMapDao
 {
-    public async Task<WorkshopPlaylistMap?> GetWorkshopPlaylistMap(int mapId, int playlistId)
+    public async Task<WorkshopPlaylistMap?> GetWorkshopPlaylistMap(int mapId, Guid playlistId)
     {
         var playlistMap =
             await dbContext.PlaylistMaps.FirstOrDefaultAsync(x =>

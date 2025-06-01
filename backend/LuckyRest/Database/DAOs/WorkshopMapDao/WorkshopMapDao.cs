@@ -1,11 +1,11 @@
 ﻿using LuckyRest.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace LuckyRest.Database.DAOs;
+namespace LuckyRest.Database.DAOs.WorkshopMapDao;
 
-public class WorkshopMapDao(LuckyDbContext dbContext)
+public class WorkshopMapDao(LuckyDbContext dbContext) : IWorkshopMapDao
 {
-    public async Task<WorkshopMap?> GetWorkshopMap(int workshopMapId)
+    public async Task<WorkshopMap?> GetWorkshopMap(long workshopMapId)
     {
         var map = await dbContext.Maps.FindAsync(workshopMapId);
         return map;
@@ -17,7 +17,7 @@ public class WorkshopMapDao(LuckyDbContext dbContext)
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<bool> PutWorkshopMap(int workshopMapId, WorkshopMap map)
+    public async Task<bool> PutWorkshopMap(long workshopMapId, WorkshopMap map)
     {
         if (workshopMapId != map.WorkshopMapId)
         {
@@ -29,7 +29,7 @@ public class WorkshopMapDao(LuckyDbContext dbContext)
         return true;
     }
     
-    public bool MapExists(int workshopMapId)
+    public bool MapExists(long workshopMapId)
     {
         return dbContext.Maps.Any(x => x.WorkshopMapId == workshopMapId);
     }

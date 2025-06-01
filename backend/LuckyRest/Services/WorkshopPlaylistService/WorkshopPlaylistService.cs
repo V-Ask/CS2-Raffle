@@ -1,33 +1,28 @@
-﻿using LuckyRest.Database;
-using LuckyRest.Database.DAOs;
-using LuckyRest.Database.DTOs;
-using LuckyRest.Database.DTOs.Actions;
+﻿using LuckyRest.Database.DAOs.WorkshopMapDao;
+using LuckyRest.Database.DAOs.WorkshopPlaylistDao;
+using LuckyRest.Database.DAOs.WorkshopPlaylistMapDao;
 using LuckyRest.Database.DTOs.Models;
 using LuckyRest.Database.DTOs.Results;
 using LuckyRest.Database.Entities;
 using LuckyRest.Utils;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WorkshopScraper.Scraper;
 
-namespace LuckyRest.Services;
+namespace LuckyRest.Services.WorkshopPlaylistService;
 
 public class WorkshopPlaylistService(
-    WorkshopPlaylistDao workshopPlaylistDao,
-    WorkshopMapDao workshopMapDao,
-    WorkshopPlaylistMapDao workshopPlaylistMapDao)
+    IWorkshopPlaylistDao workshopPlaylistDao,
+    IWorkshopMapDao workshopMapDao,
+    IWorkshopPlaylistMapDao workshopPlaylistMapDao) : IWorkshopPlaylistService
 {
-    public async Task<ServiceResult<AddMapToPlaylistResultDto>> AddMapToPlaylist(string userId,
-        AddMapToPlaylistDto addMapToPlaylistDto)
+    public async Task<ServiceResult<AddMapToPlaylistResultDto>> AddMapToPlaylist(string userId, Guid workshopPlaylistId,
+        long workshopMapId)
     {
-        var playlist = await workshopPlaylistDao.GetWorkshopPlaylist(userId, addMapToPlaylistDto.WorkshopPlaylistId);
+        var playlist = await workshopPlaylistDao.GetWorkshopPlaylist(userId, workshopPlaylistId);
         if (playlist == null)
         {
             return ServiceResult.NotFound.WithData<AddMapToPlaylistResultDto>(null);
         }
 
-        var map = await workshopMapDao.GetWorkshopMap(addMapToPlaylistDto.WorkshopMapId);
+        var map = await workshopMapDao.GetWorkshopMap(workshopMapId);
         if (map == null)
         {
             return ServiceResult.NotFound.WithData<AddMapToPlaylistResultDto>(null);
@@ -40,9 +35,9 @@ public class WorkshopPlaylistService(
         };
         await workshopPlaylistMapDao.PostWorkshopPlaylistMap(playlistMap);
         playlist.PlaylistMaps.Add(playlistMap);
-        
+
         var result =
-            await workshopPlaylistDao.PutWorkshopPlaylist(userId, addMapToPlaylistDto.WorkshopPlaylistId, playlist);
+            await workshopPlaylistDao.PutWorkshopPlaylist(userId, workshopPlaylistId ,playlist);
         if (!result)
         {
             return ServiceResult.NotFound.WithData<AddMapToPlaylistResultDto>(null);
@@ -54,7 +49,7 @@ public class WorkshopPlaylistService(
         });
     }
 
-    public async Task<WorkshopPlaylistDto?> GetWorkshopPlaylist(string userId, int workshopPlaylistId)
+    public async Task<WorkshopPlaylistDto?> GetWorkshopPlaylist(string userId, Guid workshopPlaylistId)
     {
         var workshopPlaylist = await workshopPlaylistDao.GetWorkshopPlaylist(userId, workshopPlaylistId);
         if (workshopPlaylist == null) return null;
@@ -65,16 +60,16 @@ public class WorkshopPlaylistService(
         };
     }
 
-    public async Task<GetUserPlaylistsResultDto> GetWorkshopPlaylists(string userId)
+    public async Task<ServiceResult<GetUserPlaylistsResultDto>> GetWorkshopPlaylists(string userId)
     {
         var playlists = await workshopPlaylistDao.GetWorkshopPlaylists(userId);
-        return new GetUserPlaylistsResultDto
+        return ServiceResult.Success.WithData(new GetUserPlaylistsResultDto
         {
             WorkshopPlaylists = playlists.Select(WorkshopPlaylistDto.FromEntity).ToList()
-        };
+        });
     }
 
-    public async Task<ServiceResult> DeleteWorkshopPlaylist(string userId, int workshopPlaylistId)
+    public async Task<ServiceResult> DeleteWorkshopPlaylist(string userId, Guid workshopPlaylistId)
     {
         var isDeleted = await workshopPlaylistDao.DeleteWorkshopPlaylist(userId, workshopPlaylistId);
         if (!isDeleted)
@@ -83,5 +78,18 @@ public class WorkshopPlaylistService(
                 Status = ServiceResultStatus.NotFound
             };
         return ServiceResult.Success;
+    }
+
+    public async Task<ServiceResult<WorkshopPlaylistDto>> CreatePlaylist(User user, string collectionName)
+    {
+        var playlist = new WorkshopPlaylist
+        {
+            Author = user,
+            CollectionName = collectionName
+        };
+        var result = await workshopPlaylistDao.CreatePlaylist(playlist);
+        return result == null
+            ? ServiceResult.Exists.WithData<WorkshopPlaylistDto>(null)
+            : ServiceResult.Success.WithData(WorkshopPlaylistDto.FromEntity(result));
     }
 }
