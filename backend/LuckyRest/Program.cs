@@ -8,20 +8,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+var services = builder.Services;
+services.AddEndpointsApiExplorer();
 
-builder.Services.AddControllers();
-builder.Services.AddCors();
-builder.Services.AddSwaggerGen();
+services.AddControllers();
+services.AddCors();
+services.AddSwaggerGen();
 
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
+services.AddAuthorization();
+services.AddAuthentication()
+    .AddCookie(IdentityConstants.ApplicationScheme);
 
-builder.Services.AddIdentityCore<User>()
+services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<LuckyDbContext>()
     .AddApiEndpoints();
 
-builder.Services.AddDbContext<LuckyDbContext>(options =>
+services.AddDbContext<LuckyDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
 });
@@ -37,7 +39,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    // app.ApplyMigrations();
 }
 
 app.UseHttpsRedirection();

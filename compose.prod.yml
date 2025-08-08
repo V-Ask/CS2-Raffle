@@ -13,17 +13,10 @@ services:
     depends_on:
       - postgres-db
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-  vue-frontend: 
-    build: 
-      context: ./frontend/
-    ports:
-      - 8080:80
+      - ASPNETCORE_ENVIRONMENT=Docker
   postgres-db:
     image: postgres:latest
     restart: always
-    ports:
-      - "5432:5432"
     secrets:
       - user
       - pass
