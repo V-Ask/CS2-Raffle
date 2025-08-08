@@ -1,0 +1,72 @@
+* {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+}
+
+body {
+  margin: 0;
+  font-size: larger;
+  color: #c8c8c8;
+}
+
+h1 {
+  color: #989898;
+}
+
+button {
+  color: white;
+  background: none;
+  border: 2px solid transparent;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+button:hover {
+  border: 2px solid #1e1e1e;
+}
+
+input[type='text'],
+input[type='password'] {
+  padding: 6px 12px;
+  font-size: larger;
+  color: white;
+  background-color: rgb(58, 58, 58);
+  border: none;
+}
+
+.background {
+  height: 100vh;
+  background-image: url('@/assets/background-temp.png');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center top;
+}
+
+.blur {
+  height: 100%;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.flex {
+  display: flex;
+  gap: 16px;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+#app {
+  height: 100%;
+}
