@@ -4,6 +4,7 @@
     <attachedFolders>
       <Path>.</Path>
       <Path>frontend</Path>
+      <Path>luckywheel-client</Path>
     </attachedFolders>
     <explicitIncludes />
     <explicitExcludes />
