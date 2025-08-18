@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import RegButton from './RegButton.vue';
 
-const emits = defineEmits<{
-  clicked: []
+const props = defineProps<{
+  type?: "button" | "submit" | "reset" | undefined,
+  disabled?: boolean | undefined,
 }>();
+
+const emits = defineEmits(['clicked'])
 </script>
 <template>
-  <RegButton @clicked="emits('clicked')">
+  <RegButton :type="props.type" :disabled="disabled" @clicked="emits('clicked')">
     <slot></slot>
   </RegButton>
 </template>

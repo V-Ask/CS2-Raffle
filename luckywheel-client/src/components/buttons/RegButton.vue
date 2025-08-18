@@ -1,10 +1,15 @@
 <script setup lang="ts">
+const props = defineProps<{
+  type?: "button" | "submit" | "reset" | undefined,
+  disabled?: boolean | undefined,
+}>();
+
 const emit = defineEmits<{
   clicked: []
 }>();
 </script>
 <template>
-  <button class="button" @click="emit('clicked')">
+  <button class="button" :type="props.type" :disabled="disabled" @click="emit('clicked')">
     <slot></slot>
   </button>
 </template>

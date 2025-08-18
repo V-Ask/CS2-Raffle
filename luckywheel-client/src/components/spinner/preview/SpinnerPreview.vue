@@ -1,34 +1,21 @@
-﻿<script setup lang="ts">
-import {WorkshopPlaylist} from "@/models/workshop-playlist.ts";
-import PreviewHeader from "@/components/spinner/preview/PreviewHeader.vue";
+<script setup lang="ts">
+import {useSpinnerStore} from "@/stores/spinner.ts";
 import MapList from "@/components/spinner/preview/MapList.vue";
 import SpinnerControls from "@/components/spinner/preview/SpinnerControls.vue";
 
-const props = defineProps<{
-  selectedPlaylist: WorkshopPlaylist
+const emits = defineEmits<{
+  (e: 'playlistDismissed'): void,
+  (e: 'playlistSpun'): void,
 }>();
+const spinnerStore = useSpinnerStore();
 </script>
 <template>
-  <div class="wrapper flex-column align-center">
-    <div>
-      <PreviewHeader :playlist-name="props.selectedPlaylist.playlistName" />
-    </div>
-    <div class="bottom-align flex-column align-center">
-      <div>
-        <MapList :workshop-maps="props.selectedPlaylist.workshopMaps" />
-      </div>
-      <div>
-        <SpinnerControls />
-      </div>
-    </div>
+  <div v-if="spinnerStore.selectedPlaylist" class="playlist wrapper">
+    <MapList :workshop-maps="spinnerStore.selectedPlaylist.maps"></MapList>
+    <SpinnerControls @spin="emits('playlistSpun')"
+                     @close="emits('playlistDismissed')" />
+  </div>
+  <div v-else class="loading wrapper">
+    <p>Playlist is loading...</p>
   </div>
 </template>
-<style scoped>
-.wrapper {
-  height: 100%;
-}
-.bottom-align {
-  flex-grow: 1;
-  justify-content: flex-end;
-}
-</style>

@@ -26,7 +26,8 @@ button:hover {
 }
 
 input[type='text'],
-input[type='password'] {
+input[type='password'],
+input[type='email'] {
   padding: 6px 12px;
   font-size: larger;
   color: white;
@@ -57,6 +58,14 @@ input[type='password'] {
 .flex {
   display: flex;
   gap: 16px;
+}
+
+.no-gap {
+  gap: 0;
+}
+
+.no-margin {
+  margin: 0;
 }
 
 .align-center {

@@ -1,22 +1,12 @@
-import { loginPost } from '@/api/auth'
 import { defineStore } from 'pinia'
+import type {User} from "@/models/user.ts";
+import Auth from "@/api/auth.ts";
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null,
+    user: null as User | null,
   }),
   getters: {
     isLoggedIn: (state) => !!state?.user,
   },
-  actions: {
-    async login(username: string, password: string) {
-      loginPost(username, password)
-        .then((response) => {
-          console.log(response)
-        })
-        .catch((e) => {
-          console.error(e)
-        })
-    },
-  },
-})
+});

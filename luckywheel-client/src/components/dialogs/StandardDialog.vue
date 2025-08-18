@@ -19,7 +19,7 @@ const props = defineProps<{
 <style scoped>
 .dialog {
   background-color: #2d2d2d;
-  min-width: 600px;
+  min-width: 200px;
 }
 
 .header-box {
