@@ -1,21 +1,30 @@
 <script setup lang="ts">
-import {useSpinnerStore} from "@/stores/spinner.ts";
 import MapList from "@/components/spinner/preview/MapList.vue";
 import SpinnerControls from "@/components/spinner/preview/SpinnerControls.vue";
+import type {ReelMap} from "@/models/reel-map.ts";
+import {useSpinnerStore} from "@/stores/spinner.ts";
+import ReelService from "@/services/spinner/reel.service.ts";
+import {useRouter} from "vue-router";
 
-const emits = defineEmits<{
-  (e: 'playlistDismissed'): void,
-  (e: 'playlistSpun'): void,
+const props = defineProps<{
+  coloredMaps: ReelMap[];
 }>();
 const spinnerStore = useSpinnerStore();
+const router = useRouter();
+
+function spinMap() {
+  spinnerStore.spinning = true;
+}
+
+function closePlaylist() {
+  return ReelService.navigateToPlaylistSelector(router);
+}
+
 </script>
 <template>
-  <div v-if="spinnerStore.selectedPlaylist" class="playlist wrapper">
-    <MapList :workshop-maps="spinnerStore.selectedPlaylist.maps"></MapList>
-    <SpinnerControls @spin="emits('playlistSpun')"
-                     @close="emits('playlistDismissed')" />
-  </div>
-  <div v-else class="loading wrapper">
-    <p>Playlist is loading...</p>
+  <div class="playlist wrapper">
+    <MapList :workshop-maps="props.coloredMaps"></MapList>
+    <SpinnerControls @spin="spinMap()"
+                     @close="closePlaylist()" />
   </div>
 </template>

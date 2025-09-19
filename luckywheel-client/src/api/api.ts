@@ -2,13 +2,13 @@ import axios from 'axios'
 import {useRouter} from "vue-router";
 
 const API_BASE_URL = 'https://localhost:8080'
-const router = useRouter();
 
 axios.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
+    const router = useRouter();
     if(error.response.status === 401) {
       router.push({
         name: 'Login'

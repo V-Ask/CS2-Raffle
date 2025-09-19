@@ -63,6 +63,7 @@ async function checkAuth() {
     }
     const authStore = useAuthStore();
     authStore.user = null
+    return false;
   }).catch(e => {
     const authStore = useAuthStore();
     authStore.user = null

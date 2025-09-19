@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import UserForm from './UserForm.vue';
 import type {UserCredentials} from "@/models/user-credentials.ts";
-import userAuth from "@/services/user-auth.ts";
 import {useRouter} from "vue-router";
+import UserAuthService from "@/services/user-auth.service.ts";
 
 const router = useRouter();
 
 function registerUser(creds: UserCredentials) {
-  userAuth.registerUser(creds).then((success) => {
+  UserAuthService.registerUser(creds).then((success) => {
     if (success) {
         router.push("/");
     }

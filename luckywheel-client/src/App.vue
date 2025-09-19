@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import {useDialogStore} from "@/stores/dialog.ts";
-import LoginDialog from "@/components/dialogs/login/LoginDialog.vue";
+import {useLoadingStore} from "@/stores/loading.ts";
+import LoadingContainer from "@/components/loading/LoadingContainer.vue";
 
-const dialogStore = useDialogStore();
-dialogStore.showDialog("Test Header", LoginDialog);
+const loadingStore = useLoadingStore();
 </script>
 
 <template>
   <div id="main">
-    <RouterView />
+    <LoadingContainer :is-loading="loadingStore.isLazyLoading">
+      <RouterView />
+    </LoadingContainer>
   </div>
 </template>
 

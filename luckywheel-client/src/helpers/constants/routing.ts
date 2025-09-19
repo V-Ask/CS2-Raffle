@@ -1,0 +1,15 @@
+﻿const PLAYLIST_QUERY_PARAM = "id";
+const PLAYLIST_SELECTED_NAME = "Playlist Selected";
+const PLAYLIST_VIEW = "Playlists"
+const LOGIN_NAME = "Login";
+const NOT_FOUND_NAME = "Not Found";
+const CREATE_NEW_PLAYLIST_NAME = "Create playlist"
+
+export {
+  PLAYLIST_QUERY_PARAM,
+  LOGIN_NAME,
+  PLAYLIST_SELECTED_NAME,
+  PLAYLIST_VIEW,
+  NOT_FOUND_NAME,
+  CREATE_NEW_PLAYLIST_NAME
+}

@@ -1,11 +1,11 @@
-﻿import type {RouteLocationNormalizedLoadedGeneric} from "vue-router";
-import UserAuth from "@/services/user-auth.ts";
+﻿import UserAuthService from "@/services/user-auth.service.ts";
+import type {GuardFn} from "@/guards/guard-fn.ts";
 
-export default async function (from: RouteLocationNormalizedLoadedGeneric, to: RouteLocationNormalizedLoadedGeneric) {
-  return UserAuth.checkAuth().then(response => {
-    return response;
-  }).catch(e => {
+export const authGuardFn: GuardFn = async (from, to) => {
+  try {
+    return await UserAuthService.checkAuth();
+  } catch (e) {
     console.error(e);
     return false;
-  })
+  }
 }

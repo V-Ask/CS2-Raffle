@@ -9,18 +9,20 @@ export const useSpinnerStore = defineStore('spinner', {
     playlistIndices: [] as WorkshopPlaylistIndex[],
     maps: [] as WorkshopMap[],
     selectedPlaylist: null as WorkshopPlaylist | null,
+    spinnerStatus: SpinnerStatus.VIEWING as SpinnerStatus,
   }),
   getters: {
     getPlaylists: (state) => state.playlistIndices,
-    getMapsFromSelectedPlaylist: (state) => state.maps
+    getMapsFromSelectedPlaylist: (state) => state.maps,
+    getSelectedPlaylist: (state) => state.selectedPlaylist,
+    isSpinning: (state) => state.spinnerStatus === SpinnerStatus.SPINNING,
+    isDoneSpinning: (state) => state.spinnerStatus === SpinnerStatus.SPUN
   },
-  actions: {
-    watchSelectedPlaylist(): Promise<WorkshopPlaylist | null> {
-      return new Promise((resolve) => {
-        watch(() => this.selectedPlaylist, (selectedPlaylist: WorkshopPlaylist | null) => {
-          resolve(selectedPlaylist);
-        });
-      })
-    }
-  }
+  actions: {}
 });
+
+enum SpinnerStatus {
+  VIEWING,
+  SPINNING,
+  SPUN
+}

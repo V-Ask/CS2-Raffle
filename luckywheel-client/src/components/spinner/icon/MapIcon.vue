@@ -1,26 +1,21 @@
 ﻿<script setup lang="ts">
-import {WorkshopMap} from "@/models/workshop-map.ts";
-import RarityBar from "@/components/spinner/icon/RarityBar.vue";
+import type {ReelMap} from "@/models/reel-map.ts";
 
 const props = defineProps<{
-  map: WorkshopMap
+  map: ReelMap
 }>();
+
+const color = props.map.color;
 </script>
 
 <template>
-    <div class="wrapper flex">
-      <RarityBar :rarity="map.rarity"/>
-      <div class="image-container">
-      </div>
-    </div>
-    <span>{{ map.workshopName }}</span>
+  <div class="map-box">
+    {{ props.map.mapName }}
+  </div>
 </template>
 
 <style scoped>
-.wrapper {
-  height: 100%;
-}
-.image-container {
-  background-color: grey;
+.map-box {
+  background-color: v-bind(color);
 }
 </style>

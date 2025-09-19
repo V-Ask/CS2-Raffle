@@ -3,6 +3,7 @@
 export class ReelMap {
   constructor(public mapName: string,
               public workshopId: string,
+              public weight: number,
               public color: Color) {
   }
 }

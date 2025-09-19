@@ -1,9 +1,9 @@
 ﻿<script setup lang="ts">
-import {WorkshopMap} from "@/models/workshop-map.ts";
 import MapIcon from "@/components/spinner/icon/MapIcon.vue";
+import type {ReelMap} from "@/models/reel-map.ts";
 
 const props = defineProps<{
-  workshopMaps: WorkshopMap[]
+  workshopMaps: ReelMap[]
 }>();
 </script>
 

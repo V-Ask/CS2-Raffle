@@ -1,6 +1,8 @@
 ﻿<script setup lang="ts">
+import type {Color} from "@/types/color.ts";
+
 const props = defineProps<{
-  rarity: number,
+  rarityColor: Color,
 }>();
 </script>
 

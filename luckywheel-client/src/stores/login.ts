@@ -1,6 +1,4 @@
 import { defineStore } from 'pinia'
-import type {UserCredentials} from "@/models/user-credentials.ts";
-import UserAuth from "@/services/user-auth.ts";
 
 export const useLoginStore = defineStore('login-view', {
   state: () => ({

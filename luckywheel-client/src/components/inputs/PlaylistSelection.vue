@@ -1,13 +1,10 @@
 ﻿<script setup lang="ts">
 import {ref} from "vue";
-import PlaylistService from "@/services/spinner/playlist-service.ts";
 import {useSpinnerStore} from "@/stores/spinner.ts";
 import type {WorkshopPlaylistIndex} from "@/models/indices/workshop-playlist-index.ts";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
-
-const emits = defineEmits<{
-  (e: 'playlistSelected', value: WorkshopPlaylistIndex): void,
-}>();
+import PlaylistService from "@/services/spinner/playlist.service.ts";
+import RoutingService from "@/services/routing.service.ts";
 
 const spinnerStore = useSpinnerStore();
 const selected = ref<WorkshopPlaylistIndex | null>(null);
@@ -16,9 +13,9 @@ PlaylistService.updatePlaylistIndices().then(() => {
   playlistsLoaded.value = true;
 });
 
-function selectMap() {
+function selectPlaylist() {
   if(selected.value) {
-    emits('playlistSelected', selected.value);
+    RoutingService.navigateToPlaylistPage(selected.value.playlistId);
   }
 }
 </script>
@@ -26,12 +23,11 @@ function selectMap() {
 <template>
 <div v-if="playlistsLoaded">
   <select v-model="selected">
-    <option disabled value="">Please select a map</option>
-    <option v-for="index in spinnerStore.playlistIndices" :value="index">
+    <option v-for="index in spinnerStore.playlistIndices" :value="index" :name="index.collectionName">
       {{ index.collectionName }}
     </option>
   </select>
-  <ConfirmButton :disabled="!!selected" @clicked="selectMap()">Select Playlist</ConfirmButton>
+  <ConfirmButton @clicked="selectPlaylist()">Select Playlist</ConfirmButton>
 </div>
 </template>
 

@@ -1,57 +1,86 @@
-import SpinView from '@/views/SpinView.vue'
 import {
-  createRouter,
   createWebHistory,
-  type NavigationGuardNext,
 } from 'vue-router'
-import authGuard from "@/guards/auth-guard.ts";
-import PlaylistSelectionView from "@/views/PlaylistSelectionView.vue";
 import LoginView from "@/views/LoginView.vue";
-import ConfirmEmailView from "@/views/ConfirmEmailView.vue";
+import {
+  CREATE_NEW_PLAYLIST_NAME,
+  LOGIN_NAME, NOT_FOUND_NAME, PLAYLIST_QUERY_PARAM,
+  PLAYLIST_SELECTED_NAME, PLAYLIST_VIEW
+} from "@/helpers/constants/routing.ts";
+import PlaylistView from "@/views/PlaylistView.vue";
+import PlaylistSelectionView from "@/views/PlaylistSelectionView.vue";
+import {GuardedRouter} from "@/router/guarded-router.ts";
+import {inverseGuardFn} from "@/guards/guard-fn.ts";
+import {authGuardFn} from "@/guards/auth-guard.ts";
+import {queryParamGuardFn} from "@/guards/query-param-guard-fn.ts";
+import {useLoadingStore} from "@/stores/loading.ts";
+import NotFoundView from "@/views/NotFoundView.vue";
+import CreatePlaylistView from "@/views/CreatePlaylistView.vue";
 
 const routes = [
   {
-    path: '/',
-    name: 'Main',
-    component: PlaylistSelectionView,
-  },
-  {
     path: '/new-user',
-    name: 'Login',
+    name: LOGIN_NAME,
     component: LoginView,
   },
   {
-    path: '/confirm-email',
-    name: 'ConfirmEmail',
-    component: ConfirmEmailView,
+    path: `/playlist`,
+    name: PLAYLIST_SELECTED_NAME,
+    component: PlaylistView,
+  },
+  {
+    path: '/new-playlist',
+    name: CREATE_NEW_PLAYLIST_NAME,
+    component: CreatePlaylistView
+  },
+  {
+    path: '/',
+    name: PLAYLIST_VIEW,
+    component: PlaylistSelectionView,
+  },
+  {
+    path: '/:path',
+    name: NOT_FOUND_NAME,
+    component: NotFoundView
   }
 ]
 
-const router = createRouter({
+const API: GuardedRouter = new GuardedRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
 
-function redirectIfFail(predicate: (() => boolean), next: NavigationGuardNext, alternative: any) {
-  if(predicate()) {
+// Redirects to the login page if user is unauthorized
+API.guardAllRoutes(authGuardFn, [LOGIN_NAME], {
+  name: LOGIN_NAME,
+});
+
+// Redirects to the playlist selection view if the user is attempting to access
+// login page while authorized
+API.guardRoute(LOGIN_NAME, inverseGuardFn(authGuardFn), {
+  name: PLAYLIST_VIEW
+});
+
+// Redirects to the playlist selection view if the user attempts to visit playlist view
+// without a specified playlist
+API.guardRoute(PLAYLIST_SELECTED_NAME, queryParamGuardFn(PLAYLIST_QUERY_PARAM), {
+  name: PLAYLIST_VIEW
+});
+
+function setupLazyLoadingStore() {
+  API.router.beforeEach((to, from, next) => {
+    const loadingStore = useLoadingStore();
+    loadingStore.startLazyLoading();
     next();
-  } else {
-    next(alternative);
-  }
+  });
+
+  API.router.afterEach((to, from, next) => {
+    const loadingStore = useLoadingStore();
+    loadingStore.stopLazyLoading();
+  })
 }
 
-router.beforeEach(async (to, from, next) => {
-  switch (to.name) {
-    case 'Login':
-      const success = await authGuard(from, to);
-      redirectIfFail(() => !success, next, {
-        name: 'Main',
-        replace: true,
-      })
-      break;
-    default:
-      next();
-  }
-})
+setupLazyLoadingStore();
 
-export default router
+
+export default API

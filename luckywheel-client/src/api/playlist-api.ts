@@ -1,7 +1,9 @@
 import {API} from "@/api/api.ts";
 import type {WorkshopPlaylistIndex} from "@/models/indices/workshop-playlist-index.ts";
-import type {WorkshopPlaylist} from "@/models/workshop-playlist.ts";
+import {WorkshopPlaylist} from "@/models/workshop-playlist.ts";
 import type {WorkshopMap} from "@/models/workshop-map.ts";
+import type {WorkshopPlaylistDto} from "@/api/dto/WorkshopPlaylistDto.ts";
+import type {WorkshopMapDto} from "@/api/dto/WorkshopMapDto.ts";
 
 async function getAllPlaylistIndex(): Promise<WorkshopPlaylistIndex[]> {
   return API.get('/api/Playlist/all').then(response => {
@@ -12,8 +14,8 @@ async function getAllPlaylistIndex(): Promise<WorkshopPlaylistIndex[]> {
   });
 }
 
-async function getPlaylist(id: string): Promise<WorkshopPlaylist> {
-  return API.get(`/api/Playlist/`, {params: {workshopPlaylistId: id}}).then(response => {
+async function getPlaylist(id: string): Promise<WorkshopPlaylistDto> {
+  return API.get(`/api/Playlist`, {params: {workshopPlaylistId: id}}).then(response => {
     if (response.status === 200) {
       return response.data;
     }
@@ -21,7 +23,7 @@ async function getPlaylist(id: string): Promise<WorkshopPlaylist> {
   });
 }
 
-async function createPlaylist(name: string): Promise<WorkshopPlaylist> {
+async function createPlaylist(name: string): Promise<WorkshopPlaylistDto> {
   return API.post('/api/Playlist', {}, {
     params: {
       collectionName: name,
@@ -42,7 +44,7 @@ async function deletePlaylist(id: string): Promise<void> {
   });
 }
 
-async function addMapToPlaylist(playlistId: string, mapId: string): Promise<WorkshopMap> {
+async function addMapToPlaylist(playlistId: string, mapId: string): Promise<WorkshopMapDto> {
   return API.put('/api/Playlist/add', {}, {
     params: {
       workshopPlaylistId: playlistId,

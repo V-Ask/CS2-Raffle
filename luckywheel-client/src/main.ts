@@ -3,7 +3,7 @@ import {createApp} from 'vue'
 import {createPinia} from 'pinia'
 
 import App from './App.vue'
-import router from './router'
+import API from './router'
 
 async function prepareApp() {
   if (import.meta.env.DEV) {
@@ -16,7 +16,7 @@ const app = createApp(App)
 
 prepareApp().then(() => {
   app.use(createPinia())
-  app.use(router)
+  app.use(API.router)
 
   app.mount('#app')
 })
