@@ -12,12 +12,40 @@ var services = builder.Services;
 services.AddEndpointsApiExplorer();
 
 services.AddControllers();
-services.AddCors();
+services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            policy.SetIsOriginAllowed(origin =>
+                    origin.StartsWith("http://localhost:") ||
+                    origin.StartsWith("https://localhost:"))
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
+        else
+        {
+            policy.WithOrigins("http://localhost:8080")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
+    });
+});
 services.AddSwaggerGen();
 
 services.AddAuthorization();
 services.AddAuthentication()
-    .AddCookie(IdentityConstants.ApplicationScheme);
+    .AddCookie(IdentityConstants.ApplicationScheme, options =>
+    {
+        options.Events.OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        };
+    });
 
 services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<LuckyDbContext>()
@@ -28,11 +56,20 @@ services.AddDbContext<LuckyDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
 });
 
+
 builder.AddScopes();
 
 var app = builder.Build();
 
-app.UseCors(options => options.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod());
+// Run migrations on startup in development
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<LuckyDbContext>();
+    db.Database.Migrate();
+}
+
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
