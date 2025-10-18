@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useLoginStore } from '@/stores/login';
 import StandardDialog from "@/components/dialogs/StandardDialog.vue";
 import NewUserView from "@/components/dialogs/login/NewUserView.vue";
 import ExistingUserView from "@/components/dialogs/login/ExistingUserView.vue";
+import {useLoginStore} from "@/stores/login.store.ts";
 
 const loginStore = useLoginStore();
 </script>

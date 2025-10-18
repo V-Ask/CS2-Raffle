@@ -3,19 +3,19 @@ import {
 } from 'vue-router'
 import LoginView from "@/views/LoginView.vue";
 import {
+  ADD_MAP_TO_PLAYLIST_NAME,
   CREATE_NEW_PLAYLIST_NAME,
-  LOGIN_NAME, NOT_FOUND_NAME, PLAYLIST_QUERY_PARAM,
-  PLAYLIST_SELECTED_NAME, PLAYLIST_VIEW
+  LOGIN_NAME, NOT_FOUND_NAME, PLAYLIST_SELECTED_NAME, PLAYLIST_VIEW
 } from "@/helpers/constants/routing.ts";
 import PlaylistView from "@/views/PlaylistView.vue";
 import PlaylistSelectionView from "@/views/PlaylistSelectionView.vue";
 import {GuardedRouter} from "@/router/guarded-router.ts";
 import {inverseGuardFn} from "@/guards/guard-fn.ts";
 import {authGuardFn} from "@/guards/auth-guard.ts";
-import {queryParamGuardFn} from "@/guards/query-param-guard-fn.ts";
-import {useLoadingStore} from "@/stores/loading.ts";
 import NotFoundView from "@/views/NotFoundView.vue";
 import CreatePlaylistView from "@/views/CreatePlaylistView.vue";
+import {useLoadingStore} from "@/stores/loading.store.ts";
+import AddNewMapView from "@/views/AddNewMapView.vue";
 
 const routes = [
   {
@@ -24,9 +24,16 @@ const routes = [
     component: LoginView,
   },
   {
-    path: `/playlist`,
+    path: `/playlist/:id/`,
     name: PLAYLIST_SELECTED_NAME,
     component: PlaylistView,
+    children: [
+      {
+        path: 'add',
+        name: ADD_MAP_TO_PLAYLIST_NAME,
+        component: AddNewMapView
+      }
+    ]
   },
   {
     path: '/new-playlist',
@@ -57,15 +64,9 @@ API.guardAllRoutes(authGuardFn, [LOGIN_NAME], {
 
 // Redirects to the playlist selection view if the user is attempting to access
 // login page while authorized
-API.guardRoute(LOGIN_NAME, inverseGuardFn(authGuardFn), {
-  name: PLAYLIST_VIEW
-});
-
-// Redirects to the playlist selection view if the user attempts to visit playlist view
-// without a specified playlist
-API.guardRoute(PLAYLIST_SELECTED_NAME, queryParamGuardFn(PLAYLIST_QUERY_PARAM), {
-  name: PLAYLIST_VIEW
-});
+// API.guardRoute(LOGIN_NAME, inverseGuardFn(authGuardFn), {
+//   name: PLAYLIST_VIEW
+// });
 
 function setupLazyLoadingStore() {
   API.router.beforeEach((to, from, next) => {

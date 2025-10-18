@@ -1,27 +1,43 @@
 ﻿<script setup lang="ts">
 import {useRoute} from "vue-router";
-import {computed, onMounted, ref} from "vue";
+import {ref, watch} from "vue";
 import {Reel} from "@/models/reel.ts";
-import PlaylistService from "@/services/spinner/playlist.service.ts";
 import SpinnerPreview from "@/components/spinner/preview/SpinnerPreview.vue";
 import SpinningReel from "@/components/spinner/reel/SpinningReel.vue";
-import {useSpinnerStore} from "@/stores/spinner.ts";
+import {SpinnerStatus, useSpinnerStore} from "@/stores/spinner.store.ts";
 
 const spinnerStore = useSpinnerStore();
 
-const id = getPlaylistId();
-const reel = computed(() => {
-  const selectedPlaylist = spinnerStore.selectedPlaylist;
-  return selectedPlaylist ? new Reel(selectedPlaylist) : null;
-})
-if(id) {
-  PlaylistService.selectPlaylist(id).then();
+const reel = ref<Reel | null>();
+const isSpinningReel = ref<boolean>(false);
+
+setupReel();
+watchSpinningStatus();
+
+async function setupReel() {
+  const id = getPlaylistId();
+  if(spinnerStore.selectedPlaylist?.playlistId === id) {
+    reel.value = new Reel(spinnerStore.selectedPlaylist);
+  } else {
+    spinnerStore.selectPlaylist(id).then(playlist => {
+      reel.value = new Reel(playlist);
+    });
+  }
 }
 
+function watchSpinningStatus() {
+  watch(() => spinnerStore.spinnerStatus, (status) => {
+    if(status === SpinnerStatus.SPINNING) {
+      isSpinningReel.value = true;
+      return;
+    }
+    isSpinningReel.value = false;
+  });
+}
 
 function getPlaylistId() {
   const route = useRoute();
-  const id = route.query.id;
+  const id = route.params.id;
   if (!id) {
     console.warn("No playlist id found in the params. How are you here??");
   }
@@ -37,7 +53,7 @@ function getPlaylistId() {
     <p></p>
   </div>
   <div v-else>
-    <SpinningReel :reel="reel" v-if="spinnerStore.isSpinning"></SpinningReel>
+    <SpinningReel :reel="reel" v-if="isSpinningReel"></SpinningReel>
     <SpinnerPreview :colored-maps="reel.coloredMaps" v-else></SpinnerPreview>
   </div>
 </template>

@@ -1,2 +1,5 @@
-﻿/user.txt
-/pass.txt
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/

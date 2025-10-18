@@ -6,7 +6,9 @@ import App from './App.vue'
 import API from './router'
 
 async function prepareApp() {
-  if (import.meta.env.DEV) {
+  const shouldUseMocks = import.meta.env.DEV && !import.meta.env.VITE_USE_REAL_API;
+
+  if (shouldUseMocks) {
     const {worker} = await import('@/mocks/browser');
     return worker.start().then();
   }

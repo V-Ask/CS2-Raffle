@@ -1,9 +1,9 @@
 ﻿import type {UserCredentials} from "@/models/user-credentials.ts";
-import {useAuthStore} from "@/stores/auth.ts";
 import Password from "@/helpers/constants/password.ts";
 import {PasswordValidator} from "@/models/password-validator.ts";
-import {useLoginStore} from "@/stores/login.ts";
 import Auth from "@/api/auth.ts";
+import {useAuthStore} from "@/stores/auth.store.ts";
+import {useLoginStore} from "@/stores/login.store.ts";
 
 function isPasswordValid(password: string): boolean {
   const minLength = Password.MIN_LENGTH;
@@ -64,7 +64,7 @@ async function checkAuth() {
     const authStore = useAuthStore();
     authStore.user = null
     return false;
-  }).catch(e => {
+  }).catch(e=> {
     const authStore = useAuthStore();
     authStore.user = null
     console.error(e);

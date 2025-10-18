@@ -1,15 +1,16 @@
-﻿import {type LocationQueryRaw, useRouter} from "vue-router";
+﻿import API from "@/router"
+import {type LocationQueryRaw, useRouter} from "vue-router";
 import {
+  ADD_MAP_TO_PLAYLIST_NAME,
   CREATE_NEW_PLAYLIST_NAME,
-  PLAYLIST_QUERY_PARAM,
+  PLAYLIST_QUERY_PARAM, PLAYLIST_SELECTED_NAME,
   PLAYLIST_VIEW
 } from "@/helpers/constants/routing.ts";
 
-function navigateToPage(name: string, query?: LocationQueryRaw): void {
-  const router = useRouter();
-  router.push({
+function navigateToPage(name: string, addedPath?: string): void {
+  API.router.push({
     name,
-    query
+    params: { id: addedPath }
   }).then();
 }
 
@@ -22,13 +23,16 @@ function navigateToPlaylistSelection() {
 }
 
 function navigateToPlaylistPage(playlistId: string): void {
-  navigateToPage(PLAYLIST_VIEW, {
-    [PLAYLIST_QUERY_PARAM]: playlistId,
-  });
+  navigateToPage(PLAYLIST_SELECTED_NAME, playlistId);
+}
+
+function navigateToAddMapToPlaylistPage(playlistId: string): void {
+  navigateToPage(ADD_MAP_TO_PLAYLIST_NAME, playlistId);
 }
 
 export default {
   navigateToCreateNewPlaylistPage,
   navigateToPlaylistSelection,
   navigateToPlaylistPage,
+  navigateToAddMapToPlaylistPage,
 }

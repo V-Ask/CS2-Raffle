@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {useLoadingStore} from "@/stores/loading.ts";
 import LoadingContainer from "@/components/loading/LoadingContainer.vue";
+import {useLoadingStore} from "@/stores/loading.store.ts";
 
 const loadingStore = useLoadingStore();
 </script>

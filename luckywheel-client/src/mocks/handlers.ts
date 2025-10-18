@@ -35,4 +35,12 @@ export default [
     ]))
   }),
 
+  http.post('https://localhost:8080/api/Playlist', () => {
+    return HttpResponse.json(new WorkshopPlaylist("id-5", "New Playlist", []));
+  }),
+
+  http.put('https://localhost:8080/api/Playlist/add', () => {
+    return HttpResponse.json(new WorkshopMap("Added Map", "map-id-new", 1, ""));
+  }),
+
 ]

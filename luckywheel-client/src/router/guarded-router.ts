@@ -17,24 +17,28 @@ export class GuardedRouter {
 
   public guardRoute(guardedRouteName: string, predicate: GuardFn, alternative?: RouteLocationRaw) {
     this._router.beforeEach(async (to, from, next) => {
+      console.log(guardedRouteName)
+      console.log(to.name)
       if (guardedRouteName != to.name?.toString()) {
         next();
-        return;
+        return true;
       }
       if (await predicate(from, to)) {
         next();
-        return;
+        return true;
       }
       console.debug("Guard hit! Falling back...")
       if (alternative) {
         next(alternative);
       }
+      return false;
     })
   }
 
   public guardAllRoutes(predicate: GuardFn, excludes?: string[], alternative?: RouteLocationRaw) {
     this._router.beforeEach(async (to, from, next) => {
-      if (excludes && to.name && !excludes.includes(to.name.toString())) {
+      console.log(excludes, to.name)
+      if (excludes && to.name && excludes.includes(to.name.toString())) {
         next();
         return;
       }

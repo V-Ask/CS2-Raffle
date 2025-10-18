@@ -1,23 +1,25 @@
 import axios from 'axios'
-import {useRouter} from "vue-router";
+import router from "@/router";
 
-const API_BASE_URL = 'https://localhost:8080'
+export const API = axios.create({
+  timeout: 1000,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json;charset=UTF-8",
+    "Accept": "application/json"
+  }
+});
 
-axios.interceptors.response.use(
+API.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
-    const router = useRouter();
-    if(error.response.status === 401) {
-      router.push({
-        name: 'Login'
+    if (error.response?.status === 401) {
+      router.router.push({
+        name: "Login"
       }).then();
     }
-    return error;
-  })
-
-export const API = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 1000,
-});
+    return Promise.reject(error);
+  }
+)

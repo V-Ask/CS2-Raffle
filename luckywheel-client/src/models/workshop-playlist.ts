@@ -33,9 +33,12 @@ export class WorkshopPlaylist {
     return comparator;
   }
 
+  addMap(workshopMap: WorkshopMap) {
+    this.maps.push(workshopMap);
+  }
+
   public static fromDto(dto: WorkshopPlaylistDto): WorkshopPlaylist {
     const maps = dto.maps.map(map => WorkshopMap.fromDto(map));
-    console.log(maps)
     return new WorkshopPlaylist(dto.playlistId, dto.collectionName, maps);
   }
 }

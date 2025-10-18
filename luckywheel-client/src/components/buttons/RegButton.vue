@@ -14,7 +14,8 @@ const emit = defineEmits<{
   </button>
 </template>
 <style scoped>
-.button {
+button {
+  background-color: grey;
   font-size: large;
   padding: 12px 18px;
 }

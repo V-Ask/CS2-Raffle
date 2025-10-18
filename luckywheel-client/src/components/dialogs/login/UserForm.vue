@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import ConfirmButton from '@/components/buttons/ConfirmButton.vue';
 import RegButton from '@/components/buttons/RegButton.vue';
-import { useLoginStore } from '@/stores/login';
-import { ref } from 'vue';
+import {ref} from 'vue';
 import type {UserCredentials} from "@/models/user-credentials.ts";
+import {useLoginStore} from "@/stores/login.store.ts";
 
 const props = defineProps<{
   submitButtonText: string,
@@ -20,7 +20,7 @@ const password = ref('');
 const loginStore = useLoginStore();
 
 function submitUser() {
-  emit('submit', { email: email.value, password: password.value });
+  emit('submit', {email: email.value, password: password.value});
 }
 
 function secondaryClicked() {
@@ -29,13 +29,17 @@ function secondaryClicked() {
 
 </script>
 <template>
-  <div class="flex-column no-gap">
-    <input id="email-input" type="email" v-model="email" placeholder="Enter email..." required />
-    <input :class="{ invalid: !loginStore.isPasswordValid }" id="password-input" type="password" aria-describedby="password-criteria" v-model="password" placeholder="Enter password..." required />
+  <form class="flex-column no-gap">
+    <input id="email-input" type="email" v-model="email" placeholder="Enter email..."
+           autocomplete="username" required/>
+    <input id="password-input" type="password" aria-describedby="password-criteria"
+           v-model="password" autocomplete="current-password" placeholder="Enter password..."
+           required/>
     <p v-if="props.showCriteria" class="no-margin" id="password-criteria">
-      The password must be at least 6 characters and contain uppercase and lowercase letters, digits, and alphanumeric characters.
+      The password must be at least 6 characters and contain uppercase and lowercase letters,
+      digits, and alphanumeric characters.
     </p>
-  </div>
+  </form>
   <div class="flex button-row">
     <RegButton v-if="props.secondaryButtonText" @clicked="secondaryClicked()">
       {{ props.secondaryButtonText }}

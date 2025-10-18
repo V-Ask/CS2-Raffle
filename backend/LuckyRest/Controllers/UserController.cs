@@ -20,4 +20,10 @@ public class UserController(IUserService userService, UserManager<User> userMana
         await userService.SetUserRestEndpoint(user, endpoint);
         return Ok();
     }
+
+    [HttpGet("auth")]
+    public IActionResult CheckAuth()
+    {
+        return Ok();
+    }
 }
