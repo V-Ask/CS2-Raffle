@@ -53,7 +53,7 @@ services.AddIdentityCore<User>()
 
 services.AddDbContext<LuckyDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("luckydb"));
 });
 
 
@@ -61,15 +61,9 @@ builder.AddScopes();
 
 var app = builder.Build();
 
-// Run migrations on startup in development
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<LuckyDbContext>();
-    db.Database.Migrate();
-}
-
 app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

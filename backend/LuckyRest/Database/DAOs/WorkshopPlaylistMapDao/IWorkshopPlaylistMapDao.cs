@@ -6,5 +6,5 @@ public interface IWorkshopPlaylistMapDao
 {
     public Task<WorkshopPlaylistMap?> GetWorkshopPlaylistMap(int mapId, Guid playlistId);
 
-    public Task PostWorkshopPlaylistMap(WorkshopPlaylistMap playlistMap);
+    public Task<bool> PostWorkshopPlaylistMap(WorkshopPlaylistMap playlistMap);
 }

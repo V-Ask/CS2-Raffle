@@ -10,9 +10,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkshopScraper", "backend\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkshopScraperTest", "backend\WorkshopScraperTest\WorkshopScraperTest.csproj", "{F9D0DCF0-A8AE-4CA6-9E96-337A1F45B078}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevelopmentHost", "DevelopmentHost\DevelopmentHost.csproj", "{F1F7B726-0BBB-4BC6-A83E-BD59BEAAD8E9}"
-EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "LuckyClient", "luckywheel-client\LuckyClient.esproj", "{BDF62446-EBB9-491E-9EF9-557152EF2DA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuckyStackAppHost", "LuckyStackAppHost\LuckyStackAppHost.csproj", "{4BA102CB-2CBB-4EB5-B424-69DE08ED6ED8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuckyRest.MigrationService", "LuckyRest.MigrationService\LuckyRest.MigrationService.csproj", "{489B72CB-DBC4-40D8-8DD5-AD61DE61E035}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,5 +50,13 @@ Global
 		{BDF62446-EBB9-491E-9EF9-557152EF2DA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDF62446-EBB9-491E-9EF9-557152EF2DA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDF62446-EBB9-491E-9EF9-557152EF2DA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BA102CB-2CBB-4EB5-B424-69DE08ED6ED8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BA102CB-2CBB-4EB5-B424-69DE08ED6ED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BA102CB-2CBB-4EB5-B424-69DE08ED6ED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA102CB-2CBB-4EB5-B424-69DE08ED6ED8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{489B72CB-DBC4-40D8-8DD5-AD61DE61E035}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{489B72CB-DBC4-40D8-8DD5-AD61DE61E035}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{489B72CB-DBC4-40D8-8DD5-AD61DE61E035}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{489B72CB-DBC4-40D8-8DD5-AD61DE61E035}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

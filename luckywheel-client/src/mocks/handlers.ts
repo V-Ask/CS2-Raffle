@@ -1,7 +1,7 @@
 ﻿import {http, HttpResponse} from "msw";
-import {WorkshopPlaylistIndex} from "@/models/indices/workshop-playlist-index.ts";
-import {WorkshopPlaylist} from "@/models/workshop-playlist.ts";
+import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import {WorkshopMap} from "@/models/workshop-map.ts";
+import {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-index.ts";
 
 const successResponse =() =>  new HttpResponse(null, { status: 200 });
 
@@ -27,20 +27,20 @@ export default [
     ]);
   }),
 
-  http.get('https://localhost:8080/api/Playlist', () => {
-    return HttpResponse.json(new WorkshopPlaylist("id-1", "Collection 1", [
-      new WorkshopMap("Map 1", "map-id-1", 1, ""),
-      new WorkshopMap("Map 2", "map-id-2", 5, ""),
-      new WorkshopMap("Map 3", "map-id-3", 2, ""),
-    ]))
-  }),
+  // http.get('https://localhost:8080/api/Playlist', () => {
+  //   return HttpResponse.json(new WorkshopPlaylistView("id-1", "Collection 1", [
+  //     new WorkshopMap("Map 1", "map-id-1", 1, ""),
+  //     new WorkshopMap("Map 2", "map-id-2", 5, ""),
+  //     new WorkshopMap("Map 3", "map-id-3", 2, ""),
+  //   ]))
+  // }),
 
   http.post('https://localhost:8080/api/Playlist', () => {
-    return HttpResponse.json(new WorkshopPlaylist("id-5", "New Playlist", []));
+    return HttpResponse.json(new WorkshopPlaylistView("id-5", "New Playlist", []));
   }),
-
-  http.put('https://localhost:8080/api/Playlist/add', () => {
-    return HttpResponse.json(new WorkshopMap("Added Map", "map-id-new", 1, ""));
-  }),
+  //
+  // http.put('https://localhost:8080/api/Playlist/add', () => {
+  //   return HttpResponse.json(new WorkshopMap("Added Map", "map-id-new", 1, ""));
+  // }),
 
 ]

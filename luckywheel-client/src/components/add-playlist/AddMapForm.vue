@@ -5,6 +5,7 @@ import {ref} from "vue";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
 import RoutingService from "@/services/routing.service.ts";
+import WorkshopLinkService from "@/services/workshop/workshop-link.service.ts";
 
 interface Props {
   playlistId: string;
@@ -21,7 +22,12 @@ function returnToPlaylistView() {
 
 // TODO: This need validation
 function addNewMap() {
-  spinnerStore.addMapToSelectedPlaylist(workshopUrl.value).then(() => {
+  let id = WorkshopLinkService.getWorkshopId(workshopUrl.value);
+  if(!id) {
+    console.warn("Invalid Workshop Link -- this needs clearer error reporting");
+    return;
+  }
+  spinnerStore.addWorkshopMapIdToSelectedPlaylist(id).then(() => {
     returnToPlaylistView();
   })
 }
@@ -29,8 +35,8 @@ function addNewMap() {
 
 <template>
   <SingleLineTextField placeholder="Insert Workshop URL here" v-model="workshopUrl"></SingleLineTextField>
-  <ConfirmButton>Add</ConfirmButton>
-  <RegButton>Cancel</RegButton>
+  <ConfirmButton @click="addNewMap()">Add</ConfirmButton>
+  <RegButton @click="returnToPlaylistView()">Cancel</RegButton>
 </template>
 
 <style scoped>

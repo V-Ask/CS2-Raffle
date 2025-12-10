@@ -27,13 +27,11 @@ const routes = [
     path: `/playlist/:id/`,
     name: PLAYLIST_SELECTED_NAME,
     component: PlaylistView,
-    children: [
-      {
-        path: 'add',
-        name: ADD_MAP_TO_PLAYLIST_NAME,
-        component: AddNewMapView
-      }
-    ]
+  },
+  {
+    path: `/playlist/:id/add/`,
+    name: ADD_MAP_TO_PLAYLIST_NAME,
+    component: AddNewMapView,
   },
   {
     path: '/new-playlist',

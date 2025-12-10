@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LuckyRest.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 [Authorize]
 public class UserController(IUserService userService, UserManager<User> userManager) : ControllerBase

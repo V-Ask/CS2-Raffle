@@ -6,5 +6,5 @@ namespace LuckyRest.Services.WorkshopMapService;
 public interface IWorkshopMapService
 {
     public Task<ServiceResult<WorkshopMapDto>> GetWorkshopMap(long workshopMapId);
-    public Task<ServiceResult<WorkshopMapDto>> AddWorkshopMap(long workshopMapId);
+    public Task<ServiceResult<WorkshopMapDto>> EnsureWorkshopMap(long workshopMapId);
 }

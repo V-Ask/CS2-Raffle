@@ -3,5 +3,5 @@
 public interface IHtmlNodeWrapper
 {
     string InnerText { get; }
-    string? ImageSource { get; }
+    string ImageSource { get; }
 }

@@ -7,6 +7,6 @@ public interface IScraper
 {
     string Url { get; }
     string? GetQueryValue(string query);
-    IHtmlNodeWrapper? GetSingleElement(string xpathSelector);
+    IHtmlNodeWrapper GetSingleElement(string xpathSelector);
     INodeCollectionWrapper GetAllElements(string xpathSelector);
 }

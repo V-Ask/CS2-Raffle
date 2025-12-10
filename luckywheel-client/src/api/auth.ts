@@ -1,7 +1,7 @@
 import { API } from './api'
 
 async function login(username: string, password: string) {
-  return API.post('/api/login', {
+  return API.post('/api/login?useCookies=true', {
     email: username,
     password,
   })

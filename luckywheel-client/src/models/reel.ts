@@ -1,8 +1,7 @@
-﻿import  {type WorkshopPlaylist} from "@/models/workshop-playlist.ts";
+﻿import  {type WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import  {type ReelMap} from "@/models/reel-map.ts";
 import {COLOR_RARITY_PAIRS} from "@/helpers/constants/colors.ts";
 import {WeightedList} from "@/models/weighted-list.ts";
-import type {WorkshopPlaylistIndex} from "@/models/indices/workshop-playlist-index.ts";
 import {REEL_LENGTH} from "@/helpers/constants/reel.ts";
 
 export class Reel {
@@ -12,7 +11,7 @@ export class Reel {
 
   private readonly _coloredMaps: ReelMap[];
 
-  constructor(playlist: WorkshopPlaylist) {
+  constructor(playlist: WorkshopPlaylistView) {
     this._coloredMaps = this.colorPlaylist(playlist);
   }
 
@@ -25,7 +24,7 @@ export class Reel {
     return reel;
   }
 
-  private colorPlaylist(playlist: WorkshopPlaylist) {
+  private colorPlaylist(playlist: WorkshopPlaylistView) {
     const sortedPlaylist = playlist.getSorted({
       comparison: "weight",
       ascending: false,

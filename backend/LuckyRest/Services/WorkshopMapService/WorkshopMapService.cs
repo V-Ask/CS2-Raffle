@@ -18,7 +18,7 @@ public class WorkshopMapService(IWorkshopMapDao workshopMapDao) : IWorkshopMapSe
             : ServiceResult.Success.WithData(WorkshopMapDto.FromEntity(map));
     }
 
-    public async Task<ServiceResult<WorkshopMapDto>> AddWorkshopMap(long workshopMapId)
+    public async Task<ServiceResult<WorkshopMapDto>> EnsureWorkshopMap(long workshopMapId)
     {
         if (workshopMapDao.MapExists(workshopMapId))
         {

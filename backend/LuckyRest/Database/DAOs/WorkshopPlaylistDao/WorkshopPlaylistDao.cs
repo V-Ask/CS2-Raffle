@@ -7,15 +7,34 @@ public class WorkshopPlaylistDao(LuckyDbContext dbContext) : IWorkshopPlaylistDa
 {
     public async Task<WorkshopPlaylist?> GetWorkshopPlaylist(string userId, Guid workshopPlaylistId)
     {
-        var playlist =
-            await dbContext.Playlists.Where(x => x.AuthorId == userId && x.WorkshopPlaylistId == workshopPlaylistId)
-                .ToListAsync();
-        return playlist.FirstOrDefault();
+        return await dbContext.Playlists
+            .Include(p => p.PlaylistMaps)
+            .ThenInclude(pm => pm.WorkshopMap)
+            .FirstOrDefaultAsync(x =>
+                x.AuthorId == userId && x.WorkshopPlaylistId == workshopPlaylistId);
+    }
+
+    public async Task<bool> AddMapToWorkshopPlaylist(string userId, Guid workshopPlaylistId,
+        WorkshopPlaylistMap playlistMap)
+    {
+        var playlist = await GetWorkshopPlaylist(userId, workshopPlaylistId);
+        if (playlist == null)
+        {
+            return false;
+        }
+
+        playlist.PlaylistMaps.Add(playlistMap);
+        await dbContext.SaveChangesAsync();
+        return true;
     }
 
     public async Task<List<WorkshopPlaylist>> GetWorkshopPlaylists(string userId)
     {
-        var playlists = await dbContext.Playlists.Where(x => x.AuthorId == userId).ToListAsync();
+        var playlists = await dbContext.Playlists
+            .Include(p => p.PlaylistMaps)
+            .ThenInclude(pm => pm.WorkshopMap)
+            .Where(x => x.AuthorId == userId)
+            .ToListAsync();
         return playlists;
     }
 
@@ -53,6 +72,12 @@ public class WorkshopPlaylistDao(LuckyDbContext dbContext) : IWorkshopPlaylistDa
         dbContext.Playlists.Add(playlist);
         await dbContext.SaveChangesAsync();
         return playlist;
+    }
+
+    public async Task<bool> PlaylistContainsMap(string userId, Guid workshopPlaylistId, long playlistMapId)
+    {
+        var playlist = await GetWorkshopPlaylist(userId, workshopPlaylistId);
+        return playlist != null && playlist.PlaylistMaps.Any(x => x.WorkshopMapId == playlistMapId);
     }
 
     private bool PlaylistExists(string userId, Guid workshopPlaylistId)

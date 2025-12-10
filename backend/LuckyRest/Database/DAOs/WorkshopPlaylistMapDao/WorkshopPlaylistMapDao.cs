@@ -13,9 +13,17 @@ public class WorkshopPlaylistMapDao(LuckyDbContext dbContext) : IWorkshopPlaylis
         return playlistMap;
     }
     
-    public async Task PostWorkshopPlaylistMap(WorkshopPlaylistMap playlistMap)
+    public async Task<bool> PostWorkshopPlaylistMap(WorkshopPlaylistMap playlistMap)
     {
-        dbContext.PlaylistMaps.Add(playlistMap);
-        await dbContext.SaveChangesAsync();
+        try
+        {
+            dbContext.PlaylistMaps.Add(playlistMap);
+            await dbContext.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateException exception)
+        {
+            return false;
+        }
     }
 }

@@ -3,18 +3,26 @@
 import AddMapForm from "@/components/add-playlist/AddMapForm.vue";
 import {useSpinnerStore} from "@/stores/spinner.store.ts";
 import {ref} from "vue";
+import {useRoute} from "vue-router";
 
 const playlistId = ref("");
 
 const spinnerStore = useSpinnerStore();
 
-if(spinnerStore.selectedPlaylist) {
-  playlistId.value = spinnerStore.selectedPlaylist.playlistId;
+function fetchPlaylist() {
+  const route = useRoute();
+  spinnerStore.selectPlaylistFromParams(route).then(playlist => {
+    if(playlist) {
+      playlistId.value = playlist.playlistId
+    }
+  });
 }
+
+fetchPlaylist()
 </script>
 
 <template>
-  <AddMapForm :playlist-id="playlistId"></AddMapForm>
+  <AddMapForm v-if="playlistId" :playlist-id="playlistId"></AddMapForm>
 </template>
 
 <style scoped>
