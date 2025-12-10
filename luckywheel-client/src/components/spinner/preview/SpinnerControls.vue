@@ -17,18 +17,23 @@ function cancelSpin() {
 
 function addMap() {
   const playlist = spinnerStore.selectedPlaylist;
-  if(playlist) {
+  if (playlist) {
     RoutingService.navigateToAddMapToPlaylistPage(playlist.playlistId)
   }
 }
 </script>
 
 <template>
-  <ConfirmButton @click="spinReel()">Spin</ConfirmButton>
-  <RegButton @click="cancelSpin()">Close</RegButton>
-  <ConfirmButton @click="addMap()">Add Map</ConfirmButton>
+  <div class="control-group">
+    <ConfirmButton @click="spinReel()">Spin</ConfirmButton>
+    <RegButton @click="cancelSpin()">Close</RegButton>
+    <ConfirmButton @click="addMap()">Add Map</ConfirmButton>
+  </div>
 </template>
 
 <style scoped>
-
+.control-group {
+  display: flex;
+  gap: 0.5rem;
+}
 </style>

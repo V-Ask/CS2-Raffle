@@ -8,7 +8,7 @@ const props = defineProps<{
 </script>
 
 <template>
-<div class="wrapper">
+<div class="icon-wrapper">
   <div v-for="map in props.workshopMaps" class="icon">
     <MapIcon :map="map" />
   </div>
@@ -16,11 +16,14 @@ const props = defineProps<{
 </template>
 
 <style scoped>
-.wrapper {
-  min-width: 600px;
+.icon-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
+
 .icon {
-  width: 100px;
-  height: 80px;
+  width: 12rem;
+  height: 9.25rem;
 }
 </style>

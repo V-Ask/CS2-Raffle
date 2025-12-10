@@ -2,7 +2,6 @@
 import  {type ReelMap} from "@/models/reel-map.ts";
 import {COLOR_RARITY_PAIRS} from "@/helpers/constants/colors.ts";
 import {WeightedList} from "@/models/weighted-list.ts";
-import {REEL_LENGTH} from "@/helpers/constants/reel.ts";
 
 export class Reel {
   get coloredMaps(): ReelMap[] {
@@ -15,10 +14,10 @@ export class Reel {
     this._coloredMaps = this.colorPlaylist(playlist);
   }
 
-  public buildReel() {
+  public buildRandomReel(reelSize: number) {
     const weightedMaps = WeightedList.fromArrayMap(this.coloredMaps, map => map.weight)
     const reel: ReelMap[] = [];
-    for (let i = 0; i < REEL_LENGTH; i++) {
+    for (let i = 0; i < reelSize; i++) {
       reel.push(weightedMaps.getRandom());
     }
     return reel;

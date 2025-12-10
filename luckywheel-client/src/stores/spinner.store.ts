@@ -4,12 +4,14 @@ import PlaylistService from "@/services/spinner/playlist.service.ts";
 import {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-index.ts";
 import type {RouteLocationNormalizedLoaded} from "vue-router";
 import {WorkshopPlaylistMapView} from "@/models/workshop-playlist-map-view.ts";
+import type {ReelMap} from "@/models/reel-map.ts";
 
 export const useSpinnerStore = defineStore('spinner', {
   state: () => ({
     playlistIndices: [] as WorkshopPlaylistIndex[],
     selectedPlaylist: null as WorkshopPlaylistView | null,
     spinnerStatus: SpinnerStatus.VIEWING as SpinnerStatus,
+    selectedMap: null as ReelMap | null,
   }),
   getters: {
     getPlaylists: (state) => state.playlistIndices,
@@ -25,7 +27,7 @@ export const useSpinnerStore = defineStore('spinner', {
 
     async selectPlaylist(playlistId: string) {
       let fetchedPlaylist = await PlaylistService.fetchPlaylistView(playlistId);
-      if(!fetchedPlaylist) {
+      if (!fetchedPlaylist) {
         return null;
       }
       this.selectedPlaylist = fetchedPlaylist;
@@ -34,7 +36,7 @@ export const useSpinnerStore = defineStore('spinner', {
 
     async selectPlaylistFromParams(route: RouteLocationNormalizedLoaded<any>) {
       const playlistParamId = PlaylistService.getPlaylistIdQueryParam(route);
-      if(playlistParamId === this.selectedPlaylist?.playlistId) {
+      if (playlistParamId === this.selectedPlaylist?.playlistId) {
         return this.selectedPlaylist;
       }
       return this.selectPlaylist(playlistParamId);
@@ -42,7 +44,7 @@ export const useSpinnerStore = defineStore('spinner', {
 
     async createPlaylist(name: string) {
       const playlist = await PlaylistService.createNewPlaylist(name);
-      if(!playlist) return;
+      if (!playlist) return;
       this.playlistIndices.push(WorkshopPlaylistIndex.fromPlaylist(playlist));
       return playlist;
     },
@@ -54,13 +56,31 @@ export const useSpinnerStore = defineStore('spinner', {
       }
       const newMap = await PlaylistService.addNewMapToPlaylist(workshopId, this.selectedPlaylist)
       console.log("newMap", newMap);
-      if(!newMap) return;
+      if (!newMap) return;
       console.log("playlistMap", newMap.toPlaylistMap(this.selectedPlaylist.playlistId))
       this.selectedPlaylist.addMap(newMap.toPlaylistMap(this.selectedPlaylist.playlistId));
       return newMap;
     },
+
+    selectMap(map: ReelMap) {
+      if (!this.selectedPlaylist) {
+        console.warn("Trying to select a map with no selected playlist...");
+        return;
+      }
+
+      if (!playlistContainsReelMap(this.selectedPlaylist, map)) {
+        console.warn("Selected playlist does not contain map. Logical error");
+        return;
+      }
+      this.selectedMap = map;
+      this.spinnerStatus = SpinnerStatus.SPUN;
+    }
   }
 });
+
+function playlistContainsReelMap(playlist: WorkshopPlaylistView, reelMap: ReelMap) {
+  return playlist.maps.map(map => map.mapId).includes(reelMap.workshopId);
+}
 
 export enum SpinnerStatus {
   VIEWING,

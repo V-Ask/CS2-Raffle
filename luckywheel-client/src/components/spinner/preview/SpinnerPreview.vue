@@ -11,6 +11,20 @@ const props = defineProps<{
 <template>
   <div class="playlist wrapper">
     <MapList :workshop-maps="props.coloredMaps"></MapList>
-    <SpinnerControls />
+    <div class="playlist controls">
+      <SpinnerControls/>
+    </div>
   </div>
 </template>
+<style scoped>
+.playlist.wrapper {
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.playlist.controls {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>
