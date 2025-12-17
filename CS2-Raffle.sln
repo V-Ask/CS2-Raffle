@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuckyStackAppHost", "LuckyS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuckyRest.MigrationService", "LuckyRest.MigrationService\LuckyRest.MigrationService.csproj", "{489B72CB-DBC4-40D8-8DD5-AD61DE61E035}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHostConveyer", "GameHostConveyer\GameHostConveyer.csproj", "{71A79459-7C99-4B71-BF8A-CB986FCB2D05}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,5 +60,9 @@ Global
 		{489B72CB-DBC4-40D8-8DD5-AD61DE61E035}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{489B72CB-DBC4-40D8-8DD5-AD61DE61E035}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{489B72CB-DBC4-40D8-8DD5-AD61DE61E035}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71A79459-7C99-4B71-BF8A-CB986FCB2D05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71A79459-7C99-4B71-BF8A-CB986FCB2D05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71A79459-7C99-4B71-BF8A-CB986FCB2D05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71A79459-7C99-4B71-BF8A-CB986FCB2D05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

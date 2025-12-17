@@ -1,31 +1,33 @@
 ﻿<script setup lang="ts">
-import type {Reel} from "@/models/reel.ts";
 import MapIcon from "@/components/spinner/icon/MapIcon.vue";
-import {watch, ref, onMounted} from "vue";
+import {ref, onMounted} from "vue";
 import type {ReelMap} from "@/models/reel-map.ts";
-import {useSpinnerStore} from "@/stores/spinner.store.ts";
+import ReelService from "@/services/spinner/reel.service.ts";
 
 const props = defineProps<{
-  reel: Reel,
   reelSize: number,
+  reelMaps: Set<ReelMap>,
 }>();
 
-const spinnerStore = useSpinnerStore();
+const emits = defineEmits<{
+  mapSelected: [value: ReelMap]
+}>();
 
-const filledReel = props.reel.buildRandomReel(props.reelSize);
-const winningIndex = calcWinningMapIndex(filledReel, props.reelSize);
+const filledReel = ReelService.buildRandomReel(props.reelSize, props.reelMaps);
+const winningIndex = calcWinningMapIndex(props.reelSize);
 const winningMap = filledReel[winningIndex];
 
 const reelContainer = ref<HTMLElement | null>(null);
 
 onMounted(() => {
   spinReel(props.reelSize).then(() => {
-    spinnerStore.selectMap()
+    emits('mapSelected', winningMap);
   })
 });
 
-function calcWinningMapIndex(filledReel: ReelMap[], reelLength: number) {
+function calcWinningMapIndex(reelLength: number) {
   let winningIndex = reelLength - 10; //some number that ensures that the end of the reel is not shown
+  // If the reel size is larger than 10, let's select the third quadrant of the set
   if (reelLength <= winningIndex) {
     return Math.floor(0.75 * reelLength)
   }

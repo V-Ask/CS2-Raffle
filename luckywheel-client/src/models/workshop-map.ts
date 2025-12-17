@@ -14,7 +14,6 @@ export class WorkshopMap {
   }
 
   public static fromDto(dto: WorkshopMapDto): WorkshopMap {
-    console.log("dto1111", dto);
-    return new WorkshopMap(dto.name, dto.imageSource, dto.description, dto.workshopId);
+    return new WorkshopMap(dto.name, dto.imageUrl, dto.description, dto.mapId);
   }
 }

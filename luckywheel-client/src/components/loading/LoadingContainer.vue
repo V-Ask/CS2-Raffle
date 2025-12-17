@@ -9,9 +9,14 @@ const props = defineProps<{
   <div class="loading" v-if="isLoading">
     <p>CURRENTLY LOADING</p>
   </div>
-  <slot v-else></slot>
+  <div class="not-loading" v-else>
+    <slot></slot>
+  </div>
 </template>
 
 <style scoped>
-
+.not-loading {
+  width: 100%;
+  height: 100%;
+}
 </style>

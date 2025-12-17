@@ -79,3 +79,13 @@ input[type='email'] {
 #app {
   height: 100%;
 }
+
+dialog {
+  background: coral;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}

@@ -1,46 +1,49 @@
 ﻿<script setup lang="ts">
 import {useRoute} from "vue-router";
-import {ref, watch} from "vue";
-import {Reel} from "@/models/reel.ts";
+import {ref} from "vue";
 import SpinnerPreview from "@/components/spinner/preview/SpinnerPreview.vue";
 import SpinningReel from "@/components/spinner/reel/SpinningReel.vue";
-import {SpinnerStatus, useSpinnerStore} from "@/stores/spinner.store.ts";
+import PlaylistService from "@/services/spinner/playlist.service.ts";
+import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
+import ErrorComponent from "@/components/error-window/ErrorComponent.vue";
+import {ReelMap} from "@/models/reel-map.ts";
 
-const spinnerStore = useSpinnerStore();
+const isLoading = ref<boolean>(true);
+const selectedPlaylist = ref<WorkshopPlaylistView | undefined>(undefined);
+const coloredMaps = ref<Set<ReelMap> | undefined>(undefined);
+const winnerMap = ref<ReelMap | undefined>(undefined);
 
-const reel = ref<Reel | null>();
-const isSpinningReel = ref<boolean>(false);
+setupPlaylist();
 
-setupReel();
-watchSpinningStatus();
-
-async function setupReel() {
-  console.log('VAJ', spinnerStore.selectedPlaylist);
-  const route = useRoute();
-  const playlist = await spinnerStore.selectPlaylistFromParams(route);
-  if (playlist) {
-    reel.value = new Reel(playlist);
-  }
+async function setupPlaylist() {
+  PlaylistService.fetchPlaylistFromRoute(useRoute()).then((response) => {
+    isLoading.value = false;
+    selectedPlaylist.value = response;
+  });
 }
 
-function watchSpinningStatus() {
-  watch(() => spinnerStore.spinnerStatus, (status) => {
-    if (status === SpinnerStatus.SPINNING) {
-      isSpinningReel.value = true;
-      return;
-    }
-    isSpinningReel.value = false;
-  });
+function spinReel(maps: Set<ReelMap>) {
+  coloredMaps.value = maps;
+}
+
+function selectMap(map: ReelMap) {
+  winnerMap.value = map;
 }
 </script>
 
 <template>
-  <div v-if="!reel">
+  <div v-if="isLoading">
     <p>Reel is loading...</p>
   </div>
+  <div v-else-if="selectedPlaylist">
+    <SpinningReel v-if="coloredMaps"
+                  :reel-maps="coloredMaps"
+                  :reel-size="100"
+                  @mapSelected=""></SpinningReel>
+    <SpinnerPreview :playlist="selectedPlaylist" @spinReel="spinReel($event)" v-else></SpinnerPreview>
+  </div>
   <div v-else>
-    <SpinningReel :reel="reel" v-if="isSpinningReel"></SpinningReel>
-    <SpinnerPreview :colored-maps="reel.coloredMaps" v-else></SpinnerPreview>
+    <ErrorComponent></ErrorComponent>
   </div>
 </template>
 

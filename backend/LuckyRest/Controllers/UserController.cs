@@ -10,17 +10,8 @@ namespace LuckyRest.Controllers;
 [Route("[controller]")]
 [ApiController]
 [Authorize]
-public class UserController(IUserService userService, UserManager<User> userManager) : ControllerBase
+public class UserController : ControllerBase
 {
-    [HttpPost]
-    public async Task<ActionResult<string>> SetLaunchServerEndpoint(string endpoint)
-    {
-        var user = await userManager.GetUserAsync(User);
-        if (user == null) return Unauthorized();
-        await userService.SetUserRestEndpoint(user, endpoint);
-        return Ok();
-    }
-
     [HttpGet("auth")]
     public IActionResult CheckAuth()
     {

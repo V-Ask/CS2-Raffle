@@ -1,6 +1,10 @@
 ﻿import type {WorkshopPlaylistViewDto} from "@/api/dto/views/workshop-playlist-view-dto.ts";
 import {WorkshopPlaylistMapView} from "@/models/workshop-playlist-map-view.ts";
 import {WorkshopPlaylistMapViewDto} from "@/api/dto/views/workshop-playlist-map-view-dto.ts";
+import {WeightedList} from "@/models/weighted-list.ts";
+import type {ReelMap} from "@/models/reel-map.ts";
+import {COLOR_RARITY_PAIRS} from "@/helpers/constants/colors.ts";
+import type {WorkshopMap} from "@/models/workshop-map.ts";
 
 export class WorkshopPlaylistView {
 
@@ -36,6 +40,10 @@ export class WorkshopPlaylistView {
 
   addMap(workshopMap: WorkshopPlaylistMapView) {
     this.maps.push(workshopMap);
+  }
+
+  addNewMap(workshopMap: WorkshopMap) {
+    this.maps.push(workshopMap.toPlaylistMap(this.playlistId));
   }
 
   public static fromDto(dto: WorkshopPlaylistViewDto): WorkshopPlaylistView {

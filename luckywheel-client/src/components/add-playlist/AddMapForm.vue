@@ -4,41 +4,58 @@ import SingleLineTextField from "@/components/inputs/textfield/SingleLineTextFie
 import {ref} from "vue";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
-import RoutingService from "@/services/routing.service.ts";
 import WorkshopLinkService from "@/services/workshop/workshop-link.service.ts";
+import type {WorkshopMap} from "@/models/workshop-map.ts";
+import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
+import PlaylistService from "@/services/spinner/playlist.service.ts";
 
-interface Props {
-  playlistId: string;
-}
+const props = defineProps<{
+  playlist: WorkshopPlaylistView
+}>();
 
-const props = defineProps<Props>();
+const emits = defineEmits<{
+  "addMap": [value: WorkshopMap],
+  "closeDialog": []
+}>();
 
-const spinnerStore = useSpinnerStore();
 const workshopUrl = ref("");
+const isAddingMap = ref(false);
 
 function returnToPlaylistView() {
-  RoutingService.navigateToPlaylistPage(props.playlistId);
+  emits('closeDialog');
 }
 
-// TODO: This need validation
 function addNewMap() {
+  isAddingMap.value = true;
   let id = WorkshopLinkService.getWorkshopId(workshopUrl.value);
-  if(!id) {
+  if (!id) {
     console.warn("Invalid Workshop Link -- this needs clearer error reporting");
     return;
   }
-  spinnerStore.addWorkshopMapIdToSelectedPlaylist(id).then(() => {
-    returnToPlaylistView();
-  })
+  PlaylistService.addNewMapToPlaylist(id, props.playlist).then((map) => {
+    if(!map) {
+      console.warn("The map was not found. Try again.");
+      isAddingMap.value = false;
+      return;
+    }
+    isAddingMap.value = false;
+    emits('addMap', map);
+  });
 }
 </script>
 
 <template>
-  <SingleLineTextField placeholder="Insert Workshop URL here" v-model="workshopUrl"></SingleLineTextField>
-  <ConfirmButton @click="addNewMap()">Add</ConfirmButton>
-  <RegButton @click="returnToPlaylistView()">Cancel</RegButton>
+  <div class="form-wrapper">
+    <SingleLineTextField placeholder="Insert Workshop URL here"
+                         v-model="workshopUrl"></SingleLineTextField>
+    <ConfirmButton @click="addNewMap()">Add</ConfirmButton>
+    <RegButton @click="returnToPlaylistView()">Cancel</RegButton>
+  </div>
 </template>
 
 <style scoped>
-
+.form-wrapper {
+  display: flex;
+  gap: 0.5rem;
+}
 </style>

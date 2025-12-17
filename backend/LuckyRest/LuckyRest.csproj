@@ -26,6 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\GameHostConveyer\GameHostConveyer.csproj" />
       <ProjectReference Include="..\WorkshopScraper\WorkshopScraper.csproj" />
     </ItemGroup>
 
