@@ -1,4 +1,4 @@
-﻿import PlaylistApi from "@/api/playlist-api.ts";
+﻿import PlaylistApi from "@/api/playlist.api.ts";
 import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import {WorkshopMap} from "@/models/workshop-map.ts";
 import type {RouteLocationNormalizedLoaded, RouteLocationNormalizedLoadedGeneric} from "vue-router";

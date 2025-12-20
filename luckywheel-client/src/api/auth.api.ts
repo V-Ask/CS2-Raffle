@@ -1,4 +1,5 @@
 import { API } from './api'
+import type {AuthUserDto} from "@/api/dto/auth-user-dto.ts";
 
 async function login(username: string, password: string) {
   return API.post('/api/login?useCookies=true', {
@@ -14,8 +15,8 @@ async function register(username: string, password: string) {
   })
 }
 
-async function auth() {
-  return API.get('/api/User/auth');
+async function auth(): Promise<AuthUserDto> {
+  return API.get('/api/User/auth').then(response => response.data);
 }
 
 async function getInfo() {

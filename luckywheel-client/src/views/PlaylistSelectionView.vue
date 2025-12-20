@@ -5,10 +5,17 @@ import CreatePlaylistButton from "@/components/create-playlist/CreatePlaylistBut
 </script>
 
 <template>
-  <PlaylistSelection />
-  <CreatePlaylistButton />
+  <div class="input-wrapper">
+    <PlaylistSelection/>
+    <CreatePlaylistButton/>
+  </div>
 </template>
 
 <style scoped>
-
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
 </style>

@@ -7,6 +7,7 @@ import PlaylistService from "@/services/spinner/playlist.service.ts";
 import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import ErrorComponent from "@/components/error-window/ErrorComponent.vue";
 import {ReelMap} from "@/models/reel-map.ts";
+import WinningMapComponent from "@/components/spinner/reel/WinningMapComponent.vue";
 
 const isLoading = ref<boolean>(true);
 const selectedPlaylist = ref<WorkshopPlaylistView | undefined>(undefined);
@@ -27,7 +28,18 @@ function spinReel(maps: Set<ReelMap>) {
 }
 
 function selectMap(map: ReelMap) {
+  console.log('Select map', map);
   winnerMap.value = map;
+}
+
+function deselectMap(recalculate: boolean) {
+  console.log('DeselectMap', recalculate);
+  winnerMap.value = undefined;
+  coloredMaps.value = undefined;
+}
+
+function winnerMapDefined() {
+  return !!winnerMap.value;
 }
 </script>
 
@@ -36,10 +48,11 @@ function selectMap(map: ReelMap) {
     <p>Reel is loading...</p>
   </div>
   <div v-else-if="selectedPlaylist">
-    <SpinningReel v-if="coloredMaps"
+    <WinningMapComponent v-if="winnerMapDefined()" :winning-map="winnerMap!" @cancelWinningMap="deselectMap($event)"/>
+    <SpinningReel v-else-if="coloredMaps"
                   :reel-maps="coloredMaps"
                   :reel-size="100"
-                  @mapSelected=""></SpinningReel>
+                  @mapSelected="selectMap($event)"></SpinningReel>
     <SpinnerPreview :playlist="selectedPlaylist" @spinReel="spinReel($event)" v-else></SpinnerPreview>
   </div>
   <div v-else>

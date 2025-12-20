@@ -32,9 +32,9 @@ public class WorkshopMapService(IWorkshopMapDao workshopMapDao) : IWorkshopMapSe
         var map = new WorkshopMap
         {
             WorkshopMapId = workshopMapId,
-            Description = description == null ? "" : TrimWithEllipsis(description, 600),
-            Name = name == null ? "" : TrimWithEllipsis(name, 255),
-            ImageUrl = imageUrl == null ? "" : TrimWithEllipsis(imageUrl, 600)
+            Description = TrimWithEllipsis(description, 600),
+            Name = TrimWithEllipsis(name, 255),
+            ImageUrl = TrimWithEllipsis(imageUrl, 600)
         };
         await workshopMapDao.PostWorkshopMap(map);
         return ServiceResult.Success.WithData(WorkshopMapDto.FromEntity(map));

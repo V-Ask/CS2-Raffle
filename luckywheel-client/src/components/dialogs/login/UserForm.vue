@@ -35,13 +35,13 @@ function secondaryClicked() {
     <input id="password-input" type="password" aria-describedby="password-criteria"
            v-model="password" autocomplete="current-password" placeholder="Enter password..."
            required/>
-    <p v-if="props.showCriteria" class="no-margin" id="password-criteria">
+    <p class="no-margin" :class="{hidden: !props.showCriteria}" id="password-criteria">
       The password must be at least 6 characters and contain uppercase and lowercase letters,
       digits, and alphanumeric characters.
     </p>
   </form>
   <div class="flex button-row">
-    <RegButton v-if="props.secondaryButtonText" @clicked="secondaryClicked()">
+    <RegButton v-if="props.secondaryButtonText" class="secondary-button" @clicked="secondaryClicked()">
       {{ props.secondaryButtonText }}
     </RegButton>
     <ConfirmButton class="submit-button" type="submit" @clicked="submitUser()">
@@ -54,12 +54,24 @@ function secondaryClicked() {
   flex-direction: row-reverse;
 }
 
+.hidden {
+  opacity: 0;
+}
+
 #email-input {
   margin-bottom: 16px;
 }
 
 #password-criteria {
   font-size: small;
+}
+
+.submit-button {
+  width: 20%;
+}
+
+.secondary-button {
+  width: 50%;
 }
 
 .invalid {

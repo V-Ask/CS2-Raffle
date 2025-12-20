@@ -15,7 +15,8 @@ async function prepareApp() {
   }
 }
 
-const app = createApp(App)
+
+const app = createApp(App);
 
 prepareApp().then(() => {
   app.use(createPinia())

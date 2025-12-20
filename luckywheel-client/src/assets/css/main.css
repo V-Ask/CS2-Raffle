@@ -21,8 +21,8 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  border: 2px solid #1e1e1e;
+label {
+  color: lightgray;
 }
 
 input[type='text'],
@@ -41,6 +41,10 @@ input[type='email'] {
   background-attachment: fixed;
   background-size: cover;
   background-position: center top;
+}
+
+.hover-button:hover {
+  border: 2px solid #1e1e1e;
 }
 
 .blur {
@@ -81,7 +85,7 @@ input[type='email'] {
 }
 
 dialog {
-  background: coral;
+  padding: 0;
 }
 
 dialog::backdrop {

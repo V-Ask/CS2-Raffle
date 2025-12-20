@@ -21,6 +21,10 @@ export const useSpinnerStore = defineStore('spinner', {
       this.playlistIndices = await PlaylistService.fetchPlaylistIndices();
       return this.playlistIndices;
     },
+
+    playlistWithNameExists(name: string) {
+      return this.playlistIndices.some(index => index.collectionName === name);
+    }
   }
 });
 

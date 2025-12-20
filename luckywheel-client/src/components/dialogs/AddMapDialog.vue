@@ -1,5 +1,4 @@
 ﻿<script setup lang="ts">
-import {useSpinnerStore} from "@/stores/spinner.store.ts";
 import SingleLineTextField from "@/components/inputs/textfield/SingleLineTextField.vue";
 import {ref} from "vue";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
@@ -8,6 +7,7 @@ import WorkshopLinkService from "@/services/workshop/workshop-link.service.ts";
 import type {WorkshopMap} from "@/models/workshop-map.ts";
 import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import PlaylistService from "@/services/spinner/playlist.service.ts";
+import StandardDialog from "@/components/dialogs/StandardDialog.vue";
 
 const props = defineProps<{
   playlist: WorkshopPlaylistView
@@ -33,7 +33,7 @@ function addNewMap() {
     return;
   }
   PlaylistService.addNewMapToPlaylist(id, props.playlist).then((map) => {
-    if(!map) {
+    if (!map) {
       console.warn("The map was not found. Try again.");
       isAddingMap.value = false;
       return;
@@ -45,16 +45,18 @@ function addNewMap() {
 </script>
 
 <template>
-  <div class="form-wrapper">
-    <SingleLineTextField placeholder="Insert Workshop URL here"
-                         v-model="workshopUrl"></SingleLineTextField>
-    <ConfirmButton @click="addNewMap()">Add</ConfirmButton>
-    <RegButton @click="returnToPlaylistView()">Cancel</RegButton>
-  </div>
+  <StandardDialog header-text="Add new map...">
+    <div class="input-wrapper">
+      <SingleLineTextField placeholder="Insert Workshop URL here"
+                           v-model="workshopUrl"></SingleLineTextField>
+      <ConfirmButton @click="addNewMap()">Add</ConfirmButton>
+      <RegButton @click="returnToPlaylistView()">Cancel</RegButton>
+    </div>
+  </StandardDialog>
 </template>
 
 <style scoped>
-.form-wrapper {
+.input-wrapper {
   display: flex;
   gap: 0.5rem;
 }

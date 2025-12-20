@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import MapList from "@/components/spinner/preview/MapList.vue";
 import SpinnerControls from "@/components/spinner/preview/SpinnerControls.vue";
-import AddMapForm from "@/components/add-playlist/AddMapForm.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {WorkshopMap} from "@/models/workshop-map.ts";
 import RoutingService from "@/services/routing.service.ts";
 import type {ReelMap} from "@/models/reel-map.ts";
 import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
+import ReelService from "@/services/spinner/reel.service.ts";
+import DialogService from "@/services/dialog.service.ts";
+import AddMapDialog from "@/components/dialogs/AddMapDialog.vue";
 
 const props = defineProps<{
   playlist: WorkshopPlaylistView
@@ -17,10 +19,15 @@ const emits = defineEmits<{
 }>();
 
 const addFormDialog = ref<HTMLDialogElement | null>(null)
-const coloredMaps = ref<Set<ReelMap>>(props.playlist.colorPlaylist());
+const coloredMaps = ref<Set<ReelMap>>(new Set<ReelMap>());
+
+onMounted(() => {
+  updateColorPlaylist();
+})
 
 function addMap(map: WorkshopMap) {
   props.playlist.addNewMap(map);
+  updateColorPlaylist();
   addFormDialog.value?.close();
 }
 
@@ -32,6 +39,10 @@ function returnToPlaylistSelection() {
   RoutingService.navigateToPlaylistSelection();
 }
 
+function updateColorPlaylist() {
+  coloredMaps.value = ReelService.colorPlaylist(props.playlist);
+}
+
 function openDialog() {
   addFormDialog.value?.showModal();
 }
@@ -39,6 +50,11 @@ function openDialog() {
 function closeDialog() {
   addFormDialog.value?.close();
 }
+
+function handleBackdropClick(event: MouseEvent) {
+  DialogService.handleBackdropClick(addFormDialog.value!, event, () => closeDialog());
+}
+
 
 </script>
 <template>
@@ -53,11 +69,11 @@ function closeDialog() {
       />
     </div>
   </div>
-  <dialog ref="addFormDialog">
-    <AddMapForm @addMap="addMap($event)"
-                @onClose="closeDialog()"
-                :playlist="props.playlist"
-    ></AddMapForm>
+  <dialog ref="addFormDialog" @click="handleBackdropClick($event)">
+    <AddMapDialog @addMap="addMap($event)"
+                  @closeDialog="closeDialog()"
+                  :playlist="props.playlist"
+    ></AddMapDialog>
   </dialog>
 </template>
 <style scoped>

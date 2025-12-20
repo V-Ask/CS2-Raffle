@@ -1,11 +1,12 @@
 ﻿import type {UserCredentials} from "@/models/user-credentials.ts";
 import Password from "@/helpers/constants/password.ts";
 import {PasswordValidator} from "@/models/password-validator.ts";
-import Auth from "@/api/auth.ts";
+import Auth from "@/api/auth.api.ts";
 import {useAuthStore} from "@/stores/auth.store.ts";
 import {useLoginStore} from "@/stores/login.store.ts";
 import {useRouter} from "vue-router";
 import {PLAYLIST_VIEW} from "@/helpers/constants/routing.ts";
+import {User} from "@/models/user.ts";
 
 function isPasswordValid(password: string): boolean {
   const minLength = Password.MIN_LENGTH;
@@ -31,7 +32,7 @@ async function loginUser(credentials: UserCredentials) {
     const authStore = useAuthStore();
     authStore.user = {
       email: credentials.email,
-      isConfirmed: false,
+      emailConfirmed: false,
     }
     return response.status === 200;
   } catch (e) {
@@ -60,11 +61,12 @@ async function registerUser(credentials: UserCredentials) {
 }
 
 async function checkAuth() {
-  return Auth.auth().then(response => {
-    if(response.status === 200) {
+  return Auth.auth().then(dto => {
+    const authStore = useAuthStore();
+    if(dto) {
+      authStore.user = User.fromAuthDto(dto)
       return true;
     }
-    const authStore = useAuthStore();
     authStore.user = null
     return false;
   }).catch(e=> {
