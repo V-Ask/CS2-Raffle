@@ -2,32 +2,34 @@
 import SingleLineTextField from "@/components/inputs/textfield/SingleLineTextField.vue";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import {ref, watch} from "vue";
-import type {GameHostService} from "@/services/game-host/game-host.service.ts";
-import GameHostCreatorService from "@/services/game-host/game-host-creator.service.ts";
 import {DathostGameHostService} from "@/services/game-host/dathost-game-host.service.ts";
-import {useGameHostStore} from "@/stores/game-host.store.ts";
 
-const gameHostServiceModel = defineModel<GameHostService>('game-host')
+const emits = defineEmits<{
+  hostChanged: [DathostGameHostService]
+}>();
+
+const shouldSaveGameHostToStorage = defineModel<boolean>('shouldSaveGameHostToStorage');
+
+const dathostService = ref(new DathostGameHostService());
 
 const loadingVerification = ref(false);
 const isVerified = ref(false);
-const dathostService = ref<DathostGameHostService>(new DathostGameHostService());
-gameHostServiceModel.value = dathostService.value;
 
 function verifyDathost() {
-  loadingVerification.value = true;
-  if (!dathostService.value.username || !dathostService.value.password) {
-    loadingVerification.value = false;
+  if(loadingVerification.value) {
     return;
   }
-  return gameHostServiceModel.value?.testConnection().then(valid => {
+  loadingVerification.value = true;
+  dathostService.value.testConnection().then(result => {
+    isVerified.value = result;
     loadingVerification.value = false;
-    isVerified.value = valid;
-  }).catch(_ => {
-    isVerified.value = false;
-  })
+  });
 }
 
+watch(dathostService, (newValue) => {
+  isVerified.value = false;
+  emits("hostChanged", newValue);
+}, { deep: true });
 </script>
 
 <template>
@@ -56,7 +58,7 @@ function verifyDathost() {
         </div>
         <div v-show="isVerified" class="remember-wrapper">
           <label>Remember?</label>
-          <input type="checkbox" :disabled="!isVerified"/>
+          <input type="checkbox" v-model="shouldSaveGameHostToStorage" :disabled="!isVerified"/>
         </div>
       </div>
     </div>

@@ -3,18 +3,36 @@ import {GameHosts} from "@/models/game-hosts.ts";
 import DathostForm from "@/components/dialogs/settings/game-hosts/DathostForm.vue";
 import {ref} from "vue";
 import type {GameHostService} from "@/services/game-host/game-host.service.ts";
+import RegButton from "@/components/buttons/RegButton.vue";
+
+const props = defineProps<{
+  saveExistsOnType?: GameHosts,
+}>();
 
 const gameHostService = defineModel<GameHostService>('game-host');
+const shouldSaveHostSettings = defineModel<boolean>('should-save-host');
 const host = ref<GameHosts>(gameHostService.value?.getType() || GameHosts.DATHOST);
+const overrideExistingHost = ref<boolean>(!!props.saveExistsOnType);
 
 function isDathostSelected() {
   return host.value === GameHosts.DATHOST;
+}
+
+function saveExistsOnSelectedType() {
+  return props.saveExistsOnType && props.saveExistsOnType === host.value;
+}
+
+function isCreatingNewGameHost() {
+  return !props.saveExistsOnType || overrideExistingHost.value;
 }
 
 function resetGameHost() {
   gameHostService.value = undefined;
 }
 
+function gameHostChanged(newGameHost: GameHostService) {
+  gameHostService.value = newGameHost;
+}
 </script>
 
 <template>
@@ -25,9 +43,15 @@ function resetGameHost() {
         <option :value="GameHosts.DATHOST">Dathost</option>
       </select>
     </div>
-    <DathostForm v-if="isDathostSelected()"
-                 v-model:game-host="gameHostService"
+    <div v-if="saveExistsOnSelectedType() && !overrideExistingHost">
+      <p>Game host is already set on type</p>
+      <RegButton @clicked="overrideExistingHost = !overrideExistingHost">Override?</RegButton>
+    </div>
+    <DathostForm v-else-if="isDathostSelected()"
+                 @hostChanged="gameHostChanged($event)"
+                 v-model:should-save-game-host-to-storage="shouldSaveHostSettings"
     />
+
   </div>
 </template>
 

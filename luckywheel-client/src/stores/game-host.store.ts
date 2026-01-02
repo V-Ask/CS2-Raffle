@@ -3,10 +3,13 @@ import {GameHosts} from "@/models/game-hosts.ts";
 import type {GameHostService} from "@/services/game-host/game-host.service.ts";
 import type {WorkshopMap} from "@/models/workshop-map.ts";
 import {DathostGameHostService} from "@/services/game-host/dathost-game-host.service.ts";
+import StorageService from "@/services/storage.service.ts";
+import StorageKeys from "@/helpers/constants/storage-keys.ts";
+import GameHostCreatorService from "@/services/game-host/game-host-creator.service.ts";
 
 export const useGameHostStore = defineStore('game-host', {
   state: () => ({
-    selectedGameHostService: new DathostGameHostService("", "") as GameHostService,
+    selectedGameHostService: loadGameHost(),
     dirty: true,
     successful: false,
   }),
@@ -65,9 +68,28 @@ export const useGameHostStore = defineStore('game-host', {
       this.selectedGameHostService = service;
       this.dirty = true;
       this.successful = false;
+    },
+
+    selectDefaultGameHost() {
+      return this.setNewGameHost(GameHostCreatorService.loadDefaultGameHost());
     }
   }
 });
+
+function loadGameHost(): GameHostService | undefined {
+  const hostType = StorageService.getTypeFromStorage<GameHosts>(StorageKeys.GAME_HOST_KEY);
+  if(!hostType) {
+    return;
+  }
+  return loadGameHostService(hostType as GameHosts);
+}
+
+function loadGameHostService(hostType: GameHosts): GameHostService {
+  if(!hostType) {
+    return new DathostGameHostService();
+  }
+  return GameHostCreatorService.loadGameHostFromType(hostType);
+}
 
 function gameHostDoesNotExistReject() {
   return Promise.reject(new Error("Game host not found"));

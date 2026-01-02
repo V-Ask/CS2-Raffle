@@ -1,3 +1,3 @@
 ﻿export enum GameHosts {
-  DATHOST
+  DATHOST = 1
 }

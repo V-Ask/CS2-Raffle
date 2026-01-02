@@ -3,6 +3,8 @@ import {type WorkshopMap} from "@/models/workshop-map.ts";
 import DatHostApi from "@/api/game-hosts/dat-host.api.ts";
 import {GameHosts} from "@/models/game-hosts.ts";
 import password from "@/helpers/constants/password.ts";
+import StorageService from "@/services/storage.service.ts";
+import StorageKeys from "@/helpers/constants/storage-keys.ts";
 
 export class DathostGameHostService implements GameHostService {
   serverId: string;
@@ -36,6 +38,7 @@ export class DathostGameHostService implements GameHostService {
   }
 
   saveConfig(): void {
-    //TODO
+    StorageService.saveToStorage(StorageKeys.GAME_HOST_KEY, GameHosts.DATHOST);
+    StorageService.saveToStorage(StorageKeys.GAME_HOST_DATA, this);
   }
 }

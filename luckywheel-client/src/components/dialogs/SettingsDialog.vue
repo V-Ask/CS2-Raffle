@@ -5,22 +5,27 @@ import GameHostSetting from "@/components/dialogs/settings/GameHostSetting.vue";
 import Divider from "@/components/dialogs/settings/Divider.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import type {GameHostService} from "@/services/game-host/game-host.service.ts";
 import {useGameHostStore} from "@/stores/game-host.store.ts";
+import type {GameHosts} from "@/models/game-hosts.ts";
+import GameHostCreatorService from "@/services/game-host/game-host-creator.service.ts";
 
 const emits = defineEmits<{
   closeDialog: []
 }>()
 
 const gameHostStore = useGameHostStore();
-const selectedGameHost = ref<GameHostService>(gameHostStore.selectedGameHostService);
+const selectedGameHost = ref<GameHostService>();
+const gameHostLoadedFromStore = ref<GameHosts | undefined>();
+const shouldSaveHostSettings = ref<boolean>(false);
 
 function saveAndClose() {
-  console.log('VAJ gameHost', selectedGameHost.value);
   if (selectedGameHost.value) {
     gameHostStore.setNewGameHost(selectedGameHost.value);
-    selectedGameHost.value.saveConfig();
+    if (shouldSaveHostSettings.value) {
+      selectedGameHost.value.saveConfig();
+    }
   }
   close();
 }
@@ -28,6 +33,15 @@ function saveAndClose() {
 function close() {
   emits("closeDialog");
 }
+
+onMounted(() => {
+  if(!gameHostStore.selectedGameHostService) {
+    gameHostStore.selectDefaultGameHost();
+  } else {
+    gameHostLoadedFromStore.value = gameHostStore.selectedGameHostService.getType();
+  }
+  selectedGameHost.value = gameHostStore.selectedGameHostService;
+})
 </script>
 
 <template>
@@ -36,7 +50,10 @@ function close() {
       <div class="setting">
         <label id="game-host-label">Setup Game Host</label>
         <GameHostSetting labelId="game-host-label"
-                         v-model:game-host="selectedGameHost"></GameHostSetting>
+                         :save-exists-on-type="gameHostLoadedFromStore"
+                         v-model:game-host="selectedGameHost"
+                         v-model:should-save-host="shouldSaveHostSettings"
+        ></GameHostSetting>
       </div>
       <Divider/>
       <div class="setting">
