@@ -35,7 +35,6 @@ function selectMap(map: ReelMap) {
 function deselectMap(winningCallback: WinningMapActionCallback) {
   winnerMap.value = undefined;
   coloredMaps.value = undefined;
-  selectedPlaylist.value.
 }
 
 function winnerMapDefined() {
