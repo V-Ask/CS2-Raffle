@@ -1,4 +1,5 @@
-﻿using LuckyRest.Database.DAOs.WorkshopMapDao;
+﻿using LuckyRest.Database;
+using LuckyRest.Database.DAOs.WorkshopMapDao;
 using LuckyRest.Database.DAOs.WorkshopPlaylistDao;
 using LuckyRest.Database.DAOs.WorkshopPlaylistMapDao;
 using LuckyRest.Database.DTOs.Models;
@@ -12,7 +13,8 @@ namespace LuckyRest.Services.WorkshopPlaylistService;
 public class WorkshopPlaylistService(
     IWorkshopPlaylistDao workshopPlaylistDao,
     IWorkshopMapDao workshopMapDao,
-    IWorkshopPlaylistMapDao workshopPlaylistMapDao) : IWorkshopPlaylistService
+    IWorkshopPlaylistMapDao workshopPlaylistMapDao,
+    IUnitOfWork unitOfWork) : IWorkshopPlaylistService
 {
     public async Task<ServiceResult<AddMapToPlaylistResultDto>> AddMapToPlaylist(string userId, Guid workshopPlaylistId,
         long workshopMapId)
@@ -20,13 +22,6 @@ public class WorkshopPlaylistService(
         var notFoundResult = ServiceResult.NotFound.WithData<AddMapToPlaylistResultDto>(null);
         var workshopPlaylistMap = await JoinPlaylistAndMap(userId, workshopPlaylistId, workshopMapId);
         if (workshopPlaylistMap == null)
-        {
-            return notFoundResult;
-        }
-
-        var result =
-            await workshopPlaylistDao.AddMapToWorkshopPlaylist(userId, workshopPlaylistId, workshopPlaylistMap);
-        if (!result)
         {
             return notFoundResult;
         }
@@ -107,6 +102,37 @@ public class WorkshopPlaylistService(
 
     public async Task<bool> PlaylistContainsMap(string userId, Guid workshopPlaylistId, long workshopMapId)
     {
-        return await workshopPlaylistDao.PlaylistContainsMap(userId, workshopPlaylistId, workshopMapId);
+        return await workshopPlaylistMapDao.Exists(userId, workshopPlaylistId, workshopMapId);
+    }
+
+    public async Task<ServiceResult> DeleteMapFromPlaylist(string userId, Guid workshopPlaylistId,
+        long workshopMapId)
+    {
+        await unitOfWork.BeginTransactionAsync();
+        try
+        {
+            var anyDeleted = await workshopPlaylistMapDao.DeleteWorkshopPlaylistMap(userId, workshopMapId, workshopPlaylistId);
+            if (!anyDeleted)
+            {
+                await unitOfWork.RollbackTransactionAsync();
+                return ServiceResult.NotFound;
+            }
+
+            await workshopMapDao.DeleteIfOrphaned(workshopMapId);
+            await unitOfWork.CommitTransactionAsync();
+            return ServiceResult.Success;
+        }
+        catch
+        {
+            await unitOfWork.RollbackTransactionAsync();
+            return ServiceResult.Error;
+        }
+    }
+
+    public async Task<ServiceResult> IncreaseAllMapWeights(string userId, Guid workshopPlaylistId,
+        int increment, long[] exceptions)
+    {
+        var incrementedMaps = await workshopPlaylistMapDao.IncreaseWeightsOfAllMaps(userId, workshopPlaylistId, increment, exceptions);
+        return incrementedMaps > 0 ? ServiceResult.Success : ServiceResult.NoContent;
     }
 }

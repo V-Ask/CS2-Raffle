@@ -8,6 +8,7 @@ import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import ErrorComponent from "@/components/error-window/ErrorComponent.vue";
 import {ReelMap} from "@/models/reel-map.ts";
 import WinningMapComponent from "@/components/spinner/reel/WinningMapComponent.vue";
+import type {WinningMapActionCallback} from "@/models/winning-map-action-callback.ts";
 
 const isLoading = ref<boolean>(true);
 const selectedPlaylist = ref<WorkshopPlaylistView | undefined>(undefined);
@@ -28,14 +29,13 @@ function spinReel(maps: Set<ReelMap>) {
 }
 
 function selectMap(map: ReelMap) {
-  console.log('Select map', map);
   winnerMap.value = map;
 }
 
-function deselectMap(recalculate: boolean) {
-  console.log('DeselectMap', recalculate);
+function deselectMap(winningCallback: WinningMapActionCallback) {
   winnerMap.value = undefined;
   coloredMaps.value = undefined;
+  selectedPlaylist.value.
 }
 
 function winnerMapDefined() {

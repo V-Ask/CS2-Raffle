@@ -8,6 +8,7 @@ public class ServiceResult
     public static ServiceResult Exists => new() { Status = ServiceResultStatus.Exists };
     public static ServiceResult NotFound => new() {Status = ServiceResultStatus.NotFound};
     public static ServiceResult NoContent => new() {Status = ServiceResultStatus.NoContent};
+    public static ServiceResult Error => new() {Status = ServiceResultStatus.Error};
 }
 
 public class ServiceResult<T> : ServiceResult

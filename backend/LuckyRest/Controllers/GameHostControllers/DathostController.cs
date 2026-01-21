@@ -44,7 +44,7 @@ public class DathostController : ControllerBase
             return Ok();
         }
 
-        return NotFound();
+        return BadRequest();
     }
 
     [HttpPost("test")]

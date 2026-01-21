@@ -66,6 +66,17 @@ async function getMapFromPlaylist(playlistId: string, mapId: string): Promise<Wo
   })
 }
 
+async function removeMapFromPlaylist(playlistId: string, mapId: string): Promise<WorkshopPlaylistViewDto> {
+  return API.delete('/api/Playlist/map', {
+    params: {
+      collectionId: playlistId,
+      mapId
+    }
+  }).then(response => {
+    return response.data;
+  })
+}
+
 export default {
   getAllPlaylistIndex,
   addMapToPlaylist,

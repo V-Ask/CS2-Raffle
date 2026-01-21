@@ -28,7 +28,24 @@ public class WorkshopMapDao(LuckyDbContext dbContext) : IWorkshopMapDao
         await dbContext.SaveChangesAsync();
         return true;
     }
-    
+
+    public async Task<WorkshopMap> DeleteWorkshopMap(WorkshopMap map)
+    {
+        var deletedMap= dbContext.Maps.Remove(map);
+        await dbContext.SaveChangesAsync();
+        return deletedMap.Entity;
+    }
+
+    public async Task<bool> DeleteIfOrphaned(long workshopMapId)
+    {
+        var deletedRows = await dbContext.Maps
+            .Where(m =>
+                m.WorkshopMapId == workshopMapId &&
+                m.Playlists.Count == 0)
+            .ExecuteDeleteAsync();
+        return deletedRows > 0;
+    }
+
     public bool MapExists(long workshopMapId)
     {
         return dbContext.Maps.Any(x => x.WorkshopMapId == workshopMapId);

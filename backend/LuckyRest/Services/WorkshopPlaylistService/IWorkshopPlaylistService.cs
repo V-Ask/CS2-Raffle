@@ -17,7 +17,13 @@ public interface IWorkshopPlaylistService
     public Task<ServiceResult<GetUserPlaylistsResultDto>> GetWorkshopPlaylists(string userId);
 
     public Task<ServiceResult> DeleteWorkshopPlaylist(string userId, Guid workshopPlaylistId);
+    
     public Task<ServiceResult<WorkshopPlaylistDto>> CreatePlaylist(User user, string collectionName);
     
     public Task<bool> PlaylistContainsMap(string userId, Guid workshopPlaylistId, long workshopMapId);
+    
+    public Task<ServiceResult> DeleteMapFromPlaylist(string userId, Guid workshopPlaylistId, long workshopMapId);
+    
+    public Task<ServiceResult> IncreaseAllMapWeights(string userId, Guid workshopPlaylistId,
+        int increment, long[] exceptions);
 }

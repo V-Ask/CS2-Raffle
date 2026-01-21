@@ -19,11 +19,12 @@ public class DatHostConveyer : IConveyer
 
     public async Task<bool> StartServer()
     {
-        var formContent = new MultipartFormDataContent
+        var formData = new Dictionary<string, string>()
         {
-            { new StringContent("false"), "allow_host_reassignment" }
+            { "allow_host_reassignment", "false" }
         };
-        var result = await _httpClient.PostAsync("/start", formContent);
+        var content = new FormUrlEncodedContent(formData);
+        var result = await _httpClient.PostAsync("/start", content);
         return result.IsSuccessStatusCode;
     }
 
@@ -35,12 +36,13 @@ public class DatHostConveyer : IConveyer
 
     public async Task<bool> SelectWorkshopMap(long workshopId)
     {
-        var formContent = new MultipartFormDataContent
+        var formData = new Dictionary<string, string>
         {
-            { new StringContent("cs2_settings.maps_source"), "workshop_single_map" },
-            { new StringContent("cs2_settings.workshop_single_map_id"), workshopId.ToString() }
+            { "cs2_settings.maps_source", "workshop_single_map" },
+            { "cs2_settings.workshop_single_map_id", workshopId.ToString() }
         };
-        var result = await _httpClient.PutAsync("", formContent);
+        var content = new FormUrlEncodedContent(formData);
+        var result = await _httpClient.PutAsync("", content);
         return result.IsSuccessStatusCode;
     }
 

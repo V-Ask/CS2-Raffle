@@ -13,7 +13,7 @@ h1 {
   color: #989898;
 }
 
-button {
+button, input[type=submit] {
   color: white;
   background: none;
   border: 2px solid transparent;

@@ -1,41 +1,45 @@
 ﻿<script setup lang="ts">
 import type {ReelMap} from "@/models/reel-map.ts";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import MapIcon from "@/components/spinner/icon/MapIcon.vue";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
 import {useGameHostStore} from "@/stores/game-host.store.ts";
+import type {WinningMapActionCallback} from "@/models/winning-map-action-callback.ts";
 
 const props = defineProps<{
   winningMap: ReelMap
 }>();
 
 const emits = defineEmits<{
-  cancelWinningMap: [],
-  weightChanged: [value: {
-    previous: number,
-    current: number
-  }]
+  cancelWinningMap: [WinningMapActionCallback]
 }>();
 
 const gameHostStore = useGameHostStore();
 
 const incrementWeight = ref<boolean>(true);
+const removeMap =  ref<boolean>(false);
+const computedCallback = computed(() => {
+  return {
+    shiftOtherWeights: incrementWeight.value,
+    removeMap: removeMap.value
+  }
+})
 
 function cancel() {
-  emits('cancelWinningMap');
+  emits('cancelWinningMap', emptyCallback());
 }
 
 function playMap() {
-  if (incrementWeight.value) {
-    const prevWeight = props.winningMap.weight;
-    emits('weightChanged', {
-      previous: prevWeight,
-      current: prevWeight + 1
-    });
-  }
-
+  emits('cancelWinningMap', computedCallback.value);
   gameHostStore.setWorkshopMap(props.winningMap);
+}
+
+function emptyCallback(): WinningMapActionCallback {
+  return {
+    shiftOtherWeights: false,
+    removeMap: false,
+  }
 }
 </script>
 
@@ -48,6 +52,16 @@ function playMap() {
       <div class="button-row">
         <ConfirmButton @clicked="playMap()">Play</ConfirmButton>
         <RegButton @clicked="cancel()">Cancel</RegButton>
+        <div class="checkbox-col">
+          <label>
+            Increment other map's weights?
+            <input type="checkbox" v-model="incrementWeight"/>
+          </label>
+          <label>
+            Remove map from playlist?
+            <input type="checkbox" v-model="removeMap"/>
+          </label>
+        </div>
       </div>
     </div>
   </div>
@@ -71,5 +85,11 @@ function playMap() {
 .button-row {
   display: flex;
   gap: 1rem;
+}
+
+.checkbox-col {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
 }
 </style>

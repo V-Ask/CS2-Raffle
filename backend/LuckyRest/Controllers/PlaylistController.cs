@@ -1,3 +1,4 @@
+using LuckyRest.Database.DTOs.Actions;
 using Microsoft.AspNetCore.Mvc;
 using LuckyRest.Database.DTOs.Models;
 using LuckyRest.Database.DTOs.Results;
@@ -101,6 +102,39 @@ namespace LuckyRest.Controllers
             var mapResult = await workshopMapService.GetWorkshopMap(mapId);
             if (mapResult.Status == ServiceResultStatus.NotFound) return NotFound();
             return mapResult.Data;
+        }
+
+        [HttpDelete("map")]
+        public async Task<ActionResult> DeleteMapFromPlaylist(Guid collectionId, long mapId)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var result = await workshopPlaylistService.DeleteMapFromPlaylist(user.Id, collectionId, mapId);
+            return result.Status switch
+            {
+                ServiceResultStatus.NotFound => NotFound(),
+                ServiceResultStatus.Error => StatusCode(StatusCodes.Status500InternalServerError),
+                _ => NoContent()
+            };
+        }
+
+        [HttpPost("all/increase-weight")]
+        public async Task<ActionResult> IncreaseWeight(
+            [FromBody] IncreasePlaylistWeightsActionDto increasePlaylistWeightsDto)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var result = await workshopPlaylistService.IncreaseAllMapWeights(user.Id,
+                increasePlaylistWeightsDto.PlaylistId, increasePlaylistWeightsDto.Increment,
+                increasePlaylistWeightsDto.Exceptions);
+            return result.Status switch
+            {
+                ServiceResultStatus.NoContent => NoContent(),
+                ServiceResultStatus.Success => Ok(),
+                _ => throw new InvalidOperationException()
+            };
         }
     }
 }
