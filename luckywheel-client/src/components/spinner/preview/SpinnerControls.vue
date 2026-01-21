@@ -5,30 +5,28 @@ import {SpinnerStatus, useSpinnerStore} from "@/stores/spinner.store.ts";
 import RegButton from "@/components/buttons/RegButton.vue";
 import RoutingService from "@/services/routing.service.ts";
 
-const spinnerStore = useSpinnerStore();
-
-function spinReel() {
-  spinnerStore.spinnerStatus = SpinnerStatus.SPINNING;
-}
-
-function cancelSpin() {
-  RoutingService.navigateToPlaylistSelection();
-}
-
-function addMap() {
-  const playlist = spinnerStore.selectedPlaylist;
-  if(playlist) {
-    RoutingService.navigateToAddMapToPlaylistPage(playlist.playlistId)
-  }
-}
+const emits = defineEmits(['spinReel', 'cancelSpin', 'addMap'])
 </script>
 
 <template>
-  <ConfirmButton @click="spinReel()">Spin</ConfirmButton>
-  <RegButton @click="cancelSpin()">Close</RegButton>
-  <ConfirmButton @click="addMap()">Add Map</ConfirmButton>
+  <div class="control-group">
+    <ConfirmButton class="button" @click="emits('spinReel')">Spin</ConfirmButton>
+    <RegButton class="button" @click="emits('cancelSpin')">Close</RegButton>
+    <ConfirmButton class="button" @click="emits('addMap')">Add Map</ConfirmButton>
+  </div>
 </template>
 
 <style scoped>
+.control-group {
+  width: 100%;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 1rem;
+  border: 4px solid black;
 
+  .button {
+    height: 3.5rem;
+  }
+}
 </style>

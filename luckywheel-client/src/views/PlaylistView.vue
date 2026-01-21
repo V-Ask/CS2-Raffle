@@ -1,60 +1,62 @@
 ﻿<script setup lang="ts">
 import {useRoute} from "vue-router";
-import {ref, watch} from "vue";
-import {Reel} from "@/models/reel.ts";
+import {ref} from "vue";
 import SpinnerPreview from "@/components/spinner/preview/SpinnerPreview.vue";
 import SpinningReel from "@/components/spinner/reel/SpinningReel.vue";
-import {SpinnerStatus, useSpinnerStore} from "@/stores/spinner.store.ts";
+import PlaylistService from "@/services/spinner/playlist.service.ts";
+import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
+import ErrorComponent from "@/components/error-window/ErrorComponent.vue";
+import {ReelMap} from "@/models/reel-map.ts";
+import WinningMapComponent from "@/components/spinner/reel/WinningMapComponent.vue";
+import type {WinningMapActionCallback} from "@/models/winning-map-action-callback.ts";
 
-const spinnerStore = useSpinnerStore();
+const isLoading = ref<boolean>(true);
+const selectedPlaylist = ref<WorkshopPlaylistView | undefined>(undefined);
+const coloredMaps = ref<Set<ReelMap> | undefined>(undefined);
+const winnerMap = ref<ReelMap | undefined>(undefined);
 
-const reel = ref<Reel | null>();
-const isSpinningReel = ref<boolean>(false);
+setupPlaylist();
 
-setupReel();
-watchSpinningStatus();
-
-async function setupReel() {
-  const id = getPlaylistId();
-  if(spinnerStore.selectedPlaylist?.playlistId === id) {
-    reel.value = new Reel(spinnerStore.selectedPlaylist);
-  } else {
-    spinnerStore.selectPlaylist(id).then(playlist => {
-      reel.value = new Reel(playlist);
-    });
-  }
-}
-
-function watchSpinningStatus() {
-  watch(() => spinnerStore.spinnerStatus, (status) => {
-    if(status === SpinnerStatus.SPINNING) {
-      isSpinningReel.value = true;
-      return;
-    }
-    isSpinningReel.value = false;
+async function setupPlaylist() {
+  PlaylistService.fetchPlaylistFromRoute(useRoute()).then((response) => {
+    isLoading.value = false;
+    selectedPlaylist.value = response;
   });
 }
 
-function getPlaylistId() {
-  const route = useRoute();
-  const id = route.params.id;
-  if (!id) {
-    console.warn("No playlist id found in the params. How are you here??");
-  }
-  if (Array.isArray(id)) {
-    return id[0]?.toString();
-  }
-  return id?.toString();
+function spinReel(maps: Set<ReelMap>) {
+  coloredMaps.value = maps;
+}
+
+function selectMap(map: ReelMap) {
+  winnerMap.value = map;
+}
+
+function deselectMap(winningCallback: WinningMapActionCallback) {
+  winnerMap.value = undefined;
+  coloredMaps.value = undefined;
+  selectedPlaylist.value.
+}
+
+function winnerMapDefined() {
+  return !!winnerMap.value;
 }
 </script>
 
 <template>
-  <div v-if="!reel">
-    <p></p>
+  <div v-if="isLoading">
+    <p>Reel is loading...</p>
+  </div>
+  <div v-else-if="selectedPlaylist">
+    <WinningMapComponent v-if="winnerMapDefined()" :winning-map="winnerMap!" @cancelWinningMap="deselectMap($event)"/>
+    <SpinningReel v-else-if="coloredMaps"
+                  :reel-maps="coloredMaps"
+                  :reel-size="100"
+                  @mapSelected="selectMap($event)"></SpinningReel>
+    <SpinnerPreview :playlist="selectedPlaylist" @spinReel="spinReel($event)" v-else></SpinnerPreview>
   </div>
   <div v-else>
-    <SpinningReel :reel="reel" v-if="isSpinningReel"></SpinningReel>
-    <SpinnerPreview :colored-maps="reel.coloredMaps" v-else></SpinnerPreview>
+    <ErrorComponent></ErrorComponent>
   </div>
 </template>
 

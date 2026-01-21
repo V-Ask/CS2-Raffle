@@ -13,7 +13,7 @@ h1 {
   color: #989898;
 }
 
-button {
+button, input[type=submit] {
   color: white;
   background: none;
   border: 2px solid transparent;
@@ -21,8 +21,8 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  border: 2px solid #1e1e1e;
+label {
+  color: lightgray;
 }
 
 input[type='text'],
@@ -41,6 +41,10 @@ input[type='email'] {
   background-attachment: fixed;
   background-size: cover;
   background-position: center top;
+}
+
+.hover-button:hover {
+  border: 2px solid #1e1e1e;
 }
 
 .blur {
@@ -78,4 +82,14 @@ input[type='email'] {
 
 #app {
   height: 100%;
+}
+
+dialog {
+  padding: 0;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }

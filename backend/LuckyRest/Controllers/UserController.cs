@@ -1,4 +1,5 @@
-﻿using LuckyRest.Database.Entities;
+﻿using LuckyRest.Database.DTOs.Models;
+using LuckyRest.Database.Entities;
 using LuckyRest.Services;
 using LuckyRest.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
@@ -7,23 +8,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LuckyRest.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 [Authorize]
-public class UserController(IUserService userService, UserManager<User> userManager) : ControllerBase
+public class UserController(
+    UserManager<User> userManager,
+    IUserService userService) : ControllerBase
 {
-    [HttpPost]
-    public async Task<ActionResult<string>> SetLaunchServerEndpoint(string endpoint)
+    [HttpGet("auth")]
+    public async Task<ActionResult<AuthUserDto>> CheckAuth()
     {
         var user = await userManager.GetUserAsync(User);
         if (user == null) return Unauthorized();
-        await userService.SetUserRestEndpoint(user, endpoint);
-        return Ok();
-    }
-
-    [HttpGet("auth")]
-    public IActionResult CheckAuth()
-    {
-        return Ok();
+        var dto = userService.AuthUser(user);
+        if (dto.Data == null) return Unauthorized();
+        return dto.Data;
     }
 }

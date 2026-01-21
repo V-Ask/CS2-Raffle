@@ -1,20 +1,20 @@
 ﻿import {defineStore} from "pinia";
-import {WorkshopPlaylist} from "@/models/workshop-playlist.ts";
-import {WorkshopPlaylistIndex} from "@/models/indices/workshop-playlist-index.ts";
+import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import PlaylistService from "@/services/spinner/playlist.service.ts";
-import {warn, watch} from "vue";
+import {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-index.ts";
+import type {RouteLocationNormalizedLoaded} from "vue-router";
+import type {ReelMap} from "@/models/reel-map.ts";
 
 export const useSpinnerStore = defineStore('spinner', {
   state: () => ({
     playlistIndices: [] as WorkshopPlaylistIndex[],
-    selectedPlaylist: null as WorkshopPlaylist | null,
     spinnerStatus: SpinnerStatus.VIEWING as SpinnerStatus,
+    selectedMap: null as ReelMap | null,
   }),
   getters: {
     getPlaylists: (state) => state.playlistIndices,
-    getMapsFromSelectedPlaylist: (state) => state.selectedPlaylist?.maps,
     isSpinning: (state) => state.spinnerStatus === SpinnerStatus.SPINNING,
-    isDoneSpinning: (state) => state.spinnerStatus === SpinnerStatus.SPUN
+    isDoneSpinning: (state) => state.spinnerStatus === SpinnerStatus.SPUN,
   },
   actions: {
     async updatePlaylistIndices() {
@@ -22,28 +22,15 @@ export const useSpinnerStore = defineStore('spinner', {
       return this.playlistIndices;
     },
 
-    async selectPlaylist(playlistId: string) {
-      this.selectedPlaylist = await PlaylistService.fetchPlaylist(playlistId);
-      return this.selectedPlaylist;
-    },
-
-    async createPlaylist(name: string) {
-      const playlist = await PlaylistService.createNewPlaylist(name);
-      this.playlistIndices.push(WorkshopPlaylistIndex.fromDto(playlist));
-      return playlist;
-    },
-
-    async addMapToSelectedPlaylist(workshopId: string) {
-      if(!this.selectedPlaylist) {
-        console.warn("Trying to add a map with no selected playlist...");
-        return;
-      }
-      const newMap = await PlaylistService.addNewMapToPlaylist(workshopId, this.selectedPlaylist)
-      this.selectedPlaylist.addMap(newMap);
-      return newMap;
-    },
+    playlistWithNameExists(name: string) {
+      return this.playlistIndices.some(index => index.collectionName === name);
+    }
   }
 });
+
+function playlistContainsReelMap(playlist: WorkshopPlaylistView, reelMap: ReelMap) {
+  return playlist.maps.map(map => map.mapId).includes(reelMap.workshopId);
+}
 
 export enum SpinnerStatus {
   VIEWING,

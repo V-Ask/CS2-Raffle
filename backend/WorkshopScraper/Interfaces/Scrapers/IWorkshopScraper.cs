@@ -1,11 +1,9 @@
-﻿using WorkshopScraper.Scraper;
-
-namespace WorkshopScraper.Scraper;
+﻿namespace WorkshopScraper.Interfaces.Scrapers;
 
 public interface IWorkshopScraper
 {
-    string? GetTitle();
-    string? GetImageUrl();
-    string? GetDescription();
+    string GetTitle();
+    string GetImageUrl();
+    string GetDescription();
     string? GetUuid();
 }

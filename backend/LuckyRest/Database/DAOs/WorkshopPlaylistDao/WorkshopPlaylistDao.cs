@@ -7,15 +7,20 @@ public class WorkshopPlaylistDao(LuckyDbContext dbContext) : IWorkshopPlaylistDa
 {
     public async Task<WorkshopPlaylist?> GetWorkshopPlaylist(string userId, Guid workshopPlaylistId)
     {
-        var playlist =
-            await dbContext.Playlists.Where(x => x.AuthorId == userId && x.WorkshopPlaylistId == workshopPlaylistId)
-                .ToListAsync();
-        return playlist.FirstOrDefault();
+        return await dbContext.Playlists
+            .Include(p => p.PlaylistMaps)
+            .ThenInclude(pm => pm.WorkshopMap)
+            .FirstOrDefaultAsync(x =>
+                x.AuthorId == userId && x.WorkshopPlaylistId == workshopPlaylistId);
     }
 
     public async Task<List<WorkshopPlaylist>> GetWorkshopPlaylists(string userId)
     {
-        var playlists = await dbContext.Playlists.Where(x => x.AuthorId == userId).ToListAsync();
+        var playlists = await dbContext.Playlists
+            .Include(p => p.PlaylistMaps)
+            .ThenInclude(pm => pm.WorkshopMap)
+            .Where(x => x.AuthorId == userId)
+            .ToListAsync();
         return playlists;
     }
 

@@ -10,12 +10,10 @@ import {
 import PlaylistView from "@/views/PlaylistView.vue";
 import PlaylistSelectionView from "@/views/PlaylistSelectionView.vue";
 import {GuardedRouter} from "@/router/guarded-router.ts";
-import {inverseGuardFn} from "@/guards/guard-fn.ts";
 import {authGuardFn} from "@/guards/auth-guard.ts";
 import NotFoundView from "@/views/NotFoundView.vue";
 import CreatePlaylistView from "@/views/CreatePlaylistView.vue";
 import {useLoadingStore} from "@/stores/loading.store.ts";
-import AddNewMapView from "@/views/AddNewMapView.vue";
 
 const routes = [
   {
@@ -27,13 +25,6 @@ const routes = [
     path: `/playlist/:id/`,
     name: PLAYLIST_SELECTED_NAME,
     component: PlaylistView,
-    children: [
-      {
-        path: 'add',
-        name: ADD_MAP_TO_PLAYLIST_NAME,
-        component: AddNewMapView
-      }
-    ]
   },
   {
     path: '/new-playlist',

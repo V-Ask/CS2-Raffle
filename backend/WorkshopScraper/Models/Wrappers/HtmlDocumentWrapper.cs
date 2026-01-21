@@ -9,7 +9,7 @@ public class HtmlDocumentWrapper(HtmlDocument htmlDocument) : IHtmlDocumentWrapp
 {
     public HtmlNode DocumentNode => htmlDocument.DocumentNode;
     
-    public IHtmlNodeWrapper? SelectSingleDocumentNode(string selector)
+    public IHtmlNodeWrapper SelectSingleDocumentNode(string selector)
     {
         var node = DocumentNode.SelectSingleNode(selector);
         return new HtmlNodeWrapper(node);

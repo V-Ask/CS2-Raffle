@@ -9,7 +9,7 @@ const emit = defineEmits<{
 }>();
 </script>
 <template>
-  <button class="button" :type="props.type" :disabled="disabled" @click="emit('clicked')">
+  <button class="button hover-button" :type="props.type" :disabled="disabled" @click="emit('clicked')">
     <slot></slot>
   </button>
 </template>

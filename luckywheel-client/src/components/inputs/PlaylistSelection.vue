@@ -1,9 +1,9 @@
 ﻿<script setup lang="ts">
 import {ref} from "vue";
-import type {WorkshopPlaylistIndex} from "@/models/indices/workshop-playlist-index.ts";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RoutingService from "@/services/routing.service.ts";
 import {useSpinnerStore} from "@/stores/spinner.store.ts";
+import type {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-index.ts";
 
 const spinnerStore = useSpinnerStore();
 const selected = ref<WorkshopPlaylistIndex | null>(null);

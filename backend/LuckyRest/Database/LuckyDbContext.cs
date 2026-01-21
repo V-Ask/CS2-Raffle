@@ -19,16 +19,17 @@ public class LuckyDbContext(DbContextOptions<LuckyDbContext> options) : Identity
     private static void ModelPlaylistMaps(ModelBuilder builder)
     {
         builder.Entity<WorkshopPlaylistMap>()
-            .HasKey(x => new { x.WorkshopPlaylistId, x.WorkshopMapId });
+            .HasKey(x => new { x.WorkshopPlaylistId, x.WorkshopMapId }); // Combine foreign keys to create composite
         
-        builder.Entity<WorkshopPlaylistMap>()
-            .HasOne(x => x.WorkshopPlaylist)
-            .WithMany(p => p.PlaylistMaps)
-            .HasForeignKey(x => x.WorkshopPlaylistId);
+        builder.Entity<WorkshopPlaylistMap>() // Each WorkshopPlaylistMap has...
+            .HasOne(x => x.WorkshopPlaylist) // exactly one WorkshopPlaylist,
+            .WithMany(p => p.PlaylistMaps) // which can contain multiple PlaylistMaps
+            .HasForeignKey(x => x.WorkshopPlaylistId); // which is identified using the WorkshopPlaylistId column
         
-        builder.Entity<WorkshopPlaylistMap>()
-            .HasOne(x => x.WorkshopMap)
-            .WithMany(m => m.Playlists)
-            .HasForeignKey(x => x.WorkshopMapId);
+        builder.Entity<WorkshopPlaylistMap>() // Each WorkshopPlaylistMap has...
+            .HasOne(x => x.WorkshopMap) // exactly one Map,
+            .WithMany(m => m.Playlists) // and one Map can be in multiple PlaylistMaps
+            .HasForeignKey(x => x.WorkshopMapId) // which is identified using the WorkshopMapId column
+            .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of a map to cascade and delete the map from all parents
     }
 }
