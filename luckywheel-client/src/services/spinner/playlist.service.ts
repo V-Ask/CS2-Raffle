@@ -44,10 +44,11 @@ export default {
   },
 
   async removeMapFromPlaylist(workshopId: string, playlist: WorkshopPlaylistView) {
-    try {
-      const dto = await PlaylistApi.
-    }
-  }
+    console.warn('Not yet implemented');
+    // try {
+    //   const dto = await PlaylistApi.
+    // }
+  },
 
   getPlaylistIdQueryParam(route: RouteLocationNormalizedLoaded<any>): string {
     const id = route.params.id;

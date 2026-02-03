@@ -18,6 +18,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuckyRest.MigrationService"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHostConveyer", "GameHostConveyer\GameHostConveyer.csproj", "{71A79459-7C99-4B71-BF8A-CB986FCB2D05}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{B4F55017-BADE-4E55-90DE-029458EDACCC}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		.gitignore = .gitignore
+		.github\workflows\backend-deploy.yml = .github\workflows\backend-deploy.yml
+		.github\workflows\frontend-deploy.yml = .github\workflows\frontend-deploy.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
