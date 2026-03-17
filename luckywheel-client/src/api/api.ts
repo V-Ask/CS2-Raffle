@@ -2,7 +2,7 @@ import axios from 'axios'
 import router from "@/router";
 
 export const API = axios.create({
-  timeout: 1000,
+  timeout: 5000,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json;charset=UTF-8",

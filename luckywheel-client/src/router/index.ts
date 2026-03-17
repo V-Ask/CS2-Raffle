@@ -3,7 +3,6 @@ import {
 } from 'vue-router'
 import LoginView from "@/views/LoginView.vue";
 import {
-  ADD_MAP_TO_PLAYLIST_NAME,
   CREATE_NEW_PLAYLIST_NAME,
   LOGIN_NAME, NOT_FOUND_NAME, PLAYLIST_SELECTED_NAME, PLAYLIST_VIEW
 } from "@/helpers/constants/routing.ts";
@@ -13,7 +12,6 @@ import {GuardedRouter} from "@/router/guarded-router.ts";
 import {authGuardFn} from "@/guards/auth-guard.ts";
 import NotFoundView from "@/views/NotFoundView.vue";
 import CreatePlaylistView from "@/views/CreatePlaylistView.vue";
-import {useLoadingStore} from "@/stores/loading.store.ts";
 
 const routes = [
   {
@@ -52,27 +50,5 @@ const API: GuardedRouter = new GuardedRouter({
 API.guardAllRoutes(authGuardFn, [LOGIN_NAME], {
   name: LOGIN_NAME,
 });
-
-// Redirects to the playlist selection view if the user is attempting to access
-// login page while authorized
-// API.guardRoute(LOGIN_NAME, inverseGuardFn(authGuardFn), {
-//   name: PLAYLIST_VIEW
-// });
-
-function setupLazyLoadingStore() {
-  API.router.beforeEach((to, from, next) => {
-    const loadingStore = useLoadingStore();
-    loadingStore.startLazyLoading();
-    next();
-  });
-
-  API.router.afterEach((to, from, next) => {
-    const loadingStore = useLoadingStore();
-    loadingStore.stopLazyLoading();
-  })
-}
-
-setupLazyLoadingStore();
-
 
 export default API

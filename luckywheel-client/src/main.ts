@@ -4,14 +4,13 @@ import {createPinia} from 'pinia'
 
 import App from './App.vue'
 import API from './router'
-import EnvironmentService from "@/services/environment/environment.service.ts";
-
 async function prepareApp() {
-  const shouldUseMocks = !EnvironmentService.isAspireDevelopment();
-
-  if (shouldUseMocks) {
-    const {worker} = await import('@/mocks/browser');
-    return worker.start().then();
+  if (import.meta.env.DEV) {
+    const EnvironmentService = await import("@/services/environment/environment.service.ts");
+    if (!EnvironmentService.default.isAspireDevelopment()) {
+      const {worker} = await import('@/mocks/browser');
+      return worker.start();
+    }
   }
 }
 

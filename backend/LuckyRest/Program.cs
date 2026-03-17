@@ -76,6 +76,7 @@ app.UseHttpsRedirection();
 
 app.MapIdentityApi<User>();
 app.MapControllers();
+app.ApplyMigrations();
 
 app.Run();
 

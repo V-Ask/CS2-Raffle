@@ -5,14 +5,13 @@ import {useAuthStore} from "@/stores/auth.store.ts";
 import SettingsButton from "@/components/buttons/SettingsButton.vue";
 import {useGameHostStore} from "@/stores/game-host.store.ts";
 
-const loadingStore = useLoadingStore();
 const authStore = useAuthStore();
 const gameHostStore = useGameHostStore();
 </script>
 
 <template>
   <div id="main">
-    <LoadingContainer :is-loading="loadingStore.isLazyLoading">
+    <LoadingContainer>
       <div class="content">
         <div class="toolbar-wrapper">
           <p class="warning-text"

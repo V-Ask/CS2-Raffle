@@ -38,7 +38,7 @@ function secondaryClicked() {
       <input id="password-input" type="password" aria-describedby="password-criteria"
              v-model="password" autocomplete="current-password" placeholder="Enter password..."
              required/>
-      <p class="no-margin" :class="{hidden: !props.showCriteria}" id="password-criteria">
+      <p v-if="showCriteria" class="no-margin" id="password-criteria">
         The password must be at least 6 characters and contain uppercase and lowercase letters,
         digits, and alphanumeric characters.
       </p>
@@ -58,10 +58,6 @@ function secondaryClicked() {
 <style scoped>
 .button-row {
   justify-content: flex-end;
-}
-
-.hidden {
-  opacity: 0;
 }
 
 #email-input {

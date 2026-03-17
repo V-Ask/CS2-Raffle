@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import {useLoadingStore} from "@/stores/loading.store.ts";
+
+const loadingStore = useLoadingStore();
 
 const props = defineProps<{
   headerText: string
@@ -6,7 +9,7 @@ const props = defineProps<{
 
 </script>
 <template>
-  <div class="dialog">
+  <div class="dialog" v-if="!loadingStore.isLoading">
     <div class="header-box">
       <h1>{{ props.headerText }}</h1>
     </div>

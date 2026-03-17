@@ -1,34 +1,24 @@
-﻿import {defineStore} from "pinia";
+﻿import { defineStore } from "pinia";
 
-export const useLoadingStore = defineStore('loading', {
-  state: () => ({
-    lazyLoading: false,
-    loading: false,
-  }),
+export const useLoadingStore = defineStore("loading-store", {
+  state() {
+      return {
+        loadingStarted: 0 as number,
+      }
+  },
+
   getters: {
-    isLoading(state) {
-      return state.loading;
-    },
-
-    isLazyLoading(state) {
-      return state.lazyLoading;
+    isLoading(state)  {
+      return state.loadingStarted > 0;
     }
   },
+
   actions: {
     startLoading() {
-      this.loading = true;
-    },
-
-    stopLoading() {
-      this.loading = false;
-    },
-
-    startLazyLoading() {
-      this.lazyLoading = true;
-    },
-
-    stopLazyLoading() {
-      this.lazyLoading = false;
+      this.loadingStarted++;
+      return () => {
+        this.loadingStarted--;
+      }
     }
   }
 })

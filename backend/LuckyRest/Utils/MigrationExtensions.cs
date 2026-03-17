@@ -7,6 +7,7 @@ public static class MigrationExtensions
 {
     public static void ApplyMigrations(this IApplicationBuilder app)
     {
+        Console.WriteLine("Applying migrations...");
         using var scope = app.ApplicationServices.CreateScope();
         using var context = scope.ServiceProvider.GetRequiredService<LuckyDbContext>();
         context.Database.Migrate();
