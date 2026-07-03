@@ -13,7 +13,8 @@ namespace LuckyRest.Controllers;
 [Authorize]
 public class UserController(
     UserManager<User> userManager,
-    IUserService userService) : ControllerBase
+    IUserService userService,
+    SignInManager<User> signInManager) : ControllerBase
 {
     [HttpGet("auth")]
     public async Task<ActionResult<AuthUserDto>> CheckAuth()
@@ -23,5 +24,12 @@ public class UserController(
         var dto = userService.AuthUser(user);
         if (dto.Data == null) return Unauthorized();
         return dto.Data;
+    }
+
+    [HttpPost("logout")]
+    public async Task<ActionResult> Logout()
+    {
+        await signInManager.SignOutAsync();
+        return Ok();
     }
 }

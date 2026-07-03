@@ -1,10 +1,7 @@
 ﻿import type {WorkshopPlaylistViewDto} from "@/api/dto/views/workshop-playlist-view-dto.ts";
 import {WorkshopPlaylistMapView} from "@/models/workshop-playlist-map-view.ts";
-import {WorkshopPlaylistMapViewDto} from "@/api/dto/views/workshop-playlist-map-view-dto.ts";
-import {WeightedList} from "@/models/weighted-list.ts";
-import type {ReelMap} from "@/models/reel-map.ts";
-import {COLOR_RARITY_PAIRS} from "@/helpers/constants/colors.ts";
 import type {WorkshopMap} from "@/models/workshop-map.ts";
+import PlaylistService from "@/services/spinner/playlist.service.ts";
 
 export class WorkshopPlaylistView {
 
@@ -43,7 +40,26 @@ export class WorkshopPlaylistView {
   }
 
   addNewMap(workshopMap: WorkshopMap) {
-    this.maps.push(workshopMap.toPlaylistMap(this.playlistId));
+    this.maps.push(new WorkshopPlaylistMapView(workshopMap.workshopName, workshopMap.imageUrl, workshopMap.description, workshopMap.mapId, this.playlistId, 1, false));
+  }
+
+  async incrementAllOtherMaps(excludedMap: WorkshopMap, shouldRemove: boolean) {
+    this.maps.forEach((workshopMap) => {
+      workshopMap.weight++;
+    });
+    if (shouldRemove) {
+      this.removeMapFromArray(excludedMap);
+    }
+    return PlaylistService.incrementAllOtherMaps(this, excludedMap, shouldRemove)
+  }
+
+  async removeMap(removedMap: WorkshopMap) {
+    this.removeMapFromArray(removedMap);
+    return PlaylistService.removeMapFromPlaylist(removedMap, this);
+  }
+
+  private removeMapFromArray(removedMap: WorkshopMap) {
+    this.maps.filter(map => map.mapId !== removedMap.mapId);
   }
 
   public static fromDto(dto: WorkshopPlaylistViewDto): WorkshopPlaylistView {

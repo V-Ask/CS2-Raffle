@@ -4,8 +4,8 @@ import {PasswordValidator} from "@/models/password-validator.ts";
 import Auth from "@/api/auth.api.ts";
 import {useAuthStore} from "@/stores/auth.store.ts";
 import {useLoginStore} from "@/stores/login.store.ts";
-import {useRouter} from "vue-router";
-import {PLAYLIST_VIEW} from "@/helpers/constants/routing.ts";
+import {LOGIN_NAME, PLAYLIST_VIEW} from "@/helpers/constants/routing.ts";
+import router from "@/router/index.ts";
 import {User} from "@/models/user.ts";
 
 function isPasswordValid(password: string): boolean {
@@ -77,8 +77,19 @@ async function checkAuth() {
   })
 }
 
+async function logoutUser() {
+  const authStore = useAuthStore();
+  try {
+    await Auth.logout();
+  } finally {
+    authStore.user = null;
+    router.router.push({ name: LOGIN_NAME });
+  }
+}
+
 export default {
   loginUser,
   registerUser,
   checkAuth,
+  logoutUser,
 }

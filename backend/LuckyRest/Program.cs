@@ -2,6 +2,7 @@ using LuckyRest.Database;
 using LuckyRest.Database.Entities;
 using LuckyRest.Utils;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +50,7 @@ services.AddAuthentication()
 
 services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<LuckyDbContext>()
+    .AddSignInManager()
     .AddApiEndpoints();
 
 services.AddDbContext<LuckyDbContext>(options =>
@@ -57,11 +59,31 @@ services.AddDbContext<LuckyDbContext>(options =>
 });
 
 
+services.AddRateLimiter(options =>
+{
+    options.AddSlidingWindowLimiter("dathost", o =>
+    {
+        o.PermitLimit = 10;
+        o.Window = TimeSpan.FromMinutes(1);
+        o.SegmentsPerWindow = 6;
+        o.QueueLimit = 0;
+    });
+    options.AddSlidingWindowLimiter("steam", o =>
+    {
+        o.PermitLimit = 10;
+        o.Window = TimeSpan.FromMinutes(0.5);
+        o.SegmentsPerWindow = 6;
+        o.QueueLimit = 0;
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
 builder.AddScopes();
 
 var app = builder.Build();
 
 app.UseCors();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 

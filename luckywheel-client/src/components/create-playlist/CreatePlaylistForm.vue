@@ -4,27 +4,32 @@ import SingleLineTextField from "@/components/inputs/textfield/SingleLineTextFie
 import {ref} from "vue";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
-import RoutingService from "@/services/routing.service.ts";
 import {useSpinnerStore} from "@/stores/spinner.store.ts";
 import PlaylistService from "@/services/spinner/playlist.service.ts";
+import {InputTypes} from "@/models/input-types.ts";
+import type {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
+
+const emits = defineEmits<{
+  playlistCallback: [value: WorkshopPlaylistView | undefined]
+}>();
+
 
 const spinnerStore = useSpinnerStore();
 
 const input = ref("");
+const isLoading = ref(false);
 const validName = ref(true);
 
-function cancelCreate() {
-  RoutingService.navigateToPlaylistSelection();
-}
 
 function createPlaylist() {
   validName.value = isValidName();
-  if(!validName.value) return;
+  if (!validName.value || isLoading.value) return;
+  isLoading.value = true;
   PlaylistService.createNewPlaylist(input.value).then(playlist => {
-    if (playlist) {
-      RoutingService.navigateToPlaylistPage(playlist.playlistId);
-    }
-  });
+    emitPlaylist(playlist);
+    isLoading.value = false;
+    input.value = "";
+  }, _ => emitPlaylist());
 }
 
 function isValidName() {
@@ -34,17 +39,28 @@ function isValidName() {
 function doesPlaylistExist() {
   return spinnerStore.playlistWithNameExists(input.value);
 }
+
+function emitPlaylist(playlist?: WorkshopPlaylistView) {
+  emits('playlistCallback', playlist);
+}
+
+function cancelCreate() {
+  emitPlaylist();
+}
 </script>
 
 <template>
   <div class="wrapper">
     <div class="form-wrapper">
       <div class="input-wrapper">
-        <SingleLineTextField :max-length="50" v-model="input"/>
-        <ConfirmButton @click="createPlaylist()">Create</ConfirmButton>
-        <RegButton @click="cancelCreate()">Cancel</RegButton>
+        <SingleLineTextField :max-length="50"
+                             :disabled="isLoading"
+                             :input-type="InputTypes.TEXT"
+                             v-model="input"/>
+        <ConfirmButton :disabled="isLoading" @click="createPlaylist()">Create</ConfirmButton>
+        <RegButton :disabled="isLoading" @click="cancelCreate()">Cancel</RegButton>
       </div>
-      <p :class="{ disabled: validName }" class="error text">Playlist with this name is
+      <p :class="{ 'error-hidden': validName }" class="error text">Playlist with this name is
         unavailable</p>
     </div>
   </div>
@@ -67,6 +83,7 @@ function doesPlaylistExist() {
 
 .input-wrapper {
   display: flex;
+  gap: 16px;
 }
 
 .error.text {
@@ -76,7 +93,7 @@ function doesPlaylistExist() {
   color: red;
 }
 
-.disabled {
+.error-hidden {
   opacity: 0;
 }
 </style>

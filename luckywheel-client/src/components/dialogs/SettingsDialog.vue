@@ -11,6 +11,7 @@ import {useGameHostStore} from "@/stores/game-host.store.ts";
 import type {GameHosts} from "@/models/game-hosts.ts";
 import GameHostCreatorService from "@/services/game-host/game-host-creator.service.ts";
 import type {GameHostStoreService} from "@/models/game-host-store-service.ts";
+import UserAuthService from "@/services/user-auth.service.ts";
 
 const emits = defineEmits<{
   closeDialog: []
@@ -20,7 +21,6 @@ const gameHostStore = useGameHostStore();
 const selectedGameHost = ref<GameHostStoreService>(gameHostStore.ensureGameHostService);
 const shouldSaveHostSettings = ref<boolean>(false);
 const gameHostLoadedFromStore = computed(() => {
-  console.log('VAJ', selectedGameHost.value);
   if(selectedGameHost.value.loadedFromStorage) {
     return selectedGameHost.value.service.getType();
   }
@@ -54,14 +54,10 @@ function close() {
         ></GameHostSetting>
       </div>
       <Divider/>
-      <div class="setting">
-        <label>Verify Email</label>
-      </div>
-      <Divider/>
       <div class="buttons">
         <ConfirmButton @clicked="saveAndClose()">Save</ConfirmButton>
         <RegButton @clicked="close()">Cancel</RegButton>
-        <RegButton>Log out</RegButton>
+        <RegButton @clicked="UserAuthService.logoutUser()">Log out</RegButton>
       </div>
     </div>
   </StandardDialog>

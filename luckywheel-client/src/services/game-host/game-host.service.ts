@@ -2,10 +2,11 @@
 import type {GameHosts} from "@/models/game-hosts.ts";
 
 export interface GameHostService {
-  startServer(): Promise<boolean>
-  stopServer(): Promise<boolean>
-  setWorkshopMap(workshopMap: WorkshopMap): Promise<boolean>
-  testConnection(): Promise<boolean>
+  startServer(password: string): Promise<boolean>
+  stopServer(password: string): Promise<boolean>
+  setWorkshopMap(workshopMap: WorkshopMap, password: string): Promise<boolean>
+  testConnection(password: string): Promise<boolean>
   getType(): GameHosts
   saveConfig(): void
+  isGameHostSetup(): boolean
 }

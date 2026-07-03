@@ -1,6 +1,4 @@
-﻿import type {Color} from "@/types/color.ts";
-import {ReelMap} from "@/models/reel-map.ts";
-import type {WorkshopPlaylistMapViewDto} from "@/api/dto/views/workshop-playlist-map-view-dto.ts";
+﻿import type {WorkshopPlaylistMapViewDto} from "@/api/dto/views/workshop-playlist-map-view-dto.ts";
 import {WorkshopMap} from "@/models/workshop-map.ts";
 
 export class WorkshopPlaylistMapView extends WorkshopMap {
@@ -28,14 +26,5 @@ export class WorkshopPlaylistMapView extends WorkshopMap {
     )
   }
 
-  public toReelMap(color: Color): ReelMap {
-    return new ReelMap(
-      this.name,
-      this.imageUrl,
-      this.description,
-      this.mapId,
-      this.weight,
-      color
-    );
-  }
+
 }

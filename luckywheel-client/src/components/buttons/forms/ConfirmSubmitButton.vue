@@ -2,7 +2,6 @@
 import RegSubmitButton from "@/components/buttons/forms/RegSubmitButton.vue";
 
 defineProps<{
-  buttonText?: string;
   disabled?: boolean;
 }>();
 

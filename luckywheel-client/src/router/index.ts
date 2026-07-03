@@ -7,12 +7,10 @@ import {
   CREATE_NEW_PLAYLIST_NAME,
   LOGIN_NAME, NOT_FOUND_NAME, PLAYLIST_SELECTED_NAME, PLAYLIST_VIEW
 } from "@/helpers/constants/routing.ts";
-import PlaylistView from "@/views/PlaylistView.vue";
-import PlaylistSelectionView from "@/views/PlaylistSelectionView.vue";
 import {GuardedRouter} from "@/router/guarded-router.ts";
 import {authGuardFn} from "@/guards/auth-guard.ts";
 import NotFoundView from "@/views/NotFoundView.vue";
-import CreatePlaylistView from "@/views/CreatePlaylistView.vue";
+import PlaylistPreviewView from "@/views/PlaylistPreviewView.vue";
 import {useLoadingStore} from "@/stores/loading.store.ts";
 
 const routes = [
@@ -22,19 +20,9 @@ const routes = [
     component: LoginView,
   },
   {
-    path: `/playlist/:id/`,
-    name: PLAYLIST_SELECTED_NAME,
-    component: PlaylistView,
-  },
-  {
-    path: '/new-playlist',
-    name: CREATE_NEW_PLAYLIST_NAME,
-    component: CreatePlaylistView
-  },
-  {
     path: '/',
     name: PLAYLIST_VIEW,
-    component: PlaylistSelectionView,
+    component: PlaylistPreviewView,
   },
   {
     path: '/:path',

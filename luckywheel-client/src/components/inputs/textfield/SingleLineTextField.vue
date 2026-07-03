@@ -1,25 +1,25 @@
 ﻿<script setup lang="ts">
+import {computed} from 'vue';
+import {InputTypes} from "@/models/input-types.ts";
+import type {SingleLineTextfieldProp} from "@/models/props/single-line-textfield.prop.ts";
 
-interface Props {
-  maxLength?: number;
-  disabled?: boolean;
-  alt?: string;
-  placeholder?: string;
-  labelId?: string;
-  isPassword?: boolean;
-}
-
-const props = defineProps<Props>();
+const props = defineProps<SingleLineTextfieldProp>();
 const model = defineModel<string>();
 
-function getInputType(): "password" | "text" {
-  return props.isPassword ? "password" : "text";
-}
-
+const inputType = computed(() => {
+  switch (props.inputType) {
+    case InputTypes.TEXT:
+      return 'text';
+    case InputTypes.SEARCH:
+      return 'search';
+    case InputTypes.PASSWORD:
+      return 'password';
+  }
+})
 </script>
 
 <template>
-  <input :type="getInputType()"
+  <input :type="inputType"
          :value="model"
          @input="model = ($event.target as HTMLInputElement).value"
          :maxlength="props.maxLength"
@@ -27,9 +27,12 @@ function getInputType(): "password" | "text" {
          :placeholder="props.placeholder"
          :alt="props.alt"
          :aria-labelledby="props.labelId"
+         :class="{disabled: props.disabled}"
   />
 </template>
 
 <style scoped>
-
+.disabled {
+  opacity: 0.4;
+}
 </style>

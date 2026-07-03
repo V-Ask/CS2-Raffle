@@ -5,10 +5,12 @@ import type {UserCredentials} from "@/models/user-credentials.ts";
 import {useLoginStore} from "@/stores/login.store.ts";
 import ConfirmSubmitButton from "@/components/buttons/forms/ConfirmSubmitButton.vue";
 
+
 const props = defineProps<{
   submitButtonText: string,
   secondaryButtonText?: string,
   showCriteria?: boolean,
+  hasError?: boolean,
 }>();
 const emit = defineEmits<{
   submit: [UserCredentials]
@@ -22,7 +24,10 @@ const loginStore = useLoginStore();
 function submitUser(event: SubmitEvent) {
   // By default, submission would reload the page
   event.preventDefault();
-  emit('submit', {email: email.value, password: password.value});
+
+  const passwordVal = password.value;
+
+  emit('submit', {email: email.value, password: passwordVal});
 }
 
 function secondaryClicked() {
@@ -31,20 +36,25 @@ function secondaryClicked() {
 
 </script>
 <template>
-  <form @submit="submitUser($event)">
-    <div class="flex-column no-gap">
+  <form @submit="submitUser($event)" class="form-wrapper">
+    <div class="form-grid">
       <input id="email-input" type="email" v-model="email" placeholder="Enter email..."
              autocomplete="username" required/>
       <input id="password-input" type="password" aria-describedby="password-criteria"
              v-model="password" autocomplete="current-password" placeholder="Enter password..."
              required/>
-      <p class="no-margin" :class="{hidden: !props.showCriteria}" id="password-criteria">
-        The password must be at least 6 characters and contain uppercase and lowercase letters,
-        digits, and alphanumeric characters.
-      </p>
+      <Transition name="slide">
+        <p v-if="showCriteria"
+           class="no-margin"
+           :class="{'error': hasError }"
+           id="password-criteria"
+        >
+          The password must be at least 6 characters and contain uppercase and lowercase letters,
+          digits, and alphanumeric characters.
+        </p>
+      </Transition>
     </div>
     <div class="flex button-row">
-
       <ConfirmSubmitButton class="submit-button">
         {{ props.submitButtonText }}
       </ConfirmSubmitButton>
@@ -56,6 +66,20 @@ function secondaryClicked() {
   </form>
 </template>
 <style scoped>
+#password-criteria {
+  color: #989898;
+}
+
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-grid {
+  display: grid;
+}
+
 .button-row {
   justify-content: flex-end;
 }
@@ -80,8 +104,7 @@ function secondaryClicked() {
   width: 50%;
 }
 
-.invalid {
-  color: red;
-  border: red solid 2px;
+.error {
+  color: red !important;
 }
 </style>

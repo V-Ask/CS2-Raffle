@@ -21,7 +21,7 @@ function selectPlaylist() {
 </script>
 
 <template>
-<div v-if="playlistsLoaded">
+<div class="selection-wrapper" v-if="playlistsLoaded">
   <select v-model="selected">
     <option v-for="index in spinnerStore.playlistIndices" :value="index" :name="index.collectionName">
       {{ index.collectionName }}
@@ -32,5 +32,13 @@ function selectPlaylist() {
 </template>
 
 <style scoped>
+.selection-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
 
+select {
+  height: 100%;
+}
 </style>

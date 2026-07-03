@@ -9,7 +9,7 @@ body {
   color: #c8c8c8;
 }
 
-h1 {
+h1, p {
   color: #989898;
 }
 
@@ -27,6 +27,7 @@ label {
 
 input[type='text'],
 input[type='password'],
+input[type='search'],
 input[type='email'] {
   padding: 6px 12px;
   font-size: larger;
@@ -43,9 +44,6 @@ input[type='email'] {
   background-position: center top;
 }
 
-.hover-button:hover {
-  border: 2px solid #1e1e1e;
-}
 
 .blur {
   height: 100%;
@@ -92,4 +90,20 @@ dialog::backdrop {
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+}
+
+.dialog-400 {
+  width: 400px;
+}
+
+.dialog-600 {
+  width: 600px;
+}
+
+.dialog-800 {
+  width: 800px;
+}
+
+.dialog-1000 {
+  width: 1000px;
 }

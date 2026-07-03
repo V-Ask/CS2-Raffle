@@ -1,12 +1,19 @@
 <script setup lang="ts">
+import {useLoadingStore} from "@/stores/loading.store.ts";
+import {DialogWidths} from "@/models/dialog-widths.ts";
 
-const props = defineProps<{
-  headerText: string
-}>();
+const loadingStore = useLoadingStore();
+
+const props = withDefaults(defineProps<{
+  headerText: string,
+  width?: DialogWidths,
+}>(), {
+  width: DialogWidths.DIALOG_600
+});
 
 </script>
 <template>
-  <div class="dialog">
+  <div class="dialog" :class="props.width" v-if="!loadingStore.isLoading">
     <div class="header-box">
       <h1>{{ props.headerText }}</h1>
     </div>
@@ -19,7 +26,6 @@ const props = defineProps<{
 <style scoped>
 .dialog {
   background-color: #2d2d2d;
-  min-width: 200px;
 }
 
 .header-box {

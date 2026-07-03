@@ -1,11 +1,12 @@
 ﻿<script setup lang="ts">
 import type {ReelMap} from "@/models/reel-map.ts";
+import {computed} from "vue";
 
 const props = defineProps<{
   map: ReelMap
 }>();
 
-const color = props.map.color;
+const color = computed(() => props.map.color);
 </script>
 
 <template>
@@ -27,7 +28,9 @@ const color = props.map.color;
   flex-direction: column;
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
   border: darkcyan solid 2px;
+  overflow: hidden;
 }
 
 .map.thumbnail {
@@ -39,11 +42,9 @@ const color = props.map.color;
   min-height: 0;
 
   img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
 
@@ -59,6 +60,7 @@ const color = props.map.color;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: white;
   }
 }
 </style>

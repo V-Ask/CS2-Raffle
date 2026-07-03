@@ -9,7 +9,10 @@ const props = defineProps<{
 const emits = defineEmits(['clicked'])
 </script>
 <template>
-  <RegButton :type="props.type" :disabled="disabled" @clicked="emits('clicked')">
+  <RegButton
+    :type="props.type"
+    :disabled="disabled"
+    @clicked="emits('clicked')">
     <slot></slot>
   </RegButton>
 </template>
