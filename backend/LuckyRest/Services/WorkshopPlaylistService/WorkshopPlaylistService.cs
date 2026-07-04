@@ -89,10 +89,11 @@ public class WorkshopPlaylistService(
 
     public async Task<ServiceResult<WorkshopPlaylistDto>> CreatePlaylist(User user, string collectionName)
     {
+        var time = DateTime.Now;
         var playlist = new WorkshopPlaylist
         {
             Author = user,
-            CollectionName = collectionName
+            CollectionName = collectionName,
         };
         var result = await workshopPlaylistDao.CreatePlaylist(playlist);
         return result == null
@@ -159,8 +160,7 @@ public class WorkshopPlaylistService(
     private async Task<bool> DeleteMapFromPlaylistAndDeleteOrphan(string userId, Guid workshopPlaylistId,
         long workshopMapId)
     {
-        var anyDeleted =
-            await workshopPlaylistMapDao.DeleteWorkshopPlaylistMap(userId, workshopMapId, workshopPlaylistId);
+        var anyDeleted = await workshopPlaylistMapDao.DeleteWorkshopPlaylistMap(userId, workshopMapId, workshopPlaylistId);
         if (!anyDeleted) return false;
         await workshopMapDao.DeleteIfOrphaned(workshopMapId);
         return true;

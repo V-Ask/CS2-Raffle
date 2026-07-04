@@ -141,11 +141,17 @@ async function resetPlaylist() {
                           :option-text-fn="playlistIndexText">
           SELECT PLAYLIST
         </DropdownSelector>
-        <RegButton
-          :disabled="isLoading"
-          @click="openCreatePlaylistDialog">CREATE NEW PLAYLIST
-        </RegButton>
+        <button
+            :disabled="isLoading"
+            @click="openCreatePlaylistDialog">
+          <i class="fa-solid fa-plus fa-2x add-button-offset"></i>
+        </button>
       </div>
+      <SingleLineTextField v-model="searchText"
+                           placeholder="Search maps..."
+                           :input-type="InputTypes.SEARCH"
+                           :disabled="playlistIsNotSelected"
+      />
     </div>
     <div class="map-wrapper">
       <div v-if="isLoading"
@@ -173,22 +179,18 @@ async function resetPlaylist() {
     </div>
     <div class="bar-wrapper bottom-bar">
       <div class="map-controls" v-if="isBrowsing">
-        <SingleLineTextField v-model="searchText"
-                             placeholder="SEARCH MAPS..."
-                             :input-type="InputTypes.SEARCH"
-                             :disabled="playlistIsNotSelected"
-        />
+
         <RegButton
-          :disabled="playlistIsNotSelected"
-          @click="openAddMapDialog"
+            :disabled="playlistIsNotSelected"
+            @click="openAddMapDialog"
         >
           ADD MAP
         </RegButton>
       </div>
       <ConfirmButton
-        v-if="isBrowsing"
-        :disabled="!coloredMaps.size || playlistIsNotSelected"
-        @clicked="startSpin()">
+          v-if="isBrowsing"
+          :disabled="!coloredMaps.size || playlistIsNotSelected"
+          @clicked="startSpin()">
         SPIN
       </ConfirmButton>
     </div>
@@ -198,10 +200,10 @@ async function resetPlaylist() {
   </dialog>
   <dialog ref="addMapDialog" @click="handleBackdropClickAddMap">
     <AddMapDialog
-      v-if="selectedPlaylist"
-      @addMap="onMapAdded($event)"
-      @closeDialog="closeAddMapDialog"
-      :playlist="selectedPlaylist"
+        v-if="selectedPlaylist"
+        @addMap="onMapAdded($event)"
+        @closeDialog="closeAddMapDialog"
+        :playlist="selectedPlaylist"
     ></AddMapDialog>
   </dialog>
 </template>
@@ -219,7 +221,7 @@ async function resetPlaylist() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 1rem 1.5rem;
 }
 
 .map-wrapper {
@@ -243,6 +245,8 @@ async function resetPlaylist() {
 .select-wrapper {
   display: flex;
   gap: 16px;
+  width: 100%;
+  height: 100%;
   align-items: stretch;
 }
 
@@ -256,5 +260,9 @@ async function resetPlaylist() {
   height: 100%;
   justify-content: center;
   align-items: center;
+}
+
+.add-button-offset {
+  margin-left: -6rem;
 }
 </style>
