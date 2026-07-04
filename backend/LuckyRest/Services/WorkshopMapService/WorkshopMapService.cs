@@ -2,13 +2,14 @@
 using LuckyRest.Database.DTOs.Models;
 using LuckyRest.Database.Entities;
 using LuckyRest.Utils;
+using WorkshopScraper.Interfaces.Scrapers;
 using WorkshopScraper.Scraper;
 
 namespace LuckyRest.Services.WorkshopMapService;
 
 public class WorkshopMapService(IWorkshopMapDao workshopMapDao) : IWorkshopMapService
 {
-    private readonly string _workshopRoute = "https://steamcommunity.com/sharedfiles/filedetails/?id=";
+    private readonly LimitedScraper<string> _scraper = new(new WebScraper());
 
     public async Task<ServiceResult<WorkshopMapDto>> GetWorkshopMap(long workshopMapId)
     {
@@ -24,11 +25,11 @@ public class WorkshopMapService(IWorkshopMapDao workshopMapDao) : IWorkshopMapSe
         {
             return await GetWorkshopMap(workshopMapId);
         }
-
-        var scraper = new SteamWorkshopScraper(GenericScraper.Load(_workshopRoute + workshopMapId));
-        var name = scraper.GetTitle();
-        var description = scraper.GetDescription();
-        var imageUrl = scraper.GetImageUrl();
+        
+        var workshopExplorer = new SteamWorkshopExplorer(await _scraper.LoadAsync(workshopMapId.ToString()));
+        var name = workshopExplorer.GetTitle();
+        var description = workshopExplorer.GetDescription();
+        var imageUrl = workshopExplorer.GetImageUrl();
         var map = new WorkshopMap
         {
             WorkshopMapId = workshopMapId,

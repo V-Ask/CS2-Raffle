@@ -9,12 +9,12 @@ using WorkshopScraper.Scraper;
 namespace WorkshopScraperTest.Scrapers;
 
 [TestFixture]
-public class GenericScraperTest
+public class HtmlExplorerTest
 {
     
     private readonly Mock<IHtmlDocumentWrapper> _htmlDocumentWrapperMock = new();
     private const string Url = "https://thisisaurl.com";
-    private GenericScraper _scraper;
+    private HtmlExplorer _scraper;
     
     [SetUp]
     public void Setup()
@@ -25,7 +25,7 @@ public class GenericScraperTest
             ["b"] = "2",
             ["c"] = "3"
         };
-        _scraper = new GenericScraper(_htmlDocumentWrapperMock.Object, query, Url);
+        _scraper = new HtmlExplorer(_htmlDocumentWrapperMock.Object, query, Url);
     }
 
     [Test(Description = "Query values should have the correct index and value")]

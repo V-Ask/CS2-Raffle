@@ -5,10 +5,10 @@ using WorkshopScraper.Scraper;
 
 namespace WorkshopScraperTest.Scrapers;
 
-public class SteamWorkshopScraperTest
+public class SteamWorkshopExplorerTest
 {
-    private SteamWorkshopScraper _steamWorkshopScraper;
-    private readonly Mock<IScraper> _mockScraper = new();
+    private SteamWorkshopExplorer _steamWorkshopExplorer;
+    private readonly Mock<IExplorer> _mockScraper = new();
     private readonly Mock<IHtmlNodeWrapper> _mockHtmlNodeWrapper = new();
     
     [SetUp]
@@ -16,50 +16,50 @@ public class SteamWorkshopScraperTest
     {
         _mockHtmlNodeWrapper.Setup(x => x.InnerText).Returns("Test InnerText");
         _mockHtmlNodeWrapper.Setup(x => x.ImageSource).Returns("Test ImageSource");
-        _steamWorkshopScraper = new SteamWorkshopScraper(_mockScraper.Object);
+        _steamWorkshopExplorer = new SteamWorkshopExplorer(_mockScraper.Object);
     }
 
-    [Test(Author = "VAJ", Description = "Scraper can get title of workshop map")]
+    [Test(Author = "VAJ", Description = "WebScraper can get title of workshop map")]
     public void TestGetTitle()
     {
         // arrange
         _mockScraper.Setup(x => x.GetSingleElement("//div[contains(@class, 'workshopItemTitle')]")).Returns(_mockHtmlNodeWrapper.Object);
         // act
-        var result = _steamWorkshopScraper.GetTitle();
+        var result = _steamWorkshopExplorer.GetTitle();
         // assert
         Assert.That(result, Is.EqualTo("Test InnerText"));
     }
     
     
-    [Test(Author = "VAJ", Description = "Scraper can get description of workshop map")]
+    [Test(Author = "VAJ", Description = "WebScraper can get description of workshop map")]
     public void TestGetDescription()
     {
         // arrange
         _mockScraper.Setup(x => x.GetSingleElement("//div[contains(@class, 'workshopItemDescription')]")).Returns(_mockHtmlNodeWrapper.Object);
         // act
-        var result = _steamWorkshopScraper.GetDescription();
+        var result = _steamWorkshopExplorer.GetDescription();
         // assert
         Assert.That(result, Is.EqualTo("Test InnerText"));
     }
     
-    [Test(Author = "VAJ", Description = "Scraper can get image url")]
+    [Test(Author = "VAJ", Description = "WebScraper can get image url")]
     public void TestGetImageUrl()
     {
         // arrange
         _mockScraper.Setup(x => x.GetSingleElement("//img[contains(@class, 'workshopItemPreviewImageMain')]")).Returns(_mockHtmlNodeWrapper.Object);
         // act
-        var result = _steamWorkshopScraper.GetImageUrl();
+        var result = _steamWorkshopExplorer.GetImageUrl();
         // assert
         Assert.That(result, Is.EqualTo("Test ImageSource"));
     }
     
-    [Test(Author = "VAJ", Description = "Scraper can get id of workshop map")]
+    [Test(Author = "VAJ", Description = "WebScraper can get id of workshop map")]
     public void TestGetId()
     {
         // arrange
         _mockScraper.Setup(x => x.GetQueryValue("id")).Returns("Test Id");
         // act
-        var result = _steamWorkshopScraper.GetUuid();
+        var result = _steamWorkshopExplorer.GetUuid();
         // assert
         Assert.That(result, Is.EqualTo("Test Id"));
     }
@@ -70,7 +70,7 @@ public class SteamWorkshopScraperTest
     public void PositiveTestIsWorkshopUrl(string url)
     {
         // act
-        var result = SteamWorkshopScraper.IsWorkshopUrl(url);
+        var result = SteamWorkshopExplorer.IsWorkshopUrl(url);
         // assert
         Assert.That(result, Is.True);
     }
@@ -83,7 +83,7 @@ public class SteamWorkshopScraperTest
     public void NegativeTestIsWorkshop(string url)
     {
         // act
-        var result = SteamWorkshopScraper.IsWorkshopUrl(url);
+        var result = SteamWorkshopExplorer.IsWorkshopUrl(url);
         // assert
         Assert.That(result, Is.False);
     }
