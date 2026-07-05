@@ -29,7 +29,7 @@ export default {
   async createNewPlaylist(name: string) {
     try {
       const dto = await PlaylistApi.createPlaylist(name);
-      return new WorkshopPlaylistView(dto.id, name, []);
+      return new WorkshopPlaylistView(dto.id, name, [], new Date(), new Date());
     } catch (error) {
       console.error('Failed to create playlist:', error);
       return undefined;

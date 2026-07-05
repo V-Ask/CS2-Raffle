@@ -24,11 +24,11 @@ const routes = [
     name: PLAYLIST_VIEW,
     component: PlaylistPreviewView,
   },
-  {
-    path: '/playlists',
-    name: EDIT_PLAYLIST_VIEW,
-    component: EditPlaylistsView
-  },
+  // {
+  //   path: '/playlists',
+  //   name: EDIT_PLAYLIST_VIEW,
+  //   component: EditPlaylistsView
+  // },
   {
     path: '/:path',
     name: NOT_FOUND_NAME,

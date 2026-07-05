@@ -109,9 +109,10 @@ function handleBackdropClickAddMap(event: MouseEvent) {
   DialogService.handleBackdropClick(addMapDialog.value!, event, () => closeAddMapDialog());
 }
 
-function handleCreateDialogClosed(playlistIndex?: WorkshopPlaylistIndex) {
-  if (playlistIndex) {
-    spinnerStore.addPlaylistIndex(playlistIndex);
+function handleCreateDialogClosed(playlistView?: WorkshopPlaylistView) {
+  if (playlistView) {
+    spinnerStore.updateViewCache(playlistView);
+    spinnerStore.addPlaylistIndex(playlistView.toIndex());
   }
   closeCreatePlaylistDialog();
 }
@@ -154,13 +155,13 @@ async function resetPlaylist() {
           >
             <i class="fa-solid fa-plus fa-2x "></i>
           </button>
-          <button
-            title="Edit playlists"
-            :disabled="isLoading"
-            @click="navigateToEditPlaylistsView"
-          >
-            <i class="fa-solid fa-pen fa-xl"></i>
-          </button>
+<!--          <button-->
+<!--            title="Edit playlists"-->
+<!--            :disabled="isLoading"-->
+<!--            @click="navigateToEditPlaylistsView"-->
+<!--          >-->
+<!--            <i class="fa-solid fa-pen fa-xl"></i>-->
+<!--          </button>-->
         </div>
       </div>
       <SingleLineTextField v-model="searchText"

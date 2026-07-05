@@ -57,6 +57,10 @@ export const useSpinnerStore = defineStore('spinner', {
       }
       return playlist;
     },
+
+    updateViewCache(playlistView: WorkshopPlaylistView) {
+      this.playlistViewCache.set(playlistView.playlistId, playlistView);
+    }
   }
 });
 

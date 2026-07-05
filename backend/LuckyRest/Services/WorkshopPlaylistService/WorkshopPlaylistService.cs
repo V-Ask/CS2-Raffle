@@ -69,10 +69,10 @@ public class WorkshopPlaylistService(
 
     public async Task<ServiceResult<GetUserPlaylistsResultDto>> GetWorkshopPlaylists(string userId)
     {
-        var playlists = await workshopPlaylistDao.GetWorkshopPlaylists(userId);
+        var playlists = await workshopPlaylistDao.GetWorkshopPlaylistIndices(userId);
         return ServiceResult.Success.WithData(new GetUserPlaylistsResultDto
         {
-            WorkshopPlaylists = playlists.Select(WorkshopPlaylistIndexDto.FromEntity).ToList()
+            WorkshopPlaylists = playlists
         });
     }
 

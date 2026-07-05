@@ -2,12 +2,15 @@
 import {WorkshopPlaylistMapView} from "@/models/workshop-playlist-map-view.ts";
 import type {WorkshopMap} from "@/models/workshop-map.ts";
 import PlaylistService from "@/services/spinner/playlist.service.ts";
+import {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-index.ts";
 
 export class WorkshopPlaylistView {
 
   constructor(public playlistId: string,
               public collectionName: string,
-              public maps: WorkshopPlaylistMapView[]) {
+              public maps: WorkshopPlaylistMapView[],
+              public created: Date,
+              public modified: Date,) {
   }
 
   getSorted(sortOptions: SortOptions) {
@@ -62,9 +65,13 @@ export class WorkshopPlaylistView {
     this.maps = this.maps.filter(map => map.mapId !== removedMap.mapId);
   }
 
+  toIndex() {
+    return new WorkshopPlaylistIndex(this.collectionName, this.playlistId, this.maps.length, this.created, this.modified);
+  }
+
   public static fromDto(dto: WorkshopPlaylistViewDto): WorkshopPlaylistView {
     const maps = dto.maps.map(map => WorkshopPlaylistMapView.fromDto(map));
-    return new WorkshopPlaylistView(dto.id, dto.collectionName, maps);
+    return new WorkshopPlaylistView(dto.id, dto.collectionName, maps, dto.created, dto.modified);
   }
 }
 
