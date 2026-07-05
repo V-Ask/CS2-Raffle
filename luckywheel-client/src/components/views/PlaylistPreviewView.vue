@@ -8,7 +8,6 @@ import type {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-in
 import MapList from "@/components/spinner/preview/MapList.vue";
 import SpinningReel from "@/components/spinner/reel/SpinningReel.vue";
 import WinningMapComponent from "@/components/spinner/reel/WinningMapComponent.vue";
-import PlaylistService from "@/services/spinner/playlist.service.ts";
 import ReelService from "@/services/spinner/reel.service.ts";
 import type {ReelMap} from "@/models/reel-map.ts";
 import type {WinningMapActionCallback} from "@/models/winning-map-action-callback.ts";
@@ -19,6 +18,7 @@ import DialogService from "@/services/dialog.service.ts";
 import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import type {WorkshopMap} from "@/models/workshop-map.ts";
 import AddMapDialog from "@/components/dialogs/AddMapDialog.vue";
+import RoutingService from "@/services/routing.service.ts";
 
 enum ViewState { BROWSING, SPINNING, SPUN }
 
@@ -32,11 +32,12 @@ const coloredMaps = ref<Set<ReelMap>>(new Set());
 const searchText = ref('');
 const winnerMap = ref<ReelMap | null>(null);
 const viewState = ref<ViewState>(ViewState.BROWSING);
-const playlistIndices = ref<WorkshopPlaylistIndex[]>([]);
 const isLoading = ref<boolean>(true);
 
+const playlistIndices = computed(() => spinnerStore.playlistIndices);
+
 onMounted(async () => {
-  playlistIndices.value = await spinnerStore.updatePlaylistIndices();
+  await spinnerStore.ensurePlaylistIndices();
   isLoading.value = false;
 });
 
@@ -84,6 +85,10 @@ function openCreatePlaylistDialog() {
   createPlaylistDialog.value?.showModal();
 }
 
+function navigateToEditPlaylistsView() {
+  RoutingService.navigateToPlaylistEdit();
+}
+
 function closeCreatePlaylistDialog() {
   createPlaylistDialog.value?.close();
 }
@@ -106,7 +111,7 @@ function handleBackdropClickAddMap(event: MouseEvent) {
 
 function handleCreateDialogClosed(playlistIndex?: WorkshopPlaylistIndex) {
   if (playlistIndex) {
-    playlistIndices.value.push(playlistIndex);
+    spinnerStore.addPlaylistIndex(playlistIndex);
   }
   closeCreatePlaylistDialog();
 }
@@ -121,7 +126,7 @@ async function resetPlaylist() {
   if (selectedPlaylistIndex.value) {
     viewState.value = ViewState.BROWSING;
     winnerMap.value = null;
-    const playlist = await PlaylistService.fetchPlaylistView(selectedPlaylistIndex.value.playlistId);
+    const playlist = await spinnerStore.getPlaylistView(selectedPlaylistIndex.value.playlistId);
     if (playlist) {
       selectedPlaylist.value = playlist;
       recolorMaps();
@@ -141,11 +146,22 @@ async function resetPlaylist() {
                           :option-text-fn="playlistIndexText">
           SELECT PLAYLIST
         </DropdownSelector>
-        <button
+        <div class="playlist-buttons">
+          <button
+            title="Create new playlist"
             :disabled="isLoading"
-            @click="openCreatePlaylistDialog">
-          <i class="fa-solid fa-plus fa-2x add-button-offset"></i>
-        </button>
+            @click="openCreatePlaylistDialog"
+          >
+            <i class="fa-solid fa-plus fa-2x "></i>
+          </button>
+          <button
+            title="Edit playlists"
+            :disabled="isLoading"
+            @click="navigateToEditPlaylistsView"
+          >
+            <i class="fa-solid fa-pen fa-xl"></i>
+          </button>
+        </div>
       </div>
       <SingleLineTextField v-model="searchText"
                            placeholder="Search maps..."
@@ -181,16 +197,16 @@ async function resetPlaylist() {
       <div class="map-controls" v-if="isBrowsing">
 
         <RegButton
-            :disabled="playlistIsNotSelected"
-            @click="openAddMapDialog"
+          :disabled="playlistIsNotSelected"
+          @click="openAddMapDialog"
         >
           ADD MAP
         </RegButton>
       </div>
       <ConfirmButton
-          v-if="isBrowsing"
-          :disabled="!coloredMaps.size || playlistIsNotSelected"
-          @clicked="startSpin()">
+        v-if="isBrowsing"
+        :disabled="!coloredMaps.size || playlistIsNotSelected"
+        @clicked="startSpin()">
         SPIN
       </ConfirmButton>
     </div>
@@ -200,10 +216,10 @@ async function resetPlaylist() {
   </dialog>
   <dialog ref="addMapDialog" @click="handleBackdropClickAddMap">
     <AddMapDialog
-        v-if="selectedPlaylist"
-        @addMap="onMapAdded($event)"
-        @closeDialog="closeAddMapDialog"
-        :playlist="selectedPlaylist"
+      v-if="selectedPlaylist"
+      @addMap="onMapAdded($event)"
+      @closeDialog="closeAddMapDialog"
+      :playlist="selectedPlaylist"
     ></AddMapDialog>
   </dialog>
 </template>
@@ -262,7 +278,8 @@ async function resetPlaylist() {
   align-items: center;
 }
 
-.add-button-offset {
-  margin-left: -6rem;
+.playlist-buttons {
+  display: flex;
+  align-items: center;
 }
 </style>

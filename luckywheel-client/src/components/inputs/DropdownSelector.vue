@@ -28,7 +28,7 @@ const model = defineModel<T | null>({ default: null });
 .selector {
   appearance: none;
   -webkit-appearance: none;
-  width: 240px;
+  width: 360px;
   padding: 0 2.5rem 0 0.75rem;
   background-color: #1e2a35;
   border: 1px solid #3a5068;

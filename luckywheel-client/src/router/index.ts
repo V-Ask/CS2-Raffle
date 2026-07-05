@@ -1,17 +1,17 @@
 import {
   createWebHistory,
 } from 'vue-router'
-import LoginView from "@/views/LoginView.vue";
 import {
-  ADD_MAP_TO_PLAYLIST_NAME,
-  CREATE_NEW_PLAYLIST_NAME,
-  LOGIN_NAME, NOT_FOUND_NAME, PLAYLIST_SELECTED_NAME, PLAYLIST_VIEW
+  EDIT_PLAYLIST_VIEW,
+  LOGIN_NAME, NOT_FOUND_NAME, PLAYLIST_VIEW
 } from "@/helpers/constants/routing.ts";
 import {GuardedRouter} from "@/router/guarded-router.ts";
 import {authGuardFn} from "@/guards/auth-guard.ts";
-import NotFoundView from "@/views/NotFoundView.vue";
-import PlaylistPreviewView from "@/views/PlaylistPreviewView.vue";
 import {useLoadingStore} from "@/stores/loading.store.ts";
+import LoginView from "@/components/views/LoginView.vue";
+import PlaylistPreviewView from "@/components/views/PlaylistPreviewView.vue";
+import NotFoundView from "@/components/views/NotFoundView.vue";
+import EditPlaylistsView from "@/components/views/edit-playlists/EditPlaylistsView.vue";
 
 const routes = [
   {
@@ -23,6 +23,11 @@ const routes = [
     path: '/',
     name: PLAYLIST_VIEW,
     component: PlaylistPreviewView,
+  },
+  {
+    path: '/playlists',
+    name: EDIT_PLAYLIST_VIEW,
+    component: EditPlaylistsView
   },
   {
     path: '/:path',
@@ -40,12 +45,6 @@ const API: GuardedRouter = new GuardedRouter({
 API.guardAllRoutes(authGuardFn, [LOGIN_NAME], {
   name: LOGIN_NAME,
 });
-
-// Redirects to the playlist selection view if the user is attempting to access
-// login page while authorized
-// API.guardRoute(LOGIN_NAME, inverseGuardFn(authGuardFn), {
-//   name: PLAYLIST_VIEW
-// });
 
 function setupLazyLoadingStore() {
   API.router.beforeEach((to, from, next) => {

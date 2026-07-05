@@ -58,8 +58,8 @@ export class WorkshopPlaylistView {
     return PlaylistService.removeMapFromPlaylist(removedMap, this);
   }
 
-  private removeMapFromArray(removedMap: WorkshopMap) {
-    this.maps.filter(map => map.mapId !== removedMap.mapId);
+  removeMapFromArray(removedMap: WorkshopMap) {
+    this.maps = this.maps.filter(map => map.mapId !== removedMap.mapId);
   }
 
   public static fromDto(dto: WorkshopPlaylistViewDto): WorkshopPlaylistView {
