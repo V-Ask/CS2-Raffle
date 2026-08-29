@@ -1,7 +1,9 @@
 ﻿import type {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import {COLOR_RARITY_PAIRS} from "@/helpers/constants/colors.ts";
-import type {ReelMap} from "@/models/reel-map.ts";
+import {ReelMap} from "@/models/reel-map.ts";
 import {WeightedList} from "@/models/weighted-list.ts";
+import type {Color} from "@/types/color.ts";
+import type {WorkshopPlaylistMapView} from "@/models/workshop-playlist-map-view.ts";
 
 export default {
   colorPlaylist(playlist: WorkshopPlaylistView) {
@@ -19,8 +21,8 @@ export default {
     while (currentSegment < segmentSizeMap.length && currentIndex < sortedPlaylist.length) {
       totalSegments = segmentSizeMap[currentSegment] + totalSegments;
       const color = COLOR_RARITY_PAIRS[currentSegment];
-      while (currentIndex < totalSegments) {
-        coloredMaps.add(sortedPlaylist[currentIndex].toReelMap(color.color));
+      while (currentIndex < totalSegments && currentIndex < sortedPlaylist.length) {
+        coloredMaps.add(toReelMap(sortedPlaylist[currentIndex], color.color));
         currentIndex++;
       }
       currentSegment++;
@@ -36,4 +38,14 @@ export default {
     }
     return reel;
   }
+}
+function toReelMap(workshopPlaylistMapView: WorkshopPlaylistMapView, color: Color): ReelMap {
+  return new ReelMap(
+    workshopPlaylistMapView.name,
+    workshopPlaylistMapView.imageUrl,
+    workshopPlaylistMapView.description,
+    workshopPlaylistMapView.mapId,
+    workshopPlaylistMapView.weight,
+    color
+  );
 }

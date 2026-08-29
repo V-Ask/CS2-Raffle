@@ -6,21 +6,21 @@ using WorkshopScraper.Interfaces.Scrapers;
 
 namespace WorkshopScraper.Scraper;
 
-public partial class SteamWorkshopScraper(IScraper scraper) : IWorkshopScraper
+public partial class SteamWorkshopExplorer(IExplorer explorer) : IWorkshopExplorer
 {
     private const string WorkshopLinkPattern = @"^(https://)?steamcommunity\.com/workshop/filedetails/\?id=(\d{10})";
 
     private string GetPreviewImage =>
-        scraper.GetSingleElement("//img[contains(@id, 'previewImageMain')]")
+        explorer.GetSingleElement("//img[contains(@id, 'previewImageMain')]")
             .ImageSource;
 
     private string GetEnlargedPreviewImage =>
-        scraper.GetSingleElement("//img[contains(@class, 'workshopItemPreviewImageEnlargeable')]")
+        explorer.GetSingleElement("//img[contains(@class, 'workshopItemPreviewImageEnlargeable')]")
             .ImageSource;
 
     public string GetTitle()
     {
-        return scraper.GetSingleElement("//div[contains(@class, 'workshopItemTitle')]").InnerText;
+        return explorer.GetSingleElement("//div[contains(@class, 'workshopItemTitle')]").InnerText;
     }
 
     public string GetImageUrl()
@@ -32,12 +32,12 @@ public partial class SteamWorkshopScraper(IScraper scraper) : IWorkshopScraper
 
     public string GetDescription()
     {
-        return scraper.GetSingleElement("//div[contains(@class, 'workshopItemDescription')]").InnerText;
+        return explorer.GetSingleElement("//div[contains(@class, 'workshopItemDescription')]").InnerText;
     }
 
     public string? GetUuid()
     {
-        return scraper.GetQueryValue("id");
+        return explorer.GetQueryValue("id");
     }
 
     public static bool IsWorkshopUrl(string url)

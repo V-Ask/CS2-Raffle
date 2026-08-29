@@ -1,12 +1,6 @@
-﻿using WorkshopScraper.HtmlNodeWrapper;
-using WorkshopScraper.NodeCollectionWrapper;
+﻿namespace WorkshopScraper.Interfaces.Scrapers;
 
-namespace WorkshopScraper.Interfaces.Scrapers;
-
-public interface IScraper
+public interface IScraper<in T>
 {
-    string Url { get; }
-    string? GetQueryValue(string query);
-    IHtmlNodeWrapper GetSingleElement(string xpathSelector);
-    INodeCollectionWrapper GetAllElements(string xpathSelector);
+    public Task<IExplorer> LoadAsync(T dataLocation);
 }

@@ -8,6 +8,7 @@ export default {
   async fetchPlaylistIndices() {
     try {
       return PlaylistApi.getAllPlaylistIndex().then(results => {
+        console.log('results', results);
         return results.workshopPlaylists
       });
     } catch (error) {
@@ -28,9 +29,10 @@ export default {
   async createNewPlaylist(name: string) {
     try {
       const dto = await PlaylistApi.createPlaylist(name);
-      return new WorkshopPlaylistView(dto.id, name, []);
+      return new WorkshopPlaylistView(dto.id, name, [], new Date(), new Date());
     } catch (error) {
       console.error('Failed to create playlist:', error);
+      return undefined;
     }
   },
 
@@ -43,11 +45,33 @@ export default {
     }
   },
 
-  async removeMapFromPlaylist(workshopId: string, playlist: WorkshopPlaylistView) {
+  async removeMapFromPlaylist(workshopMap: WorkshopMap, playlist: WorkshopPlaylistView) {
     try {
-      const dto = await PlaylistApi.
+      const dto = await PlaylistApi.removeMapFromPlaylist(playlist.playlistId, workshopMap.mapId);
+      return WorkshopPlaylistView.fromDto(dto);
+    } catch (e) {
+      console.error('Failed to remove map from playlist:', e)
     }
-  }
+  },
+
+  /**
+   * Increments the weight of all maps in a playlist except for a map by a given increment.
+   * @param playlist
+   * @param workshopMap
+   * @param removeMap
+   * @param increment
+   */
+  async incrementAllOtherMaps(playlist: WorkshopPlaylistView,
+                              workshopMap?: WorkshopMap,
+                              removeMap: boolean = false,
+                              increment: number = 1) {
+    const exceptions = workshopMap ? [ workshopMap.mapId ] : [];
+    try {
+      return PlaylistApi.incrementAll(playlist.playlistId, increment, exceptions, removeMap);
+    } catch (e) {
+      console.error('Failed to increment maps weight:', e)
+    }
+  },
 
   getPlaylistIdQueryParam(route: RouteLocationNormalizedLoaded<any>): string {
     const id = route.params.id;

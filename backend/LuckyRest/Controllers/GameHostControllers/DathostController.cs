@@ -1,11 +1,13 @@
 ﻿using GameHostConveyer.Models;
 using LuckyRest.Database.DTOs.Actions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace LuckyRest.Controllers.GameHostControllers;
 
 [Route("[controller]")]
 [ApiController]
+[EnableRateLimiting("dathost")]
 public class DathostController : ControllerBase
 {
     [HttpPut("start")]

@@ -2,10 +2,9 @@
 
 export class WorkshopPlaylistIndex {
   constructor(public collectionName: string,
-              public playlistId: string,) {
-  }
-
-  public static fromPlaylist(playlist: WorkshopPlaylistView): WorkshopPlaylistIndex {
-    return new WorkshopPlaylistIndex(playlist.collectionName, playlist.playlistId);
+              public playlistId: string,
+              public size: number,
+              public created: Date,
+              public modified: Date,) {
   }
 }

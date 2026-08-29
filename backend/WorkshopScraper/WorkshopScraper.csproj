@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+      <PackageReference Include="System.Threading.RateLimiting" Version="10.0.9" />
     </ItemGroup>
 
     <ItemGroup>

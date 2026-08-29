@@ -10,7 +10,7 @@ namespace WorkshopScraper.Scraper;
 
 using HtmlAgilityPack;
 
-public class GenericScraper(IHtmlDocumentWrapper htmlDocument, NameValueCollection queries, string url) : IScraper
+public class HtmlExplorer(IHtmlDocumentWrapper htmlDocument, NameValueCollection queries, string url) : IExplorer
 {
     public string Url => url;
     public string? GetQueryValue(string query) => queries[query];
@@ -23,13 +23,5 @@ public class GenericScraper(IHtmlDocumentWrapper htmlDocument, NameValueCollecti
     public INodeCollectionWrapper GetAllElements(string xpathSelector)
     {
         return htmlDocument.SelectAllDocumentNodes(xpathSelector);
-    }
-
-    public static GenericScraper Load(string url)
-    {
-        var document = new HtmlDocumentWrapper(new HtmlWeb().Load(url));
-        var uri = new Uri(url);
-        var queries = HttpUtility.ParseQueryString(uri.Query);
-        return new GenericScraper(document, queries, url);
     }
 }

@@ -9,28 +9,26 @@ import StorageKeys from "@/helpers/constants/storage-keys.ts";
 export class DathostGameHostService implements GameHostService {
   serverId: string;
   username: string;
-  password: string;
 
-  constructor(serverId: string = "", username: string = "", password: string = "") {
+  constructor(serverId: string = "", username: string = "") {
     this.serverId = serverId;
     this.username = username;
-    this.password = password;
   }
 
-  setWorkshopMap(workshopMap: WorkshopMap): Promise<boolean> {
-    return DatHostApi.setWorkshopMap(this.serverId, this.username, this.password, workshopMap.mapId);
+  setWorkshopMap(workshopMap: WorkshopMap, password: string): Promise<boolean> {
+    return DatHostApi.setWorkshopMap(this.serverId, this.username, password, workshopMap.mapId);
   }
 
-  startServer(): Promise<boolean> {
-    return DatHostApi.startServer(this.serverId, this.username, this.password);
+  startServer(password: string): Promise<boolean> {
+    return DatHostApi.startServer(this.serverId, this.username, password);
   }
 
-  stopServer(): Promise<boolean> {
-    return DatHostApi.stopServer(this.serverId, this.username, this.password);
+  stopServer(password: string): Promise<boolean> {
+    return DatHostApi.stopServer(this.serverId, this.username, password);
   }
 
-  testConnection(): Promise<boolean> {
-    return DatHostApi.testConnection(this.serverId, this.username, this.password);
+  testConnection(password: string): Promise<boolean> {
+    return DatHostApi.testConnection(this.serverId, this.username, password);
   }
 
   getType(): GameHosts {
@@ -38,7 +36,12 @@ export class DathostGameHostService implements GameHostService {
   }
 
   saveConfig(): void {
+    const service = new DathostGameHostService(this.serverId, this.username);
     StorageService.saveToStorage(StorageKeys.GAME_HOST_KEY, GameHosts.DATHOST);
-    StorageService.saveToStorage(StorageKeys.GAME_HOST_DATA, this);
+    StorageService.saveToStorage(StorageKeys.GAME_HOST_DATA, service);
+  }
+
+  isGameHostSetup(): boolean {
+    return !!this.serverId && !!this.username;
   }
 }

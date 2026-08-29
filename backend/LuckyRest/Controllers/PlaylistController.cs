@@ -9,6 +9,7 @@ using LuckyRest.Services.WorkshopPlaylistService;
 using LuckyRest.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace LuckyRest.Controllers
 {
@@ -45,6 +46,7 @@ namespace LuckyRest.Controllers
         // POST: api/Playlist
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
+        [EnableRateLimiting("steam")]
         public async Task<ActionResult<WorkshopMapDto>> AddMapToWorkshopPlaylist(
             [FromBody] AddWorkshopMapDto addWorkshopMapDto)
         {
@@ -126,9 +128,13 @@ namespace LuckyRest.Controllers
             var user = await userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var result = await workshopPlaylistService.IncreaseAllMapWeights(user.Id,
-                increasePlaylistWeightsDto.PlaylistId, increasePlaylistWeightsDto.Increment,
-                increasePlaylistWeightsDto.Exceptions);
+            var result = await workshopPlaylistService.IncreaseAllMapWeights(
+                user.Id,
+                increasePlaylistWeightsDto.PlaylistId,
+                increasePlaylistWeightsDto.Increment,
+                increasePlaylistWeightsDto.Exceptions,
+                increasePlaylistWeightsDto.RemoveExceptions
+            );
             return result.Status switch
             {
                 ServiceResultStatus.NoContent => NoContent(),

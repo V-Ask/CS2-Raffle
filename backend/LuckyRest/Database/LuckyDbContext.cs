@@ -1,4 +1,5 @@
 ﻿using LuckyRest.Database.Entities;
+using LuckyRest.Database.EntityConfigurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,10 +11,51 @@ public class LuckyDbContext(DbContextOptions<LuckyDbContext> options) : Identity
     public DbSet<WorkshopPlaylist> Playlists { get; set; }
     public DbSet<WorkshopPlaylistMap> PlaylistMaps { get; set; }
 
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        MarkPlaylistAsModified();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override int SaveChanges()
+    {
+        MarkPlaylistAsModified();
+        return base.SaveChanges();
+    }
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
+    {
+        MarkPlaylistAsModified();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
+    {
+        MarkPlaylistAsModified();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         ModelPlaylistMaps(builder);
+        AddConfigurations(builder);
+    }
+    
+    private void MarkPlaylistAsModified()
+    {
+        foreach (var playlist in ChangeTracker.Entries()
+                     .Where(entityEntry => entityEntry is { State: EntityState.Modified, Entity: WorkshopPlaylist })
+                     .Select(entityEntry => entityEntry.Entity)
+                     .Cast<WorkshopPlaylist>())
+        {
+            playlist.Modified = DateTime.Now;
+        }
+    }
+
+    private static void AddConfigurations(ModelBuilder builder)
+    {
+        builder.ApplyConfiguration(new WorkshopPlaylistEntityConfiguration());
     }
 
     private static void ModelPlaylistMaps(ModelBuilder builder)
