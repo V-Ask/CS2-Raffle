@@ -1,4 +1,5 @@
-﻿using LuckyRest.Database.DAOs.UserDao;
+﻿using LuckyRest.Database;
+using LuckyRest.Database.DAOs.UserDao;
 using LuckyRest.Database.DAOs.WorkshopMapDao;
 using LuckyRest.Database.DAOs.WorkshopPlaylistDao;
 using LuckyRest.Database.DAOs.WorkshopPlaylistMapDao;
@@ -15,9 +16,11 @@ public static class ScopeUtil
         AddServiceScope(builder);
         AddDaoScope(builder);
     }
+
     private static void AddServiceScope(IHostApplicationBuilder builder)
     {
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IWorkshopMapService, WorkshopMapService>();
         builder.Services.AddScoped<IWorkshopPlaylistService, WorkshopPlaylistService>();
     }

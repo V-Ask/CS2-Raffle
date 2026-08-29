@@ -7,5 +7,7 @@ public interface IWorkshopMapDao
     public Task<WorkshopMap?> GetWorkshopMap(long workshopMapId);
     public Task PostWorkshopMap(WorkshopMap map);
     public Task<bool> PutWorkshopMap(long workshopMapId, WorkshopMap map);
+    public Task<WorkshopMap> DeleteWorkshopMap(WorkshopMap map);
+    public Task<bool> DeleteIfOrphaned(long workshopMapId);
     public bool MapExists(long workshopMapId);
 }

@@ -15,7 +15,7 @@ public class GenericScraper(IHtmlDocumentWrapper htmlDocument, NameValueCollecti
     public string Url => url;
     public string? GetQueryValue(string query) => queries[query];
 
-    public IHtmlNodeWrapper? GetSingleElement(string xpathSelector)
+    public IHtmlNodeWrapper GetSingleElement(string xpathSelector)
     {
         return htmlDocument.SelectSingleDocumentNode(xpathSelector);
     }

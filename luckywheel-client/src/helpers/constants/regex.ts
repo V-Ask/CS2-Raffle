@@ -1,0 +1,11 @@
+﻿const UPPERCASE_REGEX = /[A-Z]/;
+const LOWERCASE_REGEX = /[a-z]/;
+const DIGIT_REGEX = /[0-9]/;
+const NON_ALPHANUMERIC_REGEX = /^[a-zA-Z0-9]/;
+
+export default {
+  UPPERCASE_REGEX,
+  LOWERCASE_REGEX,
+  DIGIT_REGEX,
+  NON_ALPHANUMERIC_REGEX,
+}

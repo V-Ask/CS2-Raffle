@@ -1,0 +1,95 @@
+* {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+}
+
+body {
+  margin: 0;
+  font-size: larger;
+  color: #c8c8c8;
+}
+
+h1 {
+  color: #989898;
+}
+
+button, input[type=submit] {
+  color: white;
+  background: none;
+  border: 2px solid transparent;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+label {
+  color: lightgray;
+}
+
+input[type='text'],
+input[type='password'],
+input[type='email'] {
+  padding: 6px 12px;
+  font-size: larger;
+  color: white;
+  background-color: rgb(58, 58, 58);
+  border: none;
+}
+
+.background {
+  height: 100vh;
+  background-image: url('@/assets/background-temp.png');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center top;
+}
+
+.hover-button:hover {
+  border: 2px solid #1e1e1e;
+}
+
+.blur {
+  height: 100%;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.flex {
+  display: flex;
+  gap: 16px;
+}
+
+.no-gap {
+  gap: 0;
+}
+
+.no-margin {
+  margin: 0;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+#app {
+  height: 100%;
+}
+
+dialog {
+  padding: 0;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}

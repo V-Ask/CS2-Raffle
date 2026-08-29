@@ -1,9 +1,10 @@
-﻿using LuckyRest.Database.Entities;
+﻿using LuckyRest.Database.DTOs.Models;
+using LuckyRest.Database.Entities;
 using LuckyRest.Utils;
 
 namespace LuckyRest.Services.UserService;
 
 public interface IUserService
 {
-    public Task<ServiceResult> SetUserRestEndpoint(User user, string endpoint);
+    ServiceResult<AuthUserDto> AuthUser(User user);
 }

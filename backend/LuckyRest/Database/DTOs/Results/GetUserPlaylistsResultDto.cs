@@ -4,5 +4,5 @@ namespace LuckyRest.Database.DTOs.Results;
 
 public class GetUserPlaylistsResultDto
 {
-    public IList<WorkshopPlaylistDto> WorkshopPlaylists { get; set; } =  new List<WorkshopPlaylistDto>();
+    public IList<WorkshopPlaylistIndexDto> WorkshopPlaylists { get; set; } =  new List<WorkshopPlaylistIndexDto>();
 }

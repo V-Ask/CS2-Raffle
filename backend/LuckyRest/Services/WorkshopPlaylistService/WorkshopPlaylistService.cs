@@ -1,8 +1,10 @@
-﻿using LuckyRest.Database.DAOs.WorkshopMapDao;
+﻿using LuckyRest.Database;
+using LuckyRest.Database.DAOs.WorkshopMapDao;
 using LuckyRest.Database.DAOs.WorkshopPlaylistDao;
 using LuckyRest.Database.DAOs.WorkshopPlaylistMapDao;
 using LuckyRest.Database.DTOs.Models;
 using LuckyRest.Database.DTOs.Results;
+using LuckyRest.Database.DTOs.Views;
 using LuckyRest.Database.Entities;
 using LuckyRest.Utils;
 
@@ -11,53 +13,58 @@ namespace LuckyRest.Services.WorkshopPlaylistService;
 public class WorkshopPlaylistService(
     IWorkshopPlaylistDao workshopPlaylistDao,
     IWorkshopMapDao workshopMapDao,
-    IWorkshopPlaylistMapDao workshopPlaylistMapDao) : IWorkshopPlaylistService
+    IWorkshopPlaylistMapDao workshopPlaylistMapDao,
+    IUnitOfWork unitOfWork) : IWorkshopPlaylistService
 {
     public async Task<ServiceResult<AddMapToPlaylistResultDto>> AddMapToPlaylist(string userId, Guid workshopPlaylistId,
+        long workshopMapId)
+    {
+        var notFoundResult = ServiceResult.NotFound.WithData<AddMapToPlaylistResultDto>(null);
+        var workshopPlaylistMap = await JoinPlaylistAndMap(userId, workshopPlaylistId, workshopMapId);
+        if (workshopPlaylistMap == null)
+        {
+            return notFoundResult;
+        }
+
+        return ServiceResult.Success.WithData(new AddMapToPlaylistResultDto
+        {
+            WorkshopPlaylistMap = WorkshopPlaylistMapDto.FromEntity(workshopPlaylistMap)
+        });
+    }
+
+    private async Task<WorkshopPlaylistMap?> JoinPlaylistAndMap(string userId, Guid workshopPlaylistId,
         long workshopMapId)
     {
         var playlist = await workshopPlaylistDao.GetWorkshopPlaylist(userId, workshopPlaylistId);
         if (playlist == null)
         {
-            return ServiceResult.NotFound.WithData<AddMapToPlaylistResultDto>(null);
+            return null;
         }
 
         var map = await workshopMapDao.GetWorkshopMap(workshopMapId);
         if (map == null)
         {
-            return ServiceResult.NotFound.WithData<AddMapToPlaylistResultDto>(null);
+            return null;
         }
 
-        var playlistMap = new WorkshopPlaylistMap
-        {
-            WorkshopMap = map,
-            WorkshopPlaylist = playlist
-        };
-        await workshopPlaylistMapDao.PostWorkshopPlaylistMap(playlistMap);
-        playlist.PlaylistMaps.Add(playlistMap);
-
-        var result =
-            await workshopPlaylistDao.PutWorkshopPlaylist(userId, workshopPlaylistId ,playlist);
-        if (!result)
-        {
-            return ServiceResult.NotFound.WithData<AddMapToPlaylistResultDto>(null);
-        }
-
-        return ServiceResult.Success.WithData(new AddMapToPlaylistResultDto
-        {
-            WorkshopPlaylistMap = WorkshopPlaylistMapDto.FromEntity(playlistMap)
-        });
+        var playlistMap = WorkshopPlaylistMap.Join(playlist, map);
+        var postResult = await workshopPlaylistMapDao.PostWorkshopPlaylistMap(playlistMap);
+        return !postResult ? null : playlistMap;
     }
 
     public async Task<WorkshopPlaylistDto?> GetWorkshopPlaylist(string userId, Guid workshopPlaylistId)
     {
         var workshopPlaylist = await workshopPlaylistDao.GetWorkshopPlaylist(userId, workshopPlaylistId);
-        if (workshopPlaylist == null) return null;
-        return new WorkshopPlaylistDto
-        {
-            CollectionName = workshopPlaylist.CollectionName,
-            Maps = workshopPlaylist.PlaylistMaps.Select(WorkshopPlaylistMapDto.FromEntity).ToList(),
-        };
+        return workshopPlaylist == null ? null : WorkshopPlaylistDto.FromEntity(workshopPlaylist);
+    }
+
+    public async Task<ServiceResult<WorkshopPlaylistViewDto>> GetWorkshopPlaylistView(string userId,
+        Guid workshopPlaylistId)
+    {
+        var workshopPlaylist = await workshopPlaylistDao.GetWorkshopPlaylist(userId, workshopPlaylistId);
+        return workshopPlaylist == null
+            ? ServiceResult.NotFound.WithData<WorkshopPlaylistViewDto>(null)
+            : ServiceResult.Success.WithData(WorkshopPlaylistViewDto.FromEntity(workshopPlaylist));
     }
 
     public async Task<ServiceResult<GetUserPlaylistsResultDto>> GetWorkshopPlaylists(string userId)
@@ -65,7 +72,7 @@ public class WorkshopPlaylistService(
         var playlists = await workshopPlaylistDao.GetWorkshopPlaylists(userId);
         return ServiceResult.Success.WithData(new GetUserPlaylistsResultDto
         {
-            WorkshopPlaylists = playlists.Select(WorkshopPlaylistDto.FromEntity).ToList()
+            WorkshopPlaylists = playlists.Select(WorkshopPlaylistIndexDto.FromEntity).ToList()
         });
     }
 
@@ -91,5 +98,41 @@ public class WorkshopPlaylistService(
         return result == null
             ? ServiceResult.Exists.WithData<WorkshopPlaylistDto>(null)
             : ServiceResult.Success.WithData(WorkshopPlaylistDto.FromEntity(result));
+    }
+
+    public async Task<bool> PlaylistContainsMap(string userId, Guid workshopPlaylistId, long workshopMapId)
+    {
+        return await workshopPlaylistMapDao.Exists(userId, workshopPlaylistId, workshopMapId);
+    }
+
+    public async Task<ServiceResult> DeleteMapFromPlaylist(string userId, Guid workshopPlaylistId,
+        long workshopMapId)
+    {
+        await unitOfWork.BeginTransactionAsync();
+        try
+        {
+            var anyDeleted = await workshopPlaylistMapDao.DeleteWorkshopPlaylistMap(userId, workshopMapId, workshopPlaylistId);
+            if (!anyDeleted)
+            {
+                await unitOfWork.RollbackTransactionAsync();
+                return ServiceResult.NotFound;
+            }
+
+            await workshopMapDao.DeleteIfOrphaned(workshopMapId);
+            await unitOfWork.CommitTransactionAsync();
+            return ServiceResult.Success;
+        }
+        catch
+        {
+            await unitOfWork.RollbackTransactionAsync();
+            return ServiceResult.Error;
+        }
+    }
+
+    public async Task<ServiceResult> IncreaseAllMapWeights(string userId, Guid workshopPlaylistId,
+        int increment, long[] exceptions)
+    {
+        var incrementedMaps = await workshopPlaylistMapDao.IncreaseWeightsOfAllMaps(userId, workshopPlaylistId, increment, exceptions);
+        return incrementedMaps > 0 ? ServiceResult.Success : ServiceResult.NoContent;
     }
 }
