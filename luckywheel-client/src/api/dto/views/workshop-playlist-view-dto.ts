@@ -4,7 +4,9 @@ export class WorkshopPlaylistViewDto {
   constructor(
     public collectionName: string,
     public id: string,
-    public maps: WorkshopPlaylistMapViewDto[]
+    public maps: WorkshopPlaylistMapViewDto[],
+    public created: Date,
+    public modified: Date,
   ) {
   }
 }

@@ -10,6 +10,7 @@ import type {GameHostStoreService} from "@/models/game-host-store-service.ts";
 
 export const useGameHostStore = defineStore('game-host', () => {
   const gameHostStoreService = ref<GameHostStoreService>();
+  const savedPassword = ref<string>("");
 
   const ensureGameHostService = computed(() => {
     if (!gameHostStoreService.value) {
@@ -25,12 +26,15 @@ export const useGameHostStore = defineStore('game-host', () => {
     if (hasFailedAndChecked()) return;
     const gameHostService = ensureGameHostService.value.service;
     dirty = false;
-    return gameHostService.startServer().then(success => {
-      successful = success;
-      return success;
-    }).catch(_ => {
-      successful = false;
-    });
+    if (!!savedPassword.value) {
+
+      return gameHostService.startServer(savedPassword.value).then(success => {
+        successful = success;
+        return success;
+      }).catch(_ => {
+        successful = false;
+      });
+    }
   }
 
 
@@ -38,25 +42,35 @@ export const useGameHostStore = defineStore('game-host', () => {
     if (hasFailedAndChecked()) return;
     const gameHostService = ensureGameHostService.value.service;
     dirty = false;
-    return gameHostService.stopServer().then(success => {
-      successful = success;
-      return success;
-    }).catch(_ => {
-      successful = false;
-    });
+    if (!!savedPassword.value) {
+      return gameHostService.stopServer(savedPassword.value).then(success => {
+        successful = success;
+        return success;
+      }).catch(_ => {
+        successful = false;
+      });
+    }
   }
 
 
   async function setWorkshopMap(workshopMap: WorkshopMap) {
-    if (hasFailedAndChecked()) return;
+    if (hasFailedAndChecked()) return false;
     const gameHostService = ensureGameHostService.value.service;
     dirty = false;
-    return gameHostService.setWorkshopMap(workshopMap).then(success => {
-      successful = success;
-      return success;
-    }).catch(_ => {
-      successful = false;
-    });
+    if (!!savedPassword.value) {
+      return gameHostService.setWorkshopMap(workshopMap, savedPassword.value).then(success => {
+        successful = success;
+        return success;
+      }).catch(_ => {
+        successful = false;
+        return false;
+      });
+    }
+    return false;
+  }
+
+  function isGameHostSetup() {
+    return ensureGameHostService.value.service.isGameHostSetup();
   }
 
   function hasPreviouslySucceededOrNotYetChecked() {
@@ -82,7 +96,7 @@ export const useGameHostStore = defineStore('game-host', () => {
    */
   function loadGameHostIntoStore() {
     const hostType = StorageService.getTypeFromStorage<GameHosts>(StorageKeys.GAME_HOST_KEY);
-    let storeService:  GameHostStoreService;
+    let storeService: GameHostStoreService;
     if (hostType) {
       storeService = {
         service: GameHostCreatorService.loadGameHostFromType(hostType as GameHosts),
@@ -103,7 +117,8 @@ export const useGameHostStore = defineStore('game-host', () => {
     stopServer,
     setWorkshopMap,
     setNewGameHost,
-    hasFailedAndChecked
+    savedPassword,
+    isGameHostSetup
   };
 })
 

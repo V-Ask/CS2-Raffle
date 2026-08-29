@@ -130,6 +130,12 @@ namespace LuckyRest.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("WorkshopPlaylistId");
 
                     b.HasIndex("AuthorId");
@@ -309,7 +315,7 @@ namespace LuckyRest.Migrations
                     b.HasOne("LuckyRest.Database.Entities.WorkshopMap", "WorkshopMap")
                         .WithMany("Playlists")
                         .HasForeignKey("WorkshopMapId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LuckyRest.Database.Entities.WorkshopPlaylist", "WorkshopPlaylist")

@@ -19,6 +19,10 @@ async function auth(): Promise<AuthUserDto> {
   return API.get('/api/User/auth').then(response => response.data);
 }
 
+async function logout() {
+  return API.post('/api/User/logout');
+}
+
 async function getInfo() {
   return API.get('/manage/info');
 }
@@ -26,5 +30,6 @@ async function getInfo() {
 export default {
   login,
   register,
-  auth
+  auth,
+  logout,
 }

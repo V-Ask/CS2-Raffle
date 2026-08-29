@@ -69,10 +69,10 @@ public class WorkshopPlaylistService(
 
     public async Task<ServiceResult<GetUserPlaylistsResultDto>> GetWorkshopPlaylists(string userId)
     {
-        var playlists = await workshopPlaylistDao.GetWorkshopPlaylists(userId);
+        var playlists = await workshopPlaylistDao.GetWorkshopPlaylistIndices(userId);
         return ServiceResult.Success.WithData(new GetUserPlaylistsResultDto
         {
-            WorkshopPlaylists = playlists.Select(WorkshopPlaylistIndexDto.FromEntity).ToList()
+            WorkshopPlaylists = playlists
         });
     }
 
@@ -89,10 +89,11 @@ public class WorkshopPlaylistService(
 
     public async Task<ServiceResult<WorkshopPlaylistDto>> CreatePlaylist(User user, string collectionName)
     {
+        var time = DateTime.Now;
         var playlist = new WorkshopPlaylist
         {
             Author = user,
-            CollectionName = collectionName
+            CollectionName = collectionName,
         };
         var result = await workshopPlaylistDao.CreatePlaylist(playlist);
         return result == null
@@ -111,14 +112,13 @@ public class WorkshopPlaylistService(
         await unitOfWork.BeginTransactionAsync();
         try
         {
-            var anyDeleted = await workshopPlaylistMapDao.DeleteWorkshopPlaylistMap(userId, workshopMapId, workshopPlaylistId);
+            var anyDeleted = await DeleteMapFromPlaylistAndDeleteOrphan(userId, workshopPlaylistId, workshopMapId);
             if (!anyDeleted)
             {
                 await unitOfWork.RollbackTransactionAsync();
                 return ServiceResult.NotFound;
             }
 
-            await workshopMapDao.DeleteIfOrphaned(workshopMapId);
             await unitOfWork.CommitTransactionAsync();
             return ServiceResult.Success;
         }
@@ -130,9 +130,39 @@ public class WorkshopPlaylistService(
     }
 
     public async Task<ServiceResult> IncreaseAllMapWeights(string userId, Guid workshopPlaylistId,
-        int increment, long[] exceptions)
+        int increment, long[] exceptions, bool removeExceptions)
     {
-        var incrementedMaps = await workshopPlaylistMapDao.IncreaseWeightsOfAllMaps(userId, workshopPlaylistId, increment, exceptions);
-        return incrementedMaps > 0 ? ServiceResult.Success : ServiceResult.NoContent;
+        await unitOfWork.BeginTransactionAsync();
+        try
+        {
+            var incrementedMaps =
+                await workshopPlaylistMapDao.IncreaseWeightsOfAllMaps(userId, workshopPlaylistId, increment,
+                    exceptions);
+            if (!removeExceptions) return incrementedMaps > 0 ? ServiceResult.Success : ServiceResult.NoContent;
+            foreach (var exceptionId in exceptions)
+            {
+                var isDeleted = await DeleteMapFromPlaylistAndDeleteOrphan(userId, workshopPlaylistId, exceptionId);
+                if (isDeleted) continue;
+                await unitOfWork.RollbackTransactionAsync();
+                return ServiceResult.NotFound;
+            }
+
+            await unitOfWork.CommitTransactionAsync();
+            return ServiceResult.Success;
+        }
+        catch
+        {
+            await unitOfWork.RollbackTransactionAsync();
+            return ServiceResult.Error;
+        }
+    }
+
+    private async Task<bool> DeleteMapFromPlaylistAndDeleteOrphan(string userId, Guid workshopPlaylistId,
+        long workshopMapId)
+    {
+        var anyDeleted = await workshopPlaylistMapDao.DeleteWorkshopPlaylistMap(userId, workshopMapId, workshopPlaylistId);
+        if (!anyDeleted) return false;
+        await workshopMapDao.DeleteIfOrphaned(workshopMapId);
+        return true;
     }
 }

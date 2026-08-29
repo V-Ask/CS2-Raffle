@@ -8,6 +8,7 @@ import type {
 
 async function getAllPlaylistIndex(): Promise<GetUserPlaylistsResultDto> {
   return API.get('/api/Playlist/all').then(response => {
+    console.log('response', response);
     if (response.status === 200) {
       return response.data;
     }
@@ -77,10 +78,26 @@ async function removeMapFromPlaylist(playlistId: string, mapId: string): Promise
   })
 }
 
+async function incrementAll(playlistId: string,
+                            increment: number = 1,
+                            exceptions: string[],
+                            removeExceptions: boolean): Promise<void> {
+  return API.post(`/api/Playlist/all/increase-weight`, {
+    playlistId,
+    increment,
+    exceptions,
+    removeExceptions
+  }).then(response => {
+    return response.data;
+  })
+}
+
 export default {
   getAllPlaylistIndex,
   addMapToPlaylist,
   createPlaylist,
   getMapFromPlaylist,
   getPlaylistView,
+  removeMapFromPlaylist,
+  incrementAll
 }

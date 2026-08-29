@@ -8,6 +8,12 @@ import type {WorkshopMap} from "@/models/workshop-map.ts";
 import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import PlaylistService from "@/services/spinner/playlist.service.ts";
 import StandardDialog from "@/components/dialogs/StandardDialog.vue";
+import {useSpinnerStore} from "@/stores/spinner.store.ts";
+import {useLoadingStore} from "@/stores/loading.store.ts";
+import {InputTypes} from "@/models/input-types.ts";
+
+const loadingStore = useLoadingStore();
+const playlistStore = useSpinnerStore();
 
 const props = defineProps<{
   playlist: WorkshopPlaylistView
@@ -21,15 +27,20 @@ const emits = defineEmits<{
 const workshopUrl = ref("");
 const isAddingMap = ref(false);
 
-function returnToPlaylistView() {
+function returnToPlaylistView(map?: WorkshopMap) {
+  if(map) {
+    emits('addMap', map);
+  }
   emits('closeDialog');
+  workshopUrl.value = "";
+  isWorkshopUrlError.value = false;
 }
 
 function addNewMap() {
   isAddingMap.value = true;
   let id = WorkshopLinkService.getWorkshopId(workshopUrl.value);
-  if (!id) {
-    console.warn("Invalid Workshop Link -- this needs clearer error reporting");
+  if (!id || mapAlreadyExists(id)) {
+    isWorkshopUrlError.value = true;
     return;
   }
   PlaylistService.addNewMapToPlaylist(id, props.playlist).then((map) => {
@@ -38,8 +49,10 @@ function addNewMap() {
       isAddingMap.value = false;
       return;
     }
-    isAddingMap.value = false;
-    emits('addMap', map);
+    returnToPlaylistView(map);
+  }, err => {
+    console.error('An error occured', err);
+    loadingCallback();
   });
 }
 </script>
@@ -48,7 +61,7 @@ function addNewMap() {
   <StandardDialog header-text="Add new map...">
     <div class="input-wrapper">
       <SingleLineTextField placeholder="Insert Workshop URL here"
-                           v-model="workshopUrl"></SingleLineTextField>
+                           :input-type="InputTypes.TEXT"v-model="workshopUrl"></SingleLineTextField>
       <ConfirmButton @click="addNewMap()">Add</ConfirmButton>
       <RegButton @click="returnToPlaylistView()">Cancel</RegButton>
     </div>
@@ -59,5 +72,6 @@ function addNewMap() {
 .input-wrapper {
   display: flex;
   gap: 0.5rem;
+  justify-content: space-between;
 }
 </style>

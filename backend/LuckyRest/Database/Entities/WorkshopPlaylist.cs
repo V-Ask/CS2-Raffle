@@ -7,11 +7,16 @@ namespace LuckyRest.Database.Entities;
 public class WorkshopPlaylist
 {
     public Guid WorkshopPlaylistId { get; set; }
-    [StringLength(50)]
-    public string CollectionName { get; set; } = string.Empty;
+    [StringLength(50)] public string CollectionName { get; set; } = string.Empty;
     public IList<WorkshopPlaylistMap> PlaylistMaps { get; set; } = new List<WorkshopPlaylistMap>();
-
-    [StringLength(500)]
-    public string AuthorId { get; set; } = string.Empty;
+    [StringLength(500)] public string AuthorId { get; set; } = string.Empty;
     public required User Author { get; set; }
+    public DateTime? Created { get; set; }
+    public DateTime? Modified { get; set; }
+
+    public WorkshopPlaylist()
+    {
+        Modified = DateTime.Now;
+        Created ??= Modified;
+    }
 }

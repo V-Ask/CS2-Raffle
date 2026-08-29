@@ -1,4 +1,5 @@
-﻿using LuckyRest.Database.Entities;
+﻿using LuckyRest.Database.DTOs.Models;
+using LuckyRest.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LuckyRest.Database.DAOs.WorkshopPlaylistDao;
@@ -14,12 +15,13 @@ public class WorkshopPlaylistDao(LuckyDbContext dbContext) : IWorkshopPlaylistDa
                 x.AuthorId == userId && x.WorkshopPlaylistId == workshopPlaylistId);
     }
 
-    public async Task<List<WorkshopPlaylist>> GetWorkshopPlaylists(string userId)
+    public async Task<List<WorkshopPlaylistIndexDto>> GetWorkshopPlaylistIndices(string userId)
     {
         var playlists = await dbContext.Playlists
             .Include(p => p.PlaylistMaps)
             .ThenInclude(pm => pm.WorkshopMap)
             .Where(x => x.AuthorId == userId)
+            .Select(playlist => WorkshopPlaylistIndexDto.FromEntity(playlist))
             .ToListAsync();
         return playlists;
     }
