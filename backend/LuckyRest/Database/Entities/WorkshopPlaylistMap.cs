@@ -9,7 +9,7 @@ public class WorkshopPlaylistMap
     public long WorkshopMapId { get; set; }
     public int Weight { get; set; } = 1;
     public bool HasPlayed { get; set; }
-
+    public int Rating { get; set; } = 0;
     public static WorkshopPlaylistMap Join(WorkshopPlaylist playlist, WorkshopMap map)
     {
         return new WorkshopPlaylistMap

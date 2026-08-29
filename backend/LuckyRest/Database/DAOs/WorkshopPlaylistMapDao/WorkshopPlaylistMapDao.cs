@@ -53,14 +53,25 @@ public class WorkshopPlaylistMapDao(LuckyDbContext dbContext) : IWorkshopPlaylis
                 pm.WorkshopPlaylist.AuthorId == userId);
     }
 
-    public async Task<int> IncreaseWeightsOfAllMaps(string userId, Guid playlistId, int increment, long[] exceptions)
+    public async Task<int> IncreaseWeightsOfAllMaps(string userId, Guid playlistId, int increment, long[] excludedMaps)
     {
         return await dbContext.PlaylistMaps
             .Where(pm => 
                 pm.WorkshopPlaylist.AuthorId == userId &&
                 pm.WorkshopPlaylistId == playlistId &&
-                !exceptions.Contains(pm.WorkshopMapId))
+                !excludedMaps.Contains(pm.WorkshopMapId))
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(pm => pm.Weight, pm => pm.Weight + increment));
+    }
+
+    public async Task<int> RateMap(string userId, Guid playlistId, long workshopMapId, int rating)
+    {
+        return await dbContext.PlaylistMaps
+            .Where(pm => 
+                pm.WorkshopPlaylist.AuthorId == userId &&
+                pm.WorkshopPlaylistId == playlistId &&
+                pm.WorkshopMapId == workshopMapId)
+            .ExecuteUpdateAsync(setter => setter
+                .SetProperty(pm => pm.Rating, pm => rating));
     }
 }

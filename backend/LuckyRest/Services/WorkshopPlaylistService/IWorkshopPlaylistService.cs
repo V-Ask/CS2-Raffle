@@ -26,4 +26,6 @@ public interface IWorkshopPlaylistService
     
     public Task<ServiceResult> IncreaseAllMapWeights(string userId, Guid workshopPlaylistId,
         int increment, long[] exceptions, bool removeExceptions);
+    
+    public Task<ServiceResult> RateMap(string userId, Guid workshopPlaylistId, long workshopMapId, int newRating);
 }

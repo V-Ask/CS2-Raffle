@@ -12,5 +12,7 @@ public interface IWorkshopPlaylistMapDao
 
     public Task<bool> Exists(string userId, Guid playlistId, long mapId);
 
-    public Task<int> IncreaseWeightsOfAllMaps(string userId, Guid playlistId, int increment, long[] exceptions);
+    public Task<int> IncreaseWeightsOfAllMaps(string userId, Guid playlistId, int increment, long[] excludedMaps);
+    
+    public Task<int> RateMap(string userId, Guid playlistId, long workshopMapId, int rating);
 }

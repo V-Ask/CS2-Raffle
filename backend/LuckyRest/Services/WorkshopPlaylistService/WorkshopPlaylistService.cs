@@ -89,7 +89,6 @@ public class WorkshopPlaylistService(
 
     public async Task<ServiceResult<WorkshopPlaylistDto>> CreatePlaylist(User user, string collectionName)
     {
-        var time = DateTime.Now;
         var playlist = new WorkshopPlaylist
         {
             Author = user,
@@ -155,6 +154,19 @@ public class WorkshopPlaylistService(
             await unitOfWork.RollbackTransactionAsync();
             return ServiceResult.Error;
         }
+    }
+
+    public async Task<ServiceResult> RateMap(string userId, Guid workshopPlaylistId, long workshopMapId, int rating)
+    {
+        await unitOfWork.BeginTransactionAsync();
+        var mapsRated = await workshopPlaylistMapDao.RateMap(userId, workshopPlaylistId, workshopMapId, rating);
+        if (mapsRated != 0)
+        {
+            await unitOfWork.RollbackTransactionAsync();
+            return ServiceResult.Error;
+        }
+        await unitOfWork.CommitTransactionAsync();
+        return ServiceResult.Success;
     }
 
     private async Task<bool> DeleteMapFromPlaylistAndDeleteOrphan(string userId, Guid workshopPlaylistId,

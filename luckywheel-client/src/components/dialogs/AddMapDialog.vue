@@ -25,6 +25,7 @@ const emits = defineEmits<{
 }>();
 
 const workshopUrl = ref("");
+const isWorkshopUrlError = ref(false);
 const isAddingMap = ref(false);
 
 function returnToPlaylistView(map?: WorkshopMap) {
@@ -43,8 +44,11 @@ function addNewMap() {
     isWorkshopUrlError.value = true;
     return;
   }
+  const loadingCallback = loadingStore.startLoading();
   PlaylistService.addNewMapToPlaylist(id, props.playlist).then((map) => {
+    loadingCallback();
     if (!map) {
+      isWorkshopUrlError.value = true;
       console.warn("The map was not found. Try again.");
       isAddingMap.value = false;
       return;
@@ -55,6 +59,11 @@ function addNewMap() {
     loadingCallback();
   });
 }
+
+function mapAlreadyExists(mapId: string) {
+  return playlistStore.getPlaylists.some((p) => p.playlistId === mapId);
+}
+
 </script>
 
 <template>

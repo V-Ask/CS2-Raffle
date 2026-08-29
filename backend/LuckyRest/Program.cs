@@ -68,13 +68,6 @@ services.AddRateLimiter(options =>
         o.SegmentsPerWindow = 6;
         o.QueueLimit = 0;
     });
-    options.AddSlidingWindowLimiter("steam", o =>
-    {
-        o.PermitLimit = 10;
-        o.Window = TimeSpan.FromMinutes(0.5);
-        o.SegmentsPerWindow = 6;
-        o.QueueLimit = 0;
-    });
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
@@ -82,6 +75,7 @@ builder.AddScopes();
 
 var app = builder.Build();
 
+app.ApplyMigrations();
 app.UseCors();
 app.UseRateLimiter();
 app.UseAuthentication();

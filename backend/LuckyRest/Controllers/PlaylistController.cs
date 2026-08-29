@@ -46,7 +46,6 @@ namespace LuckyRest.Controllers
         // POST: api/Playlist
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
-        [EnableRateLimiting("steam")]
         public async Task<ActionResult<WorkshopMapDto>> AddMapToWorkshopPlaylist(
             [FromBody] AddWorkshopMapDto addWorkshopMapDto)
         {
@@ -138,6 +137,26 @@ namespace LuckyRest.Controllers
             return result.Status switch
             {
                 ServiceResultStatus.NoContent => NoContent(),
+                ServiceResultStatus.Success => Ok(),
+                _ => throw new InvalidOperationException()
+            };
+        }
+
+        [HttpPut("rate-map")]
+        public async Task<ActionResult> RateMap(
+            [FromBody] RateMapActionDto rateMapActionDto)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var result = await workshopPlaylistService.RateMap(user.Id,
+                rateMapActionDto.PlaylistId,
+                rateMapActionDto.MapId,
+                rateMapActionDto.Rating
+            );
+            return result.Status switch
+            {
+                ServiceResultStatus.Error => throw new Exception("Failed to rate map"),
                 ServiceResultStatus.Success => Ok(),
                 _ => throw new InvalidOperationException()
             };
