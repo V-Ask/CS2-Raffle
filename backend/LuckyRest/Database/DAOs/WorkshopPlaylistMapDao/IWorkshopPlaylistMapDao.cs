@@ -15,4 +15,6 @@ public interface IWorkshopPlaylistMapDao
     public Task<int> IncreaseWeightsOfAllMaps(string userId, Guid playlistId, int increment, long[] excludedMaps);
     
     public Task<int> RateMap(string userId, Guid playlistId, long workshopMapId, int rating);
+    
+    public Task<int> MarkMapAsPlayed(string userId, Guid playlistId, long workshopMapId, bool played);
 }

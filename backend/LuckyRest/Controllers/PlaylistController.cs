@@ -161,5 +161,39 @@ namespace LuckyRest.Controllers
                 _ => throw new InvalidOperationException()
             };
         }
+
+        [HttpPut("played")]
+        public async Task<ActionResult> MarkMapAsPlayed(
+            [FromBody] MarkMapAsPlayedActionDto markMapAsPlayedDto)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+            
+            ServiceResult result;
+            if (markMapAsPlayedDto.Played)
+            {
+                result = await workshopPlaylistService.MarkMapAsPlayed(
+                    user.Id,
+                    markMapAsPlayedDto.PlaylistId,
+                    markMapAsPlayedDto.MapId
+                );
+            }
+            else
+            {
+                result = await workshopPlaylistService.MarkMapAsUnPlayed(
+                    user.Id,
+                    markMapAsPlayedDto.PlaylistId,
+                    markMapAsPlayedDto.MapId
+                );
+            }
+
+            return result.Status switch
+            {
+                ServiceResultStatus.Success => Ok(),
+                ServiceResultStatus.NoContent => NoContent(),
+                ServiceResultStatus.Error => throw new Exception("Failed to mark map"),
+                _ => throw new InvalidOperationException()
+            };
+        }
     }
 }

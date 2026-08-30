@@ -160,11 +160,48 @@ public class WorkshopPlaylistService(
     {
         await unitOfWork.BeginTransactionAsync();
         var mapsRated = await workshopPlaylistMapDao.RateMap(userId, workshopPlaylistId, workshopMapId, rating);
-        if (mapsRated != 0)
+        if (mapsRated != 1)
         {
             await unitOfWork.RollbackTransactionAsync();
             return ServiceResult.Error;
         }
+
+        await unitOfWork.CommitTransactionAsync();
+        return ServiceResult.Success;
+    }
+
+    public async Task<ServiceResult> MarkMapAsPlayed(string userId, Guid workshopPlaylistId, long workshopMapId)
+    {
+        await unitOfWork.BeginTransactionAsync();
+        var mapsModified = await workshopPlaylistMapDao.MarkMapAsPlayed(userId, workshopPlaylistId, workshopMapId, true);
+        switch (mapsModified)
+        {
+            case < 1:
+                await unitOfWork.CommitTransactionAsync();
+                return ServiceResult.NoContent;
+            case > 1:
+                await unitOfWork.RollbackTransactionAsync();
+                return ServiceResult.Error;
+        }
+
+        await unitOfWork.CommitTransactionAsync();
+        return ServiceResult.Success;
+    }
+    
+    public async Task<ServiceResult> MarkMapAsUnPlayed(string userId, Guid workshopPlaylistId, long workshopMapId)
+    {
+        await unitOfWork.BeginTransactionAsync();
+        var mapsModified = await workshopPlaylistMapDao.MarkMapAsPlayed(userId, workshopPlaylistId, workshopMapId, false);
+        switch (mapsModified)
+        {
+            case < 1:
+                await unitOfWork.CommitTransactionAsync();
+                return ServiceResult.NoContent;
+            case > 1:
+                await unitOfWork.RollbackTransactionAsync();
+                return ServiceResult.Error;
+        }
+
         await unitOfWork.CommitTransactionAsync();
         return ServiceResult.Success;
     }
@@ -172,7 +209,8 @@ public class WorkshopPlaylistService(
     private async Task<bool> DeleteMapFromPlaylistAndDeleteOrphan(string userId, Guid workshopPlaylistId,
         long workshopMapId)
     {
-        var anyDeleted = await workshopPlaylistMapDao.DeleteWorkshopPlaylistMap(userId, workshopMapId, workshopPlaylistId);
+        var anyDeleted =
+            await workshopPlaylistMapDao.DeleteWorkshopPlaylistMap(userId, workshopMapId, workshopPlaylistId);
         if (!anyDeleted) return false;
         await workshopMapDao.DeleteIfOrphaned(workshopMapId);
         return true;
