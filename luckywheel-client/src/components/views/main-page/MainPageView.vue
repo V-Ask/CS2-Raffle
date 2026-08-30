@@ -6,11 +6,8 @@ import {InputTypes} from "@/models/input-types.ts";
 import DropdownSelector from "@/components/inputs/DropdownSelector.vue";
 import type {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-index.ts";
 import MapList from "@/components/spinner/preview/MapList.vue";
-import SpinningReel from "@/components/spinner/reel/SpinningReel.vue";
-import WinningMapComponent from "@/components/spinner/reel/WinningMapComponent.vue";
 import ReelService from "@/services/spinner/reel.service.ts";
 import type {ReelMap} from "@/models/reel-map.ts";
-import type {WinningMapActionCallback} from "@/models/winning-map-action-callback.ts";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
 import CreatePlaylistDialog from "@/components/dialogs/CreatePlaylistDialog.vue";
@@ -18,9 +15,12 @@ import DialogService from "@/services/dialog.service.ts";
 import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import type {WorkshopMap} from "@/models/workshop-map.ts";
 import AddMapDialog from "@/components/dialogs/AddMapDialog.vue";
-import RoutingService from "@/services/routing.service.ts";
+import LoadingPanel from "@/components/views/main-page/sub-panels/LoadingPanel.vue";
+import WinningMapPanel from "@/components/views/main-page/sub-panels/WinningMapPanel.vue";
+import SpinningReelPanel from "@/components/views/main-page/sub-panels/SpinningReelPanel.vue";
+import MapListPanel from "@/components/views/main-page/sub-panels/MapListPanel.vue";
 
-enum ViewState { BROWSING, SPINNING, SPUN }
+enum ViewState { BROWSING, SPINNING, SPUN}
 
 const createPlaylistDialog = ref<HTMLDialogElement | null>(null);
 const addMapDialog = ref<HTMLDialogElement | null>(null);
@@ -86,7 +86,7 @@ function openCreatePlaylistDialog() {
 }
 
 function navigateToEditPlaylistsView() {
-  RoutingService.navigateToPlaylistEdit();
+
 }
 
 function closeCreatePlaylistDialog() {
@@ -139,55 +139,54 @@ async function resetPlaylist() {
 <template>
   <div class="view-wrapper">
     <div class="bar-wrapper">
-      <div class="select-wrapper" v-if="isBrowsing">
-        <DropdownSelector v-model="selectedPlaylistIndex"
-                          :disabled="isLoading"
-                          :options="playlistIndices"
-                          :option-index-fn="playlistIndexOptionIndex"
-                          :option-text-fn="playlistIndexText">
-          SELECT PLAYLIST
-        </DropdownSelector>
-        <div class="playlist-buttons">
-          <button
-            title="Create new playlist"
-            :disabled="isLoading"
-            @click="openCreatePlaylistDialog"
-          >
-            <i class="fa-solid fa-plus fa-2x "></i>
-          </button>
-<!--          <button-->
-<!--            title="Edit playlists"-->
-<!--            :disabled="isLoading"-->
-<!--            @click="navigateToEditPlaylistsView"-->
-<!--          >-->
-<!--            <i class="fa-solid fa-pen fa-xl"></i>-->
-<!--          </button>-->
+      <template v-if="isBrowsing">
+        <div class="select-wrapper">
+          <DropdownSelector v-model="selectedPlaylistIndex"
+                            :disabled="isLoading"
+                            :options="playlistIndices"
+                            :option-index-fn="playlistIndexOptionIndex"
+                            :option-text-fn="playlistIndexText">
+            SELECT PLAYLIST
+          </DropdownSelector>
+          <div class="playlist-buttons">
+            <button
+              title="Create new playlist"
+              :disabled="isLoading"
+              @click="openCreatePlaylistDialog"
+            >
+              <i class="fa-solid fa-plus fa-2x "></i>
+            </button>
+            <button
+              title="Edit playlists"
+              :disabled="isLoading"
+              @click="navigateToEditPlaylistsView"
+            >
+              <i class="fa-solid fa-pen fa-xl"></i>
+            </button>
+          </div>
         </div>
-      </div>
-      <SingleLineTextField v-model="searchText"
-                           placeholder="Search maps..."
-                           :input-type="InputTypes.SEARCH"
-                           :disabled="playlistIsNotSelected"
-      />
+        <SingleLineTextField v-model="searchText"
+                             placeholder="Search maps..."
+                             :input-type="InputTypes.SEARCH"
+                             :disabled="playlistIsNotSelected"
+        />
+      </template>
     </div>
     <div class="map-wrapper">
-      <div v-if="isLoading"
-           class="loading-wrapper">
-        <i class="fa-solid fa-spinner fa-spin fa-4x"></i>
-      </div>
+      <LoadingPanel v-if="isLoading"/>
       <template v-else>
-        <WinningMapComponent v-if="viewState === ViewState.SPUN && winnerMap && selectedPlaylist"
-                             :winning-map="winnerMap"
-                             :playlist="selectedPlaylist"
-                             @cancelWinningMap="onCancelWinner($event)"/>
-        <SpinningReel v-else-if="viewState === ViewState.SPINNING"
-                      :reel-size="100"
-                      :reel-maps="coloredMaps"
-                      @mapSelected="onMapSelected($event)"/>
+        <WinningMapPanel v-if="viewState === ViewState.SPUN && winnerMap && selectedPlaylist"
+                         :winning-map="winnerMap"
+                         :playlist="selectedPlaylist"
+                         @cancelWinningMap="onCancelWinner($event)"/>
+        <SpinningReelPanel v-else-if="viewState === ViewState.SPINNING"
+                           :reel-size="100"
+                           :reel-maps="coloredMaps"
+                           @mapSelected="onMapSelected($event)"/>
         <template v-else>
-          <div v-if="coloredMaps.size" class="map-list-container">
-            <MapList :workshop-maps="filteredMaps"/>
-          </div>
+          <MapListPanel v-if="coloredMaps.size"
+                        :maps="filteredMaps"
+          />
           <p v-else-if="selectedPlaylist" class="state-message">Add a map to this playlist to get
             started!</p>
           <p v-else class="state-message">Select a playlist to preview its maps.</p>
@@ -246,12 +245,6 @@ async function resetPlaylist() {
   overflow: hidden;
 }
 
-.map-list-container {
-  height: 100%;
-  overflow: auto;
-  padding: 1rem;
-}
-
 .state-message {
   color: #8a9bb0;
   text-align: center;
@@ -272,12 +265,6 @@ async function resetPlaylist() {
   gap: 16px;
 }
 
-.loading-wrapper {
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-}
 
 .playlist-buttons {
   display: flex;
