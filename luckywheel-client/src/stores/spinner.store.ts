@@ -5,13 +5,12 @@ import {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-index.t
 import type {RouteLocationNormalizedLoaded} from "vue-router";
 import type {ReelMap} from "@/models/reel-map.ts";
 
-export const useSpinnerStore = defineStore('spinner', {
+export const usePlaylistStore = defineStore('spinner', {
   state: () => ({
     playlistIndices: [] as WorkshopPlaylistIndex[],
     playlistIndicesLoaded: false,
     playlistViewCache: new Map<string, WorkshopPlaylistView>(),
     spinnerStatus: SpinnerStatus.VIEWING as SpinnerStatus,
-    selectedMap: null as ReelMap | null,
   }),
   getters: {
     getPlaylists: (state) => state.playlistIndices,
@@ -63,10 +62,6 @@ export const useSpinnerStore = defineStore('spinner', {
     }
   }
 });
-
-function playlistContainsReelMap(playlist: WorkshopPlaylistView, reelMap: ReelMap) {
-  return playlist.maps.map(map => map.mapId).includes(reelMap.workshopId);
-}
 
 export enum SpinnerStatus {
   VIEWING,

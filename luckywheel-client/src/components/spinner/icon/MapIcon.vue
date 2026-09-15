@@ -1,28 +1,69 @@
 ﻿<script setup lang="ts">
 import type {ReelMap} from "@/models/reel-map.ts";
-import {computed} from "vue";
+import PasswordPrompt from "@/components/dialogs/settings/game-hosts/PasswordPrompt.vue";
+import {computed, ref} from "vue";
+import {useGameHostStore} from "@/stores/game-host.store.ts";
+import EditMapsDialog from "@/components/dialogs/map/EditMapsDialog.vue";
+import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 
-const props = defineProps<{
-  map: ReelMap
-}>();
+const props = withDefaults(defineProps<{
+  map: ReelMap,
+  enableOverlayButtons?: boolean
+}>(), {
+  enableOverlayButtons: true
+});
 
+const gameHostStore = useGameHostStore();
+
+const passwordPrompt = ref<HTMLDialogElement | null>(null);
+const editMapsDialog = ref<HTMLDialogElement | null>(null);
+const deleteConfirmDialog = ref<HTMLDialogElement | null>(null);
+const isLaunchingMap = ref(false);
 const color = computed(() => props.map.color);
+
+function playMap() {
+  passwordPrompt.value?.showModal();
+}
+
+function editMap() {
+  editMapsDialog.value?.showModal();
+}
+
+function closeEdit() {
+  editMapsDialog.value?.close();
+}
+
+function deleteMap() {
+}
+
+async function onPasswordConfirmed() {
+  passwordPrompt.value?.close();
+  isLaunchingMap.value = true;
+  await gameHostStore.setWorkshopMap(props.map);
+  isLaunchingMap.value = false;
+}
 </script>
 
 <template>
   <div class="map-wrapper">
     <div class="map thumbnail">
       <img :src="map.imageUrl" :alt="`Thumbnail for ${map.mapName}`">
-      <div class="overlay">
-        <div class="play button">
-          <button>
-            <i class="fa-solid fa-play fa-2x"></i>
-          </button>
-        </div>
-        <button class="edit button">
+      <div v-if="props.enableOverlayButtons"
+           class="overlay">
+        <button class="play button"
+                title="Play map"
+                :class="{'launching-map': isLaunchingMap}"
+                @click="playMap"
+        >
+          <i class="fa-solid fa-play fa-2x"></i>
+        </button>
+        <button class="edit button"
+                title="Edit map"
+                @click="editMap"
+        >
           <i class="fa-solid fa-pen-to-square fa-2x"></i>
         </button>
-        <button class="delete button">
+        <button class="delete button" title="Remove map from playlist">
           <i class="fa-solid fa-trash fa-2x"></i>
         </button>
       </div>
@@ -33,6 +74,20 @@ const color = computed(() => props.map.color);
       </p>
     </div>
   </div>
+  <dialog ref="editMapsDialog">
+    <EditMapsDialog :map="props.map"
+                    @close="closeEdit"
+    />
+  </dialog>
+  <dialog ref="passwordPrompt">
+    <PasswordPrompt @passwordSet="onPasswordConfirmed"/>
+  </dialog>
+  <dialog ref="deleteConfirmDialog">
+    <ConfirmationDialog header-text="Are you sure you want to remove this map (can't be undone)?"
+                        confirm-button-text="Yes"
+                        cancel-button-text="No"
+    />
+  </dialog>
 </template>
 
 <style scoped>
@@ -77,6 +132,10 @@ const color = computed(() => props.map.color);
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .launching-map {
+    background: gray;
   }
 
   .play {

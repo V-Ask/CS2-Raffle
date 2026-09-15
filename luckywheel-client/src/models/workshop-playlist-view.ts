@@ -46,19 +46,10 @@ export class WorkshopPlaylistView {
     this.maps.push(new WorkshopPlaylistMapView(workshopMap.workshopName, workshopMap.imageUrl, workshopMap.description, workshopMap.mapId, this.playlistId, 1, false));
   }
 
-  async incrementAllOtherMaps(excludedMap: WorkshopMap, shouldRemove: boolean) {
+  incrementAllMaps() {
     this.maps.forEach((workshopMap) => {
       workshopMap.weight++;
     });
-    if (shouldRemove) {
-      this.removeMapFromArray(excludedMap);
-    }
-    return PlaylistService.incrementAllOtherMaps(this, excludedMap, shouldRemove)
-  }
-
-  async removeMap(removedMap: WorkshopMap) {
-    this.removeMapFromArray(removedMap);
-    return PlaylistService.removeMapFromPlaylist(removedMap, this);
   }
 
   removeMapFromArray(removedMap: WorkshopMap) {

@@ -4,7 +4,7 @@ import SingleLineTextField from "@/components/inputs/textfield/SingleLineTextFie
 import {ref} from "vue";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
-import {useSpinnerStore} from "@/stores/spinner.store.ts";
+import {usePlaylistStore} from "@/stores/spinner.store.ts";
 import PlaylistService from "@/services/spinner/playlist.service.ts";
 import {InputTypes} from "@/models/input-types.ts";
 import type {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
@@ -14,7 +14,7 @@ const emits = defineEmits<{
 }>();
 
 
-const spinnerStore = useSpinnerStore();
+const playlistStore = usePlaylistStore();
 
 const input = ref("");
 const isLoading = ref(false);
@@ -37,7 +37,7 @@ function isValidName() {
 }
 
 function doesPlaylistExist() {
-  return spinnerStore.playlistWithNameExists(input.value);
+  return playlistStore.playlistWithNameExists(input.value);
 }
 
 function emitPlaylist(playlist?: WorkshopPlaylistView) {

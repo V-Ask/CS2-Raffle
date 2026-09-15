@@ -38,9 +38,9 @@ namespace LuckyRest.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
-            var playlists = await workshopPlaylistService.GetWorkshopPlaylists(user.Id);
-            if (playlists.Data == null) return StatusCode(StatusCodes.Status500InternalServerError);
-            return playlists.Data;
+            var playlistIndices = await workshopPlaylistService.GetWorkshopPlaylists(user.Id);
+            if (playlistIndices.Data == null) return StatusCode(StatusCodes.Status500InternalServerError);
+            return playlistIndices.Data;
         }
 
         // POST: api/Playlist

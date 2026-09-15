@@ -6,26 +6,25 @@ import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
 import {useGameHostStore} from "@/stores/game-host.store.ts";
 import type {WinningMapActionCallback} from "@/models/winning-map-action-callback.ts";
-import PlaylistService from "@/services/spinner/playlist.service.ts";
-import type {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import PasswordPrompt from "@/components/dialogs/settings/game-hosts/PasswordPrompt.vue";
 import ReadonlySingleLineTextField
   from "@/components/inputs/textfield/ReadonlySingleLineTextField.vue";
 import {InputTypes} from "@/models/input-types.ts";
+import {useSelectedPlaylistStore} from "@/stores/selected-playlist.store.ts";
 
 const props = defineProps<{
   winningMap: ReelMap,
-  playlist: WorkshopPlaylistView
 }>();
 
 const emits = defineEmits<{
-  cancelWinningMap: [Promise<void>]
+  cancelWinningMap: []
 }>();
 
 const gameHostStore = useGameHostStore();
+const selectedPlaylistStore = useSelectedPlaylistStore();
 
-const incrementWeight = ref<boolean>(true);
-const removeMap = ref<boolean>(false);
+const shouldIncrementWeight = ref<boolean>(true);
+const shouldRemoveMap = ref<boolean>(false);
 const passwordPrompt = ref<HTMLDialogElement | null>(null);
 const isLaunchingMap = ref<boolean>(false);
 const playError = ref<boolean>(false);
@@ -45,7 +44,7 @@ const playMapButtonTooltip = computed(() => {
 })
 
 function cancel() {
-  emits('cancelWinningMap', Promise.resolve());
+  emits('cancelWinningMap');
 }
 
 function playMap() {
@@ -65,18 +64,13 @@ async function onPasswordConfirmed() {
 }
 
 async function havePlayed() {
-  if (incrementWeight.value) {
-    emits('cancelWinningMap', props.playlist.incrementAllOtherMaps(props.winningMap, removeMap.value).then())
-  } else if (removeMap.value) {
-    emits('cancelWinningMap', props.playlist.removeMap(props.winningMap).then());
+  if(shouldRemoveMap.value) {
+    await selectedPlaylistStore.removeMapFromPlaylist(props.winningMap);
   }
-}
-
-function emptyCallback(): WinningMapActionCallback {
-  return {
-    shiftOtherWeights: false,
-    removeMap: false,
+  if(shouldIncrementWeight.value) {
+    await selectedPlaylistStore.incrementAllMaps();
   }
+  cancel();
 }
 </script>
 
@@ -85,7 +79,9 @@ function emptyCallback(): WinningMapActionCallback {
     <div class="content-wrapper">
       <div class="winning-map-wrapper">
         <div class="icon-wrapper">
-          <MapIcon :map="props.winningMap"/>
+          <MapIcon :map="props.winningMap"
+                   :enable-overlay-buttons="false"
+          />
         </div>
         <ReadonlySingleLineTextField :text-field-value="`${props.winningMap.mapId}`"
                                      :input-type="InputTypes.TEXT"
@@ -111,13 +107,13 @@ function emptyCallback(): WinningMapActionCallback {
         <label>
           Increment other map's weights?
           <input type="checkbox"
-                 v-model="incrementWeight"
+                 v-model="shouldIncrementWeight"
           />
         </label>
         <label>
           Remove map from playlist?
           <input type="checkbox"
-                 v-model="removeMap"
+                 v-model="shouldRemoveMap"
           />
         </label>
       </div>

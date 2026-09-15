@@ -2,14 +2,26 @@
 
 import MapList from "@/components/spinner/preview/MapList.vue";
 import type {ReelMap} from "@/models/reel-map.ts";
+import type {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
+import {computed} from "vue";
+import ReelService from "@/services/spinner/reel.service.ts";
+import {useSelectedPlaylistStore} from "@/stores/selected-playlist.store.ts";
+
+const selectedPlaylistStore = useSelectedPlaylistStore();
 
 const props = defineProps<{
-  maps: Set<ReelMap>
+  searchString: string
 }>();
+
+const filteredMaps = computed(() => {
+  if(!props.searchString) return selectedPlaylistStore.coloredMaps;
+  const query = props.searchString.trim().toLowerCase();
+  return new Set([...selectedPlaylistStore.coloredMaps].filter(map => map.mapName.toLowerCase().includes(query)))
+})
 </script>
 
 <template class="map-list-container">
-  <MapList :workshop-maps="maps"/>
+  <MapList :workshop-maps="filteredMaps"/>
 </template>
 
 <style scoped>

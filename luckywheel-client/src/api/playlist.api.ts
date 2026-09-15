@@ -84,7 +84,7 @@ async function incrementAll(playlistId: string,
                             removeExceptions: boolean): Promise<void> {
   return API.post(`/api/Playlist/all/increase-weight`, {
     playlistId,
-    increment,
+    incrementAllMaps: increment,
     exceptions,
     removeExceptions
   }).then(response => {

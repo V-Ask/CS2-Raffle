@@ -57,17 +57,14 @@ export default {
   /**
    * Increments the weight of all maps in a playlist except for a map by a given increment.
    * @param playlist
-   * @param workshopMap
    * @param removeMap
    * @param increment
    */
-  async incrementAllOtherMaps(playlist: WorkshopPlaylistView,
-                              workshopMap?: WorkshopMap,
-                              removeMap: boolean = false,
-                              increment: number = 1) {
-    const exceptions = workshopMap ? [ workshopMap.mapId ] : [];
+  async incrementAllMaps(playlist: WorkshopPlaylistView,
+                         removeMap: boolean = false,
+                         increment: number = 1) {
     try {
-      return PlaylistApi.incrementAll(playlist.playlistId, increment, exceptions, removeMap);
+      return PlaylistApi.incrementAll(playlist.playlistId, increment, [], removeMap);
     } catch (e) {
       console.error('Failed to increment maps weight:', e)
     }

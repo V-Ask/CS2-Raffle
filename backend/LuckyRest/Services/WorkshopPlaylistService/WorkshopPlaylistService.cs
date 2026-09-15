@@ -69,10 +69,10 @@ public class WorkshopPlaylistService(
 
     public async Task<ServiceResult<GetUserPlaylistsResultDto>> GetWorkshopPlaylists(string userId)
     {
-        var playlists = await workshopPlaylistDao.GetWorkshopPlaylistIndices(userId);
+        var playlistIndices = await workshopPlaylistDao.GetWorkshopPlaylistIndices(userId);
         return ServiceResult.Success.WithData(new GetUserPlaylistsResultDto
         {
-            WorkshopPlaylists = playlists
+            WorkshopPlaylists = playlistIndices
         });
     }
 
@@ -129,13 +129,13 @@ public class WorkshopPlaylistService(
     }
 
     public async Task<ServiceResult> IncreaseAllMapWeights(string userId, Guid workshopPlaylistId,
-        int increment, long[] exceptions, bool removeExceptions)
+        int incrementAllMaps, long[] exceptions, bool removeExceptions)
     {
         await unitOfWork.BeginTransactionAsync();
         try
         {
             var incrementedMaps =
-                await workshopPlaylistMapDao.IncreaseWeightsOfAllMaps(userId, workshopPlaylistId, increment,
+                await workshopPlaylistMapDao.IncreaseWeightsOfAllMaps(userId, workshopPlaylistId, incrementAllMaps,
                     exceptions);
             if (!removeExceptions) return incrementedMaps > 0 ? ServiceResult.Success : ServiceResult.NoContent;
             foreach (var exceptionId in exceptions)
