@@ -82,7 +82,7 @@ async function incrementAll(playlistId: string,
                             increment: number = 1,
                             exceptions: string[],
                             removeExceptions: boolean): Promise<void> {
-  return API.post(`/api/Playlist/all/increase-weight`, {
+  return API.put(`/api/Playlist/all/increase-weight`, {
     playlistId,
     incrementAllMaps: increment,
     exceptions,
@@ -92,6 +92,16 @@ async function incrementAll(playlistId: string,
   })
 }
 
+async function rateMap(playlistId: string, mapId: string, rating: number): Promise<void> {
+  return API.put(`/api/Playlist/rate-map`, {
+    playlistId,
+    mapId,
+    rating
+  }).then(response => {
+    return response.data;
+  });
+}
+
 export default {
   getAllPlaylistIndex,
   addMapToPlaylist,
@@ -99,5 +109,6 @@ export default {
   getMapFromPlaylist,
   getPlaylistView,
   removeMapFromPlaylist,
-  incrementAll
+  incrementAll,
+  rateMap,
 }

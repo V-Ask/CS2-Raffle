@@ -2,8 +2,6 @@
 import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import PlaylistService from "@/services/spinner/playlist.service.ts";
 import {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-index.ts";
-import type {RouteLocationNormalizedLoaded} from "vue-router";
-import type {ReelMap} from "@/models/reel-map.ts";
 
 export const usePlaylistStore = defineStore('spinner', {
   state: () => ({

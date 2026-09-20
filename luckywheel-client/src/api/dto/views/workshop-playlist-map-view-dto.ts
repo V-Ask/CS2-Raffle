@@ -9,6 +9,7 @@ export class WorkshopPlaylistMapViewDto {
     public playlistId: string,
     public weight: number,
     public hasPlayed: boolean,
+    public rating: number
   ) {
   }
 

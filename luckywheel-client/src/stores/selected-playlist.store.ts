@@ -115,6 +115,26 @@ export const useSelectedPlaylistStore = defineStore('selectedPlaylist', () => {
     }
   }
 
+  /**
+   * Rate map
+   * @param map The workshop map to be rated
+   * @param rating Rating between 0 and 5 (both inclusive)
+   */
+  async function rateMap(map: ReelMap, rating: number) {
+    if (!selectedPlaylist.value) {
+      throw new Error("Failed to rate map. No playlist is selected.");
+    }
+    const stopLoadingCallback = loadingStore.startLoading();
+    try {
+      await PlaylistService.rateMap(selectedPlaylist.value.playlistId, map.mapId, rating);
+      selectedPlaylist.value.rateMap(map.toView(), rating);
+    } catch (e) {
+      throw new Error("Failed to rate map: " + e);
+    } finally {
+      stopLoadingCallback();
+    }
+  }
+
   function isMapIdValid(id?: string) {
     return !!id && !!selectedPlaylist.value && !doesPlaylistContainId(id);
   }
@@ -136,6 +156,7 @@ export const useSelectedPlaylistStore = defineStore('selectedPlaylist', () => {
     addMapToPlaylist,
     removeMapFromPlaylist,
     incrementAllMaps,
-    isPlaylistEmpty
+    isPlaylistEmpty,
+    rateMap
   }
 })

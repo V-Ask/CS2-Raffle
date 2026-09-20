@@ -1,1 +1,0 @@
-﻿export const PRIME_VUE_LICENSE = 'PRIME_VUE_LICENSE';

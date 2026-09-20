@@ -46,6 +46,7 @@ function toReelMap(workshopPlaylistMapView: WorkshopPlaylistMapView, color: Colo
     workshopPlaylistMapView.description,
     workshopPlaylistMapView.mapId,
     workshopPlaylistMapView.weight,
-    color
+    color,
+    workshopPlaylistMapView.rating
   );
 }

@@ -3,6 +3,10 @@ import type {ReelMap} from "@/models/reel-map.ts";
 import StandardDialog from "@/components/dialogs/StandardDialog.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
 import RatingStars from "@/components/buttons/forms/RatingStars.vue";
+import {computed, ref} from "vue";
+import {useSelectedPlaylistStore} from "@/stores/selected-playlist.store.ts";
+
+const selectedPlaylistStore = useSelectedPlaylistStore();
 
 const props = defineProps<{
   map: ReelMap
@@ -11,6 +15,25 @@ const props = defineProps<{
 const emits = defineEmits([
   'close'
 ]);
+
+const rating = ref<{ ratingSet: boolean, rating: number }>({
+  ratingSet: false,
+  rating: 0
+});
+
+const mapRating = computed(() => props.map.rating);
+
+function onRated(newRating: number) {
+  const shouldChangeRating = newRating !== mapRating.value;
+  rating.value = {ratingSet: shouldChangeRating, rating: newRating};
+}
+
+async function saveAndClose() {
+  if(rating.value.ratingSet) {
+    await selectedPlaylistStore.rateMap(props.map, rating.value.rating);
+  }
+  emits('close');
+}
 </script>
 
 <template>
@@ -18,7 +41,7 @@ const emits = defineEmits([
     <template v-slot:content>
       <div class="form-wrapper">
         <h1>Information</h1>
-        <div>
+        <div class="info-text">
           <div class="info-row">
             <p class="row-title">Name:</p>
             <p class="row-value">{{ props.map.mapName }}</p>
@@ -39,15 +62,13 @@ const emits = defineEmits([
             <p class="row-title">Description:</p>
             <p class="row-value">{{ props.map.description }}</p>
           </div>
-          <div>
-            <RatingStars />
-          </div>
         </div>
       </div>
+      <RatingStars @rated="onRated" :starting-rating="map.rating"/>
     </template>
     <template v-slot:footer-content>
       <div class="footer">
-        <RegButton @click="emits('close')">Close</RegButton>
+        <RegButton @click="saveAndClose">Close</RegButton>
       </div>
     </template>
   </StandardDialog>
@@ -91,6 +112,10 @@ p {
   p {
     margin-bottom: 0;
   }
+}
+
+.info-text {
+  margin-bottom: 1rem;
 }
 
 .footer {

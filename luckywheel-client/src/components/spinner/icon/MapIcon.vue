@@ -42,6 +42,7 @@ async function onPasswordConfirmed() {
   await gameHostStore.setWorkshopMap(props.map);
   isLaunchingMap.value = false;
 }
+
 </script>
 
 <template>
@@ -160,7 +161,6 @@ async function onPasswordConfirmed() {
   background-color: v-bind(color);
   overflow: hidden;
   padding: 0.5rem;
-  height: 1rem;
 
   .text {
     margin: 0;

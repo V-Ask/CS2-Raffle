@@ -3,6 +3,7 @@ import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import {WorkshopMap} from "@/models/workshop-map.ts";
 import type {RouteLocationNormalizedLoaded, RouteLocationNormalizedLoadedGeneric} from "vue-router";
 import {WorkshopPlaylistViewDto} from "@/api/dto/views/workshop-playlist-view-dto.ts";
+import type {WorkshopPlaylistMapView} from "@/models/workshop-playlist-map-view.ts";
 
 export default {
   async fetchPlaylistIndices() {
@@ -70,6 +71,14 @@ export default {
     }
   },
 
+  rateMap(playlistId: string, mapId: string, rating: number) {
+    try {
+      return PlaylistApi.rateMap(playlistId, mapId, rating);
+    } catch (e) {
+      console.error('Failed to rate map:', e)
+    }
+  },
+
   getPlaylistIdQueryParam(route: RouteLocationNormalizedLoaded<any>): string {
     const id = route.params.id;
     if (!id) {
@@ -89,4 +98,6 @@ export default {
     }
     return this.fetchPlaylistView(id);
   },
+
+
 }
