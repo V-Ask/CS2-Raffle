@@ -121,6 +121,13 @@ namespace LuckyRest.Controllers
             };
         }
 
+        [HttpPost("map/spawns")]
+        public async Task<ActionResult> UpdateMissingSpawnCounts()
+        {
+            await workshopMapService.UpdateMissingSpawnCounts();
+            return Ok();
+        }
+
         [HttpPost("all/increase-weight")]
         public async Task<ActionResult> IncreaseWeight(
             [FromBody] IncreasePlaylistWeightsActionDto increasePlaylistWeightsDto)

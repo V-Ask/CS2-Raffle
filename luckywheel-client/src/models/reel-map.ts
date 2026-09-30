@@ -7,7 +7,9 @@ export class ReelMap extends WorkshopMap {
               public description: string,
               public workshopId: string,
               public weight: number,
-              public color: Color) {
+              public color: Color,
+              public terroristSpawns?: number,
+              public counterTerroristSpawns?: number) {
     super(mapName, imageUrl, description, workshopId);
   }
 }
