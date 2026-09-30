@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import type {ReelMap} from "@/models/reel-map.ts";
-import {computed, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import MapIcon from "@/components/spinner/icon/MapIcon.vue";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
@@ -12,6 +12,8 @@ import PasswordPrompt from "@/components/dialogs/settings/game-hosts/PasswordPro
 import ReadonlySingleLineTextField
   from "@/components/inputs/textfield/ReadonlySingleLineTextField.vue";
 import {InputTypes} from "@/models/input-types.ts";
+import SpawnApi from "@/api/spawn.api.ts";
+import type {SpawnCountDto} from "@/api/dto/spawn-count-dto.ts";
 
 const props = defineProps<{
   winningMap: ReelMap,
@@ -29,6 +31,11 @@ const removeMap = ref<boolean>(false);
 const passwordPrompt = ref<HTMLDialogElement | null>(null);
 const isLaunchingMap = ref<boolean>(false);
 const playError = ref<boolean>(false);
+const spawnCount = ref<SpawnCountDto>();
+
+onMounted(async () => {
+  spawnCount.value = await SpawnApi.getSpawnCount(props.winningMap.mapId);
+});
 
 const canPlayMap = computed(() => {
   return gameHostStore.isGameHostSetup() && !isLaunchingMap.value;
@@ -90,6 +97,9 @@ function emptyCallback(): WinningMapActionCallback {
         <ReadonlySingleLineTextField :text-field-value="`${props.winningMap.mapId}`"
                                      :input-type="InputTypes.TEXT"
                                      :show-copy-to-clipboard-button="true"/>
+        <p v-if="spawnCount">
+          Spawns: {{ spawnCount.terroristSpawns }} T / {{ spawnCount.counterTerroristSpawns }} CT
+        </p>
       </div>
       <div class="button-row">
         <ConfirmButton :disabled="!canPlayMap"

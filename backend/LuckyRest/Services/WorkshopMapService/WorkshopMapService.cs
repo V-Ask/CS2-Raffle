@@ -7,7 +7,7 @@ using WorkshopScraper.Scraper;
 
 namespace LuckyRest.Services.WorkshopMapService;
 
-public class WorkshopMapService(IWorkshopMapDao workshopMapDao) : IWorkshopMapService
+public class WorkshopMapService(IWorkshopMapDao workshopMapDao, IHttpClientFactory httpClientFactory) : IWorkshopMapService
 {
     private readonly LimitedScraper<string> _scraper = new(new WebScraper());
 
@@ -25,6 +25,9 @@ public class WorkshopMapService(IWorkshopMapDao workshopMapDao) : IWorkshopMapSe
         {
             return await GetWorkshopMap(workshopMapId);
         }
+
+        // Starts the spawn scan now so the count is ready when the map gets rolled
+        _ = httpClientFactory.CreateClient("SpawnApi").GetAsync(workshopMapId.ToString());
         
         var workshopExplorer = new SteamWorkshopExplorer(await _scraper.LoadAsync(workshopMapId.ToString()));
         var name = workshopExplorer.GetTitle();
