@@ -5,6 +5,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var username = builder.AddParameter("postgres-username");
 var password = builder.AddParameter("postgres-password", secret: true);
+var spawnApiToken = builder.AddParameter("spawn-api-token", secret: true);
 
 var postgres = builder.AddPostgres("postgres", username, password)
     .WithHostPort(5432);
@@ -16,6 +17,7 @@ var migrationsWorker = builder.AddProject<LuckyRest_MigrationService>("luckyrest
 
 var restApi = builder.AddProject<LuckyRest>("luckyrest")
     .WithReference(database)
+    .WithEnvironment("SpawnApi__Token", spawnApiToken)
     .WaitFor(migrationsWorker)
     .WithExternalHttpEndpoints();
 

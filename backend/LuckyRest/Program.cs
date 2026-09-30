@@ -4,6 +4,7 @@ using LuckyRest.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +57,14 @@ services.AddIdentityCore<User>()
 services.AddDbContext<LuckyDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("luckydb"));
+});
+
+services.AddHttpClient("SpawnApi", client =>
+{
+    client.BaseAddress = new Uri("https://battyboy.realxguys.dk/");
+    client.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue("Bearer", builder.Configuration["SpawnApi:Token"]);
+    client.Timeout = TimeSpan.FromSeconds(5);
 });
 
 

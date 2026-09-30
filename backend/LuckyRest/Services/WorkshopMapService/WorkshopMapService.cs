@@ -7,7 +7,7 @@ using WorkshopScraper.Scraper;
 
 namespace LuckyRest.Services.WorkshopMapService;
 
-public class WorkshopMapService(IWorkshopMapDao workshopMapDao) : IWorkshopMapService
+public class WorkshopMapService(IWorkshopMapDao workshopMapDao, IHttpClientFactory httpClientFactory) : IWorkshopMapService
 {
     private readonly LimitedScraper<string> _scraper = new(new WebScraper());
 
@@ -25,6 +25,9 @@ public class WorkshopMapService(IWorkshopMapDao workshopMapDao) : IWorkshopMapSe
         {
             return await GetWorkshopMap(workshopMapId);
         }
+
+        // Starts the spawn scan now so the count is ready when the map gets rolled
+        _ = httpClientFactory.CreateClient("SpawnApi").GetAsync(workshopMapId.ToString());
         
         var workshopExplorer = new SteamWorkshopExplorer(await _scraper.LoadAsync(workshopMapId.ToString()));
         var name = workshopExplorer.GetTitle();
@@ -39,6 +42,19 @@ public class WorkshopMapService(IWorkshopMapDao workshopMapDao) : IWorkshopMapSe
         };
         await workshopMapDao.PostWorkshopMap(map);
         return ServiceResult.Success.WithData(WorkshopMapDto.FromEntity(map));
+    }
+
+    public async Task BackfillSpawnCounts()
+    {
+        var ids = await workshopMapDao.GetAllMapIds();
+        var client = httpClientFactory.CreateClient("SpawnApi");
+        // The spawn api takes at most 200 maps per batch
+        foreach (var chunk in ids.Chunk(200))
+        {
+            using var response = await client.PostAsJsonAsync("v1/maps/batch",
+                new { ids = chunk.Select(x => x.ToString()) });
+            response.EnsureSuccessStatusCode();
+        }
     }
 
     private static string TrimWithEllipsis(string input, int maxLength)

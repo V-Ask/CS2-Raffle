@@ -10,4 +10,5 @@ public interface IWorkshopMapDao
     public Task<WorkshopMap> DeleteWorkshopMap(WorkshopMap map);
     public Task<bool> DeleteIfOrphaned(long workshopMapId);
     public bool MapExists(long workshopMapId);
+    public Task<List<long>> GetAllMapIds();
 }

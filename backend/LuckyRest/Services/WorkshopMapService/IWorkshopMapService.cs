@@ -7,4 +7,5 @@ public interface IWorkshopMapService
 {
     public Task<ServiceResult<WorkshopMapDto>> GetWorkshopMap(long workshopMapId);
     public Task<ServiceResult<WorkshopMapDto>> EnsureWorkshopMap(long workshopMapId);
+    public Task BackfillSpawnCounts();
 }

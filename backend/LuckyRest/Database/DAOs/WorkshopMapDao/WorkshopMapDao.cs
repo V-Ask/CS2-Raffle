@@ -50,4 +50,9 @@ public class WorkshopMapDao(LuckyDbContext dbContext) : IWorkshopMapDao
     {
         return dbContext.Maps.Any(x => x.WorkshopMapId == workshopMapId);
     }
+
+    public async Task<List<long>> GetAllMapIds()
+    {
+        return await dbContext.Maps.Select(x => x.WorkshopMapId).ToListAsync();
+    }
 }
