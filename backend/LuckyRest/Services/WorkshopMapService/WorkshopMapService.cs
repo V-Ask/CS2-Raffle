@@ -50,17 +50,22 @@ public class WorkshopMapService(IWorkshopMapDao workshopMapDao, IHttpClientFacto
     {
         var maps = await workshopMapDao.GetMapsWithoutSpawnCount();
         var client = httpClientFactory.CreateClient("SpawnApi");
-        var ids = maps.Select(x => x.WorkshopMapId.ToString());
-        using var response = await client.PostAsJsonAsync("v1/maps/batch", new { ids });
-        var batch = await response.Content.ReadFromJsonAsync<SpawnBatchResultDto>();
-
-        foreach (var result in batch?.Results ?? [])
+        // The spawn api takes at most 200 maps per batch
+        foreach (var chunk in maps.Chunk(200))
         {
-            var map = maps.FirstOrDefault(x => x.WorkshopMapId == result.WorkshopId);
-            if (map == null || result.TerroristSpawns == null) continue;
-            map.TerroristSpawns = result.TerroristSpawns;
-            map.CounterTerroristSpawns = result.CounterTerroristSpawns;
-            await workshopMapDao.PutWorkshopMap(map.WorkshopMapId, map);
+            using var response = await client.PostAsJsonAsync("v1/maps/batch",
+                new { ids = chunk.Select(x => x.WorkshopMapId.ToString()) });
+            response.EnsureSuccessStatusCode();
+            var batch = await response.Content.ReadFromJsonAsync<SpawnBatchResultDto>();
+
+            foreach (var result in batch?.Results ?? [])
+            {
+                var map = chunk.FirstOrDefault(x => x.WorkshopMapId == result.WorkshopId);
+                if (map == null || result.TerroristSpawns == null) continue;
+                map.TerroristSpawns = result.TerroristSpawns;
+                map.CounterTerroristSpawns = result.CounterTerroristSpawns;
+                await workshopMapDao.PutWorkshopMap(map.WorkshopMapId, map);
+            }
         }
     }
 
