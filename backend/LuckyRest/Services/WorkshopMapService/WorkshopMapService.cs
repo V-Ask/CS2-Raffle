@@ -44,6 +44,19 @@ public class WorkshopMapService(IWorkshopMapDao workshopMapDao, IHttpClientFacto
         return ServiceResult.Success.WithData(WorkshopMapDto.FromEntity(map));
     }
 
+    public async Task BackfillSpawnCounts()
+    {
+        var ids = await workshopMapDao.GetAllMapIds();
+        var client = httpClientFactory.CreateClient("SpawnApi");
+        // The spawn api takes at most 200 maps per batch
+        foreach (var chunk in ids.Chunk(200))
+        {
+            using var response = await client.PostAsJsonAsync("v1/maps/batch",
+                new { ids = chunk.Select(x => x.ToString()) });
+            response.EnsureSuccessStatusCode();
+        }
+    }
+
     private static string TrimWithEllipsis(string input, int maxLength)
     {
         var stringLength = input.Length;

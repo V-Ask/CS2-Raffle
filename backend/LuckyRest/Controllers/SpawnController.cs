@@ -1,5 +1,6 @@
 using System.Net;
 using LuckyRest.Database.DTOs.Models;
+using LuckyRest.Services.WorkshopMapService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,9 @@ namespace LuckyRest.Controllers;
 [Route("[controller]")]
 [ApiController]
 [Authorize]
-public class SpawnController(IHttpClientFactory httpClientFactory) : ControllerBase
+public class SpawnController(
+    IHttpClientFactory httpClientFactory,
+    IWorkshopMapService workshopMapService) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<SpawnCountDto>> GetSpawnCount(long mapId)
@@ -21,5 +24,12 @@ public class SpawnController(IHttpClientFactory httpClientFactory) : ControllerB
         var spawnCount = await response.Content.ReadFromJsonAsync<SpawnCountDto>();
         if (spawnCount == null) return NotFound();
         return spawnCount;
+    }
+
+    [HttpPost("backfill")]
+    public async Task<ActionResult> BackfillSpawnCounts()
+    {
+        await workshopMapService.BackfillSpawnCounts();
+        return Ok();
     }
 }
