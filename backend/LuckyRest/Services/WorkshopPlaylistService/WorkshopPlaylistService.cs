@@ -137,7 +137,12 @@ public class WorkshopPlaylistService(
             var incrementedMaps =
                 await workshopPlaylistMapDao.IncreaseWeightsOfAllMaps(userId, workshopPlaylistId, incrementAllMaps,
                     exceptions);
-            if (!removeExceptions) return incrementedMaps > 0 ? ServiceResult.Success : ServiceResult.NoContent;
+            if (!removeExceptions)
+            {
+                await unitOfWork.CommitTransactionAsync();
+                return incrementedMaps > 0 ? ServiceResult.Success : ServiceResult.NoContent;
+            }
+
             foreach (var exceptionId in exceptions)
             {
                 var isDeleted = await DeleteMapFromPlaylistAndDeleteOrphan(userId, workshopPlaylistId, exceptionId);
@@ -159,15 +164,27 @@ public class WorkshopPlaylistService(
     public async Task<ServiceResult> RateMap(string userId, Guid workshopPlaylistId, long workshopMapId, int rating)
     {
         await unitOfWork.BeginTransactionAsync();
-        var mapsRated = await workshopPlaylistMapDao.RateMap(userId, workshopPlaylistId, workshopMapId, rating);
-        if (mapsRated != 1)
+        try
+        {
+            var mapsRated = await workshopPlaylistMapDao.RateMap(userId, workshopPlaylistId, workshopMapId, rating);
+            switch (mapsRated)
+            {
+                case < 1:
+                    await unitOfWork.RollbackTransactionAsync();
+                    return ServiceResult.NotFound;
+                case > 1:
+                    await unitOfWork.RollbackTransactionAsync();
+                    return ServiceResult.Error;
+            }
+
+            await unitOfWork.CommitTransactionAsync();
+            return ServiceResult.Success;
+        }
+        catch
         {
             await unitOfWork.RollbackTransactionAsync();
             return ServiceResult.Error;
         }
-
-        await unitOfWork.CommitTransactionAsync();
-        return ServiceResult.Success;
     }
 
     public async Task<ServiceResult> MarkMapAsPlayed(string userId, Guid workshopPlaylistId, long workshopMapId)

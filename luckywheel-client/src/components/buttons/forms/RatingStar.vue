@@ -23,5 +23,8 @@ const starClasses = computed(() => ({
 </template>
 
 <style scoped>
-
+button {
+  margin: 0;
+  padding: 0;
+}
 </style>

@@ -35,14 +35,16 @@ function closeDialog() {
 
 <template>
   <StandardDialog header-text="Add new map...">
-    <div class="input-wrapper">
-      <SingleLineTextField placeholder="Insert Workshop URL here"
-                           :input-type="InputTypes.TEXT"
-                           v-model="workshopUrl"
-      />
-      <ConfirmButton @click="addMap">Add</ConfirmButton>
-      <RegButton @click="closeDialog">Cancel</RegButton>
-    </div>
+    <template v-slot:content>
+      <div class="input-wrapper">
+        <SingleLineTextField placeholder="Insert Workshop URL here"
+                             :input-type="InputTypes.TEXT"
+                             v-model="workshopUrl"
+        />
+        <ConfirmButton @click="addMap">Add</ConfirmButton>
+        <RegButton @click="closeDialog">Cancel</RegButton>
+      </div>
+    </template>
   </StandardDialog>
 </template>
 

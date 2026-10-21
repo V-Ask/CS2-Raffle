@@ -21,10 +21,9 @@ const password = ref('');
 
 const loginStore = useLoginStore();
 
-function submitUser(event: SubmitEvent) {
+function submitUser(event: any) {
   // By default, submission would reload the page
   event.preventDefault();
-
   const passwordVal = password.value;
 
   emit('submit', {email: email.value, password: passwordVal});

@@ -7,7 +7,6 @@ export function usePlaylistDropdownActions() {
   const playlistStore = usePlaylistStore();
   const selectedPlaylistStore = useSelectedPlaylistStore();
 
-  const playlistIndices = ref<WorkshopPlaylistIndex[]>([]);
   const selectedPlaylistIndex = ref<WorkshopPlaylistIndex | null>(null);
   const playlistIndexOptionFn = computed(() => (index: WorkshopPlaylistIndex) => index.playlistId);
   const playlistIndexTextFn = computed(() => (index: WorkshopPlaylistIndex) => index.collectionName);
@@ -19,11 +18,10 @@ export function usePlaylistDropdownActions() {
   })
 
   onMounted(async () => {
-    playlistIndices.value = await playlistStore.ensurePlaylistIndices();
+    await playlistStore.ensurePlaylistIndices();
   });
 
   return {
-    playlistIndices,
     selectedPlaylistIndex,
     playlistIndexOptionFn,
     playlistIndexTextFn

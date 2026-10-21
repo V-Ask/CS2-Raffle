@@ -17,19 +17,16 @@ const emits = defineEmits<{
 const playlistStore = usePlaylistStore();
 
 const input = ref("");
-const isLoading = ref(false);
 const validName = ref(true);
 
 
 function createPlaylist() {
   validName.value = isValidName();
-  if (!validName.value || isLoading.value) return;
-  isLoading.value = true;
-  PlaylistService.createNewPlaylist(input.value).then(playlist => {
-    emitPlaylist(playlist);
-    isLoading.value = false;
+  if (!validName.value) return;
+  playlistStore.createNewPlaylist(input.value).then((result) => {
     input.value = "";
-  }, _ => emitPlaylist());
+    emitPlaylist(result);
+  });
 }
 
 function isValidName() {
@@ -54,11 +51,10 @@ function cancelCreate() {
     <div class="form-wrapper">
       <div class="input-wrapper">
         <SingleLineTextField :max-length="50"
-                             :disabled="isLoading"
                              :input-type="InputTypes.TEXT"
                              v-model="input"/>
-        <ConfirmButton :disabled="isLoading" @click="createPlaylist()">Create</ConfirmButton>
-        <RegButton :disabled="isLoading" @click="cancelCreate()">Cancel</RegButton>
+        <ConfirmButton @click="createPlaylist()">Create</ConfirmButton>
+        <RegButton @click="cancelCreate()">Cancel</RegButton>
       </div>
       <p :class="{ 'error-hidden': validName }" class="error text">Playlist with this name is
         unavailable</p>

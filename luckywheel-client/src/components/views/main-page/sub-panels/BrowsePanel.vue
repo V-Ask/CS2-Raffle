@@ -10,20 +10,28 @@ const props = defineProps<{
 </script>
 
 <template>
+
   <template v-if="selectedPlaylistStore.selectedPlaylist">
-    <MapListPanel v-if="!selectedPlaylistStore.isPlaylistEmpty"
+    <p v-if="selectedPlaylistStore.isPlaylistEmpty"
+       class="state-message">
+      Add a map to this playlist to get started!
+    </p>
+    <p v-else-if="selectedPlaylistStore.isSortedPlaylistEmpty"
+       class="state-message">
+      Your current sorting options hide maps on this playlist
+    </p>
+    <MapListPanel v-else
                   :search-string="props.searchString"
     />
-    <p v-else class="state-message">Add a map to this playlist to get started!</p>
   </template>
   <p v-else class="state-message">Select a playlist to preview its maps.</p>
 </template>
 
 <style>
 .state-message {
-color: #8a9bb0;
-text-align: center;
-padding-top: 3rem;
-letter-spacing: 0.05em;
+  color: #8a9bb0;
+  text-align: center;
+  padding-top: 3rem;
+  letter-spacing: 0.05em;
 }
 </style>

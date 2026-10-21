@@ -48,10 +48,10 @@ export default {
 
   async removeMapFromPlaylist(workshopMap: WorkshopMap, playlist: WorkshopPlaylistView) {
     try {
-      const dto = await PlaylistApi.removeMapFromPlaylist(playlist.playlistId, workshopMap.mapId);
-      return WorkshopPlaylistView.fromDto(dto);
+      await PlaylistApi.removeMapFromPlaylist(playlist.playlistId, workshopMap.mapId);
     } catch (e) {
       console.error('Failed to remove map from playlist:', e)
+      throw e;
     }
   },
 
@@ -71,11 +71,21 @@ export default {
     }
   },
 
-  rateMap(playlistId: string, mapId: string, rating: number) {
+  async rateMap(playlistId: string, mapId: string, rating: number) {
     try {
-      return PlaylistApi.rateMap(playlistId, mapId, rating);
+      await PlaylistApi.rateMap(playlistId, mapId, rating);
     } catch (e) {
       console.error('Failed to rate map:', e)
+      throw e;
+    }
+  },
+
+  async markMapAsPlayed(playlistId: string, mapId: string, played: boolean = true) {
+    try {
+      await PlaylistApi.markMapAsPlayed(playlistId, mapId, played);
+    } catch (e) {
+      console.error('Failed to mark map as played:', e)
+      throw e;
     }
   },
 

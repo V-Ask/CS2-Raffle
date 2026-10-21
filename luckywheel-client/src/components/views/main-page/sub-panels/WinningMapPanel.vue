@@ -11,6 +11,8 @@ import ReadonlySingleLineTextField
   from "@/components/inputs/textfield/ReadonlySingleLineTextField.vue";
 import {InputTypes} from "@/models/input-types.ts";
 import {useSelectedPlaylistStore} from "@/stores/selected-playlist.store.ts";
+import RatingStars from "@/components/buttons/forms/RatingStars.vue";
+import {useLoadingStore} from "@/stores/loading.store.ts";
 
 const props = defineProps<{
   winningMap: ReelMap,
@@ -22,12 +24,12 @@ const emits = defineEmits<{
 
 const gameHostStore = useGameHostStore();
 const selectedPlaylistStore = useSelectedPlaylistStore();
+const loadingStore = useLoadingStore();
 
-const shouldIncrementWeight = ref<boolean>(true);
-const shouldRemoveMap = ref<boolean>(false);
 const passwordPrompt = ref<HTMLDialogElement | null>(null);
 const isLaunchingMap = ref<boolean>(false);
 const playError = ref<boolean>(false);
+const rating = ref<number>(props.winningMap.rating ?? 0);
 
 const canPlayMap = computed(() => {
   return gameHostStore.isGameHostSetup() && !isLaunchingMap.value;
@@ -64,13 +66,21 @@ async function onPasswordConfirmed() {
 }
 
 async function havePlayed() {
-  if(shouldRemoveMap.value) {
-    await selectedPlaylistStore.removeMapFromPlaylist(props.winningMap);
-  }
-  if(shouldIncrementWeight.value) {
+  const stopLoadingCallback = loadingStore.startLoading();
+  try {
     await selectedPlaylistStore.incrementAllMaps();
+    await selectedPlaylistStore.markMapAsPlayed(props.winningMap);
+    if(rating.value !== props.winningMap.rating) {
+      await selectedPlaylistStore.rateMap(props.winningMap, rating.value);
+    }
+  } finally {
+    stopLoadingCallback();
   }
   cancel();
+}
+
+function onRated(newRating: number) {
+  rating.value = newRating;
 }
 </script>
 
@@ -87,6 +97,11 @@ async function havePlayed() {
                                      :input-type="InputTypes.TEXT"
                                      :show-copy-to-clipboard-button="true"/>
       </div>
+      <div class="rate-row">
+        <RatingStars :starting-rating="props.winningMap.rating"
+                     @rated="onRated"
+        />
+      </div>
       <div class="button-row">
         <ConfirmButton :disabled="!canPlayMap"
                        :title="playMapButtonTooltip"
@@ -102,20 +117,6 @@ async function havePlayed() {
         </RegButton>
 
 
-      </div>
-      <div class="checkbox-col">
-        <label>
-          Increment other map's weights?
-          <input type="checkbox"
-                 v-model="shouldIncrementWeight"
-          />
-        </label>
-        <label>
-          Remove map from playlist?
-          <input type="checkbox"
-                 v-model="shouldRemoveMap"
-          />
-        </label>
       </div>
       <p class="play-error" v-show="playError">
         There was an error playing the map. Please check your settings or manually insert the map
@@ -154,12 +155,6 @@ async function havePlayed() {
 .button-row {
   display: flex;
   gap: 1rem;
-}
-
-.checkbox-col {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.8rem;
 }
 
 .play-error {

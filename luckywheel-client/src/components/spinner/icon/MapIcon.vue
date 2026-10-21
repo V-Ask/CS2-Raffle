@@ -5,6 +5,14 @@ import {computed, ref} from "vue";
 import {useGameHostStore} from "@/stores/game-host.store.ts";
 import EditMapsDialog from "@/components/dialogs/map/EditMapsDialog.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
+import {useDialogActions} from "@/composables/dialog-actions.ts";
+import {useSelectedPlaylistStore} from "@/stores/selected-playlist.store.ts";
+import StarSummary from "@/components/spinner/icon/StarSummary.vue";
+import {
+  MapShowStates,
+  SortOptions,
+  useSortingOptionsStore
+} from "@/stores/sorting-options.store.ts";
 
 const props = withDefaults(defineProps<{
   map: ReelMap,
@@ -14,33 +22,76 @@ const props = withDefaults(defineProps<{
 });
 
 const gameHostStore = useGameHostStore();
+const selectedPlaylistStore = useSelectedPlaylistStore();
+const sortingOptionsStore = useSortingOptionsStore();
 
 const passwordPrompt = ref<HTMLDialogElement | null>(null);
-const editMapsDialog = ref<HTMLDialogElement | null>(null);
 const deleteConfirmDialog = ref<HTMLDialogElement | null>(null);
+const editMapDialog = ref<HTMLDialogElement | null>(null);
+const {
+  openDialog: openPasswordPrompt,
+  closeDialog: closePasswordPrompt,
+  handleBackdropClick: handleBackdropClickPassword
+} = useDialogActions(passwordPrompt);
+const {
+  openDialog: openEditDialog,
+  closeDialog: closeEditDialog,
+  handleBackdropClick: handleBackdropClickEdit,
+  isDialogOpen: isEditOpen
+} = useDialogActions(editMapDialog);
+const {
+  openDialog: openDeleteDialog,
+  closeDialog: closeDeleteDialog,
+  handleBackdropClick: handleBackdropClickDelete,
+  isDialogOpen: isDeleteOpen
+} = useDialogActions(deleteConfirmDialog);
 const isLaunchingMap = ref(false);
-const color = computed(() => props.map.color);
+const playError = ref(false);
+const color = computed(() => {
+  if (props.map.hasPlayed && sortingOptionsStore.showState === MapShowStates.BOTH) {
+    return 'green';
+  }
+  return props.map.color
+});
+
+const canPlayMap = computed(() => {
+  return gameHostStore.isGameHostSetup() && !isLaunchingMap.value;
+});
+
+const playMapButtonTooltip = computed(() => {
+  if (!gameHostStore.isGameHostSetup()) {
+    return "Game host is not configured. Please do so in the settings menu at the top-right."
+  }
+  if (isLaunchingMap.value) {
+    return "Please wait while the map is being launched..."
+  }
+  if (playError.value) {
+    return "There was an error playing the map. Please check your settings."
+  }
+  return "Play map";
+});
 
 function playMap() {
-  passwordPrompt.value?.showModal();
-}
-
-function editMap() {
-  editMapsDialog.value?.showModal();
-}
-
-function closeEdit() {
-  editMapsDialog.value?.close();
-}
-
-function deleteMap() {
+  if (!canPlayMap.value) return;
+  openPasswordPrompt();
 }
 
 async function onPasswordConfirmed() {
-  passwordPrompt.value?.close();
+  closePasswordPrompt();
   isLaunchingMap.value = true;
-  await gameHostStore.setWorkshopMap(props.map);
+  const success = await gameHostStore.setWorkshopMap(props.map);
+  playError.value = !success;
   isLaunchingMap.value = false;
+}
+
+async function onDeleteConfirmed() {
+  try {
+    await selectedPlaylistStore.removeMapFromPlaylist(props.map);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    closeDeleteDialog();
+  }
 }
 
 </script>
@@ -52,19 +103,23 @@ async function onPasswordConfirmed() {
       <div v-if="props.enableOverlayButtons"
            class="overlay">
         <button class="play button"
-                title="Play map"
-                :class="{'launching-map': isLaunchingMap}"
+                :title="playMapButtonTooltip"
+                :disabled="!canPlayMap"
+                :class="{'launching-map': isLaunchingMap, 'play-error': playError}"
                 @click="playMap"
         >
           <i class="fa-solid fa-play fa-2x"></i>
         </button>
         <button class="edit button"
                 title="Edit map"
-                @click="editMap"
+                @click="openEditDialog"
         >
           <i class="fa-solid fa-pen-to-square fa-2x"></i>
         </button>
-        <button class="delete button" title="Remove map from playlist">
+        <button class="delete button"
+                title="Remove map from playlist"
+                @click="openDeleteDialog"
+        >
           <i class="fa-solid fa-trash fa-2x"></i>
         </button>
       </div>
@@ -73,20 +128,28 @@ async function onPasswordConfirmed() {
       <p class="text" :title="props.map.mapName">
         {{ props.map.mapName }}
       </p>
+      <StarSummary v-if="!!props.map.rating"
+                   :rating="props.map.rating"/>
     </div>
   </div>
-  <dialog ref="editMapsDialog">
-    <EditMapsDialog :map="props.map"
-                    @close="closeEdit"
+  <dialog ref="editMapDialog" @click="handleBackdropClickEdit">
+    <EditMapsDialog
+      v-if="isEditOpen"
+      :map="props.map"
+      @close="closeEditDialog"
     />
   </dialog>
-  <dialog ref="passwordPrompt">
+  <dialog ref="passwordPrompt" @click="handleBackdropClickPassword">
     <PasswordPrompt @passwordSet="onPasswordConfirmed"/>
   </dialog>
-  <dialog ref="deleteConfirmDialog">
-    <ConfirmationDialog header-text="Are you sure you want to remove this map (can't be undone)?"
-                        confirm-button-text="Yes"
-                        cancel-button-text="No"
+  <dialog ref="deleteConfirmDialog" @click="handleBackdropClickDelete">
+    <ConfirmationDialog
+      v-if="isDeleteOpen"
+      header-text="Are you sure you want to remove this map (can't be undone)?"
+      confirm-button-text="Yes"
+      cancel-button-text="No"
+      @confirm="onDeleteConfirmed"
+      @cancel="closeDeleteDialog"
     />
   </dialog>
 </template>
@@ -135,8 +198,17 @@ async function onPasswordConfirmed() {
     align-items: center;
   }
 
+  .button:disabled {
+    background: rgba(128, 128, 128, 0.5);
+    cursor: not-allowed;
+  }
+
   .launching-map {
     background: gray;
+  }
+
+  .play-error {
+    background: rgba(255, 0, 0, 0.5);
   }
 
   .play {
@@ -158,8 +230,12 @@ async function onPasswordConfirmed() {
 }
 
 .map.title-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+
   background-color: v-bind(color);
-  overflow: hidden;
   padding: 0.5rem;
 
   .text {

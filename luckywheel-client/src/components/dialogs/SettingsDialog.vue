@@ -21,7 +21,7 @@ const gameHostStore = useGameHostStore();
 const selectedGameHost = ref<GameHostStoreService>(gameHostStore.ensureGameHostService);
 const shouldSaveHostSettings = ref<boolean>(false);
 const gameHostLoadedFromStore = computed(() => {
-  if(selectedGameHost.value.loadedFromStorage) {
+  if (selectedGameHost.value.loadedFromStorage) {
     return selectedGameHost.value.service.getType();
   }
 })
@@ -44,22 +44,24 @@ function close() {
 
 <template>
   <StandardDialog header-text="Settings">
-    <div class="settings-wrapper">
-      <div class="setting">
-        <label id="game-host-label">Setup Game Host</label>
-        <GameHostSetting labelId="game-host-label"
-                         :save-exists-on-type="gameHostLoadedFromStore"
-                         v-model:game-host="selectedGameHost.service"
-                         v-model:should-save-host="shouldSaveHostSettings"
-        ></GameHostSetting>
+    <template v-slot:content>
+      <div class="settings-wrapper">
+        <div class="setting">
+          <label id="game-host-label">Setup Game Host</label>
+          <GameHostSetting labelId="game-host-label"
+                           :save-exists-on-type="gameHostLoadedFromStore"
+                           v-model:game-host="selectedGameHost.service"
+                           v-model:should-save-host="shouldSaveHostSettings"
+          ></GameHostSetting>
+        </div>
+        <Divider/>
+        <div class="buttons">
+          <ConfirmButton @clicked="saveAndClose()">Save</ConfirmButton>
+          <RegButton @clicked="close()">Cancel</RegButton>
+          <RegButton @clicked="UserAuthService.logoutUser()">Log out</RegButton>
+        </div>
       </div>
-      <Divider/>
-      <div class="buttons">
-        <ConfirmButton @clicked="saveAndClose()">Save</ConfirmButton>
-        <RegButton @clicked="close()">Cancel</RegButton>
-        <RegButton @clicked="UserAuthService.logoutUser()">Log out</RegButton>
-      </div>
-    </div>
+    </template>
   </StandardDialog>
 </template>
 

@@ -88,4 +88,20 @@ export default [
     return HttpResponse.json(new WorkshopMapDto('Added Map', 'https://placehold.co/200x120', 'Mock added map', 'map-id-new'));
   }),
 
+  http.put('/api/Playlist/rate-map', () => {
+    return successResponse();
+  }),
+
+  http.put('/api/Playlist/played', () => {
+    return successResponse();
+  }),
+
+  http.delete('/api/Playlist/map', () => {
+    return new HttpResponse(null, {status: 204});
+  }),
+
+  http.post('/api/Playlist/all/increase-weight', () => {
+    return successResponse();
+  }),
+
 ]

@@ -16,6 +16,9 @@ export const useLoadingStore = defineStore('loading', {
   },
   actions: {
     startLoading() {
+      if(this.loading) {
+        return () => void 0;
+      }
       this.loading = true;
       return () => this.stopLoading();
     },

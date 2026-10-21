@@ -61,6 +61,11 @@ export class WorkshopPlaylistView {
       .forEach(existingMap => existingMap.rating = rating);
   }
 
+  markMapAsPlayed(mapId: string, played: boolean) {
+    this.maps.filter(existingMap => existingMap.mapId === mapId)
+      .forEach(existingMap => existingMap.hasPlayed = played);
+  }
+
   toIndex() {
     return new WorkshopPlaylistIndex(this.collectionName, this.playlistId, this.maps.length, this.created, this.modified);
   }

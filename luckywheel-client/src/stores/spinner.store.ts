@@ -2,6 +2,8 @@
 import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import PlaylistService from "@/services/spinner/playlist.service.ts";
 import {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-index.ts";
+import {useLoadingStore} from "@/stores/loading.store.ts";
+import {useSelectedPlaylistStore} from "@/stores/selected-playlist.store.ts";
 
 export const usePlaylistStore = defineStore('spinner', {
   state: () => ({
@@ -57,8 +59,25 @@ export const usePlaylistStore = defineStore('spinner', {
 
     updateViewCache(playlistView: WorkshopPlaylistView) {
       this.playlistViewCache.set(playlistView.playlistId, playlistView);
+    },
+
+    async createNewPlaylist(playlistName: string) {
+      const loadingStore = useLoadingStore();
+      const selectedPlaylistStore = useSelectedPlaylistStore();
+      const stopLoadingCallback = loadingStore.startLoading();
+      try {
+        const newPlaylist = await PlaylistService.createNewPlaylist(playlistName);
+        this.addPlaylistIndex(newPlaylist!.toIndex());
+        this.playlistViewCache.set(newPlaylist!.playlistId, newPlaylist!);
+        await selectedPlaylistStore.selectPlaylistById(newPlaylist!.playlistId);
+        return newPlaylist!;
+      } catch (e) {
+        throw new Error('Failed to create new playlist: ' + e);
+      } finally {
+        stopLoadingCallback();
+      }
     }
-  }
+  },
 });
 
 export enum SpinnerStatus {

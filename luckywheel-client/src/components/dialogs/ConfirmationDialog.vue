@@ -23,11 +23,19 @@ const emits = defineEmits([
 
 <template>
   <StandardDialog :header-text="props.headerText">
-    <ConfirmButton>{{ props.confirmButtonText }}</ConfirmButton>
-    <RegButton>{{ props.cancelButtonText }}</RegButton>
+    <template v-slot:content>
+      <div class="buttons">
+        <ConfirmButton @clicked="emits('confirm')">{{ props.confirmButtonText }}</ConfirmButton>
+        <RegButton @clicked="emits('cancel')">{{ props.cancelButtonText }}</RegButton>
+      </div>
+    </template>
   </StandardDialog>
 </template>
 
 <style scoped>
-
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
 </style>

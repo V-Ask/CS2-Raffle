@@ -16,6 +16,7 @@ import {useSelectedPlaylistStore} from "@/stores/selected-playlist.store.ts";
 import PlaylistDropdownSelector from "@/components/spinner/preview/PlaylistDropdownSelector.vue";
 import {useLoadingStore} from "@/stores/loading.store.ts";
 import BrowsePanel from "@/components/views/main-page/sub-panels/BrowsePanel.vue";
+import SelectedPlaylistTopPanel from "@/components/top-panel/SelectedPlaylistTopPanel.vue";
 
 enum ViewState { BROWSING, SPINNING, SPUN}
 
@@ -75,11 +76,7 @@ function handleBackdropClickAddMap(event: MouseEvent) {
   DialogService.handleBackdropClick(addMapDialog.value!, event, () => closeAddMapDialog());
 }
 
-function handleCreateDialogClosed(playlistView?: WorkshopPlaylistView) {
-  if (playlistView) {
-    playlistStore.updateViewCache(playlistView);
-    playlistStore.addPlaylistIndex(playlistView.toIndex());
-  }
+function handleCreateDialogClosed() {
   closeCreatePlaylistDialog();
 }
 </script>
@@ -104,9 +101,9 @@ function handleCreateDialogClosed(playlistView?: WorkshopPlaylistView) {
             </button>
           </div>
         </div>
-        <SingleLineTextField v-model="searchText"
-                             placeholder="Search maps..."
-                             :input-type="InputTypes.SEARCH"
+        <SelectedPlaylistTopPanel
+          v-if="viewState === ViewState.BROWSING && selectedPlaylistStore.isPlaylistSelectedAndLoaded"
+          v-model="searchText"
         />
       </template>
     </div>
@@ -133,14 +130,14 @@ function handleCreateDialogClosed(playlistView?: WorkshopPlaylistView) {
       </div>
       <ConfirmButton
         v-if="isBrowsing"
-        :disabled="!selectedPlaylistStore.coloredMaps.size"
+        :disabled="!selectedPlaylistStore.isPlaylistSelectedAndLoaded"
         @clicked="startSpin()">
         SPIN
       </ConfirmButton>
     </div>
   </div>
   <dialog ref="createPlaylistDialog" @click="handleBackdropClickCreatePlaylist">
-    <CreatePlaylistDialog @dialogClosed="handleCreateDialogClosed($event)"/>
+    <CreatePlaylistDialog @dialogClosed="handleCreateDialogClosed"/>
   </dialog>
   <dialog ref="addMapDialog" @click="handleBackdropClickAddMap">
     <AddMapDialog
@@ -159,10 +156,12 @@ function handleCreateDialogClosed(playlistView?: WorkshopPlaylistView) {
 
 .bar-wrapper {
   background: var(--top-bar-background);
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
+  min-height: 3rem;
 }
 
 .map-wrapper {

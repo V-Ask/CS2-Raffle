@@ -2,16 +2,18 @@
 import {computed, ref} from "vue";
 import RatingStar from "@/components/buttons/forms/RatingStar.vue";
 
-const props = defineProps<{
-  startingRating: number
-}>();
+const props = withDefaults(defineProps<{
+  startingRating?: number
+}>(), {
+  startingRating: 0
+});
 
 const emits = defineEmits<{
   (e: 'rated', rating: number): void
 }>();
 
 const boundedStartingRating = computed(() => {
-  if (props.startingRating > 5) {
+  if (props.startingRating < 0 || props.startingRating > 5) {
     return 0;
   }
   return props.startingRating;
@@ -31,7 +33,7 @@ function setRating(newRating: number) {
   } else {
     curRating.value = newRating;
   }
-  emits('rated', newRating);
+  emits('rated', curRating.value);
 }
 
 function setHover(hoverRating: number) {
@@ -83,4 +85,5 @@ function createStarFilledComputed(rating: number) {
 </template>
 
 <style scoped>
+
 </style>

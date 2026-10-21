@@ -47,12 +47,14 @@ function handleSubmit(creds: UserCredentials) {
     <div class="login-grid">
       <dialog ref="newUserDialog">
         <StandardDialog :header-text="headerText">
-          <UserForm
-            :submit-button-text="submitText"
-            :secondary-button-text="secondaryText"
-            :show-criteria="!loginStore.isLoggingIn"
-            @submit="handleSubmit($event)"
-          />
+          <template v-slot:content>
+            <UserForm
+              :submit-button-text="submitText"
+              :secondary-button-text="secondaryText"
+              :show-criteria="!loginStore.isLoggingIn"
+              @submit="handleSubmit($event)"
+            />
+          </template>
         </StandardDialog>
       </dialog>
     </div>

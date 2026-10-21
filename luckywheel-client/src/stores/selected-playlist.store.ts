@@ -9,10 +9,12 @@ import ReelService from "@/services/spinner/reel.service.ts";
 import type {ReelMap} from "@/models/reel-map.ts";
 import type {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-index.ts";
 import type {WorkshopMap} from "@/models/workshop-map.ts";
+import {MapShowStates, useSortingOptionsStore} from "@/stores/sorting-options.store.ts";
 
 
 export const useSelectedPlaylistStore = defineStore('selectedPlaylist', () => {
   const playlistStore = usePlaylistStore();
+  const sortingOptionsStore = useSortingOptionsStore();
   const loadingStore = useLoadingStore();
 
 
@@ -32,8 +34,26 @@ export const useSelectedPlaylistStore = defineStore('selectedPlaylist', () => {
     }
     return ReelService.colorPlaylist(selectedPlaylist.value);
   });
+  // The selected playlist's maps, sorted by the selected sorting option
+  const sortedColoredMaps = computed(() => {
+    if (!selectedPlaylist.value) {
+      return [];
+    }
+    return Array.from(coloredMaps.value).filter(map => {
+      switch (sortingOptionsStore.showState) {
+        case MapShowStates.UNPLAYED:
+          return !map.hasPlayed;
+        case MapShowStates.PLAYED:
+          return map.hasPlayed;
+        case MapShowStates.BOTH:
+          return true;
+      }
+    }).sort(sortingOptionsStore.reelMapComparator);
+  })
   // True when a playlist is either not selected or empty
   const isPlaylistEmpty = computed(() => selectedPlaylist.value ? !selectedPlaylist.value.maps.length : true);
+  // True when the selected playlist along with the sorting options are empty or the playlist is not selected
+  const isSortedPlaylistEmpty = computed(() => sortedColoredMaps.value ? !sortedColoredMaps.value.length : true);
 
   /**
    * Selects a playlist by its index
@@ -73,6 +93,11 @@ export const useSelectedPlaylistStore = defineStore('selectedPlaylist', () => {
       if (!newMap) {
         throw new Error("Failed to add map");
       }
+      const playlist = selectedPlaylist.value!;
+      playlist.addNewMap(newMap);
+      playlistStore.playlistIndices
+        .filter(index => index.playlistId === playlist.playlistId)
+        .forEach(index => index.size = playlist.maps.length);
       return newMap;
     } finally {
       stopLoadingCallback();
@@ -84,12 +109,17 @@ export const useSelectedPlaylistStore = defineStore('selectedPlaylist', () => {
    * @param map Workshop Map to be removed
    */
   async function removeMapFromPlaylist(map: WorkshopMap) {
-    if (!isSelectingPlaylist.value) {
+    if (!selectedPlaylist.value) {
       throw new Error("Failed to remove map. No playlist is selected.");
     }
     const stopLoadingCallback = loadingStore.startLoading();
     try {
-      selectedPlaylist.value = await PlaylistService.removeMapFromPlaylist(map, selectedPlaylist.value!);
+      const playlist = selectedPlaylist.value;
+      await PlaylistService.removeMapFromPlaylist(map, playlist);
+      playlist.removeMapFromArray(map);
+      playlistStore.playlistIndices
+        .filter(index => index.playlistId === playlist.playlistId)
+        .forEach(index => index.size = playlist.maps.length);
     } catch (e) {
       throw new Error("Failed to remove map: " + e,);
     } finally {
@@ -135,6 +165,26 @@ export const useSelectedPlaylistStore = defineStore('selectedPlaylist', () => {
     }
   }
 
+  /**
+   * Mark map as played
+   * @param map The workshop map to be marked
+   * @param played Whether the map has been played
+   */
+  async function markMapAsPlayed(map: ReelMap, played: boolean = true) {
+    if (!selectedPlaylist.value) {
+      throw new Error("Failed to mark map as played. No playlist is selected.");
+    }
+    const stopLoadingCallback = loadingStore.startLoading();
+    try {
+      await PlaylistService.markMapAsPlayed(selectedPlaylist.value.playlistId, map.mapId, played);
+      selectedPlaylist.value.markMapAsPlayed(map.mapId, played);
+    } catch (e) {
+      throw new Error("Failed to mark map as played: " + e);
+    } finally {
+      stopLoadingCallback();
+    }
+  }
+
   function isMapIdValid(id?: string) {
     return !!id && !!selectedPlaylist.value && !doesPlaylistContainId(id);
   }
@@ -148,6 +198,7 @@ export const useSelectedPlaylistStore = defineStore('selectedPlaylist', () => {
 
   return {
     coloredMaps,
+    sortedColoredMaps,
     selectedPlaylist,
     isPlaylistSelected,
     isPlaylistSelectedAndLoaded,
@@ -157,6 +208,8 @@ export const useSelectedPlaylistStore = defineStore('selectedPlaylist', () => {
     removeMapFromPlaylist,
     incrementAllMaps,
     isPlaylistEmpty,
-    rateMap
+    isSortedPlaylistEmpty,
+    rateMap,
+    markMapAsPlayed
   }
 })

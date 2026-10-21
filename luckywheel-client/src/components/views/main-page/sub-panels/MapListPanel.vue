@@ -14,9 +14,9 @@ const props = defineProps<{
 }>();
 
 const filteredMaps = computed(() => {
-  if(!props.searchString) return selectedPlaylistStore.coloredMaps;
+  if (!props.searchString) return selectedPlaylistStore.sortedColoredMaps;
   const query = props.searchString.trim().toLowerCase();
-  return new Set([...selectedPlaylistStore.coloredMaps].filter(map => map.mapName.toLowerCase().includes(query)))
+  return selectedPlaylistStore.sortedColoredMaps.filter(map => map.mapName.toLowerCase().includes(query));
 })
 </script>
 

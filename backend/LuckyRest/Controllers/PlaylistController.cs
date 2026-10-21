@@ -138,6 +138,8 @@ namespace LuckyRest.Controllers
             {
                 ServiceResultStatus.NoContent => NoContent(),
                 ServiceResultStatus.Success => Ok(),
+                ServiceResultStatus.NotFound => NotFound(),
+                ServiceResultStatus.Error => StatusCode(StatusCodes.Status500InternalServerError),
                 _ => throw new InvalidOperationException()
             };
         }
@@ -148,6 +150,7 @@ namespace LuckyRest.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
+            if (rateMapActionDto.Rating is < 0 or > 5) return BadRequest();
 
             var result = await workshopPlaylistService.RateMap(user.Id,
                 rateMapActionDto.PlaylistId,
@@ -156,8 +159,9 @@ namespace LuckyRest.Controllers
             );
             return result.Status switch
             {
-                ServiceResultStatus.Error => throw new Exception("Failed to rate map"),
                 ServiceResultStatus.Success => Ok(),
+                ServiceResultStatus.NotFound => NotFound(),
+                ServiceResultStatus.Error => StatusCode(StatusCodes.Status500InternalServerError),
                 _ => throw new InvalidOperationException()
             };
         }
