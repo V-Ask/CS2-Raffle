@@ -54,19 +54,19 @@ public class MapTests
         Assert.That(_map.Weight, Is.EqualTo(1));
     }
     
-    [Test(Author = "VAJ", Description = "Test increment weight")]
+    [Test(Author = "VAJ", Description = "Test incrementAllMaps weight")]
     [TestCase(1)]
     [TestCase(5)]
     [TestCase(int.MaxValue - 1)]
-    public void TestIncrementWeight(int increment)
+    public void TestIncrementWeight(int incrementAllMaps)
     {
         // act
-        _map.IncrementWeight(increment);
+        _map.IncrementWeight(incrementAllMaps);
         // assert
-        Assert.That(_map.Weight, Is.EqualTo(increment + 1));
+        Assert.That(_map.Weight, Is.EqualTo(incrementAllMaps + 1));
     }
     
-    [Test(Author = "VAJ", Description = "Test increment weight")]
+    [Test(Author = "VAJ", Description = "Test incrementAllMaps weight")]
     [TestCase("FF0000")]
     [TestCase("1100FF")]
     public void TestSetColor(string color)

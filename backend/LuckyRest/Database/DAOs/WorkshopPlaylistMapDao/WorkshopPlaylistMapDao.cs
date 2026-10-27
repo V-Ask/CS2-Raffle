@@ -12,7 +12,7 @@ public class WorkshopPlaylistMapDao(LuckyDbContext dbContext) : IWorkshopPlaylis
                 x.WorkshopMap.WorkshopMapId == mapId && x.WorkshopPlaylist.WorkshopPlaylistId == playlistId);
         return playlistMap;
     }
-    
+
     public async Task<bool> PostWorkshopPlaylistMap(WorkshopPlaylistMap playlistMap)
     {
         try
@@ -39,6 +39,7 @@ public class WorkshopPlaylistMapDao(LuckyDbContext dbContext) : IWorkshopPlaylis
         {
             return false;
         }
+
         dbContext.PlaylistMaps.Remove(playlistMap);
         await dbContext.SaveChangesAsync();
         return true;
@@ -53,14 +54,37 @@ public class WorkshopPlaylistMapDao(LuckyDbContext dbContext) : IWorkshopPlaylis
                 pm.WorkshopPlaylist.AuthorId == userId);
     }
 
-    public async Task<int> IncreaseWeightsOfAllMaps(string userId, Guid playlistId, int increment, long[] exceptions)
+    public async Task<int> IncreaseWeightsOfAllMaps(string userId, Guid playlistId, int incrementAllMaps, long[] excludedMaps)
     {
         return await dbContext.PlaylistMaps
-            .Where(pm => 
+            .Where(pm =>
                 pm.WorkshopPlaylist.AuthorId == userId &&
                 pm.WorkshopPlaylistId == playlistId &&
-                !exceptions.Contains(pm.WorkshopMapId))
+                !excludedMaps.Contains(pm.WorkshopMapId))
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(pm => pm.Weight, pm => pm.Weight + increment));
+                .SetProperty(pm => pm.Weight, pm => pm.Weight + incrementAllMaps));
+    }
+
+    public async Task<int> RateMap(string userId, Guid playlistId, long workshopMapId, int rating)
+    {
+        return await dbContext.PlaylistMaps
+            .Where(pm =>
+                pm.WorkshopPlaylist.AuthorId == userId &&
+                pm.WorkshopPlaylistId == playlistId &&
+                pm.WorkshopMapId == workshopMapId)
+            .ExecuteUpdateAsync(setter => setter
+                .SetProperty(pm => pm.Rating, pm => rating));
+    }
+
+    public async Task<int> MarkMapAsPlayed(string userId, Guid playlistId, long workshopMapId, bool played)
+    {
+        return await dbContext.PlaylistMaps
+            .Where(pm =>
+                pm.WorkshopPlaylist.AuthorId == userId &&
+                pm.WorkshopPlaylistId == playlistId &&
+                pm.WorkshopMapId == workshopMapId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(pm => pm.HasPlayed, played)
+            );
     }
 }

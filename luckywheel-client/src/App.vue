@@ -1,23 +1,43 @@
 <script setup lang="ts">
-import LoadingContainer from "@/components/loading/LoadingContainer.vue";
 import SettingsButton from "@/components/buttons/SettingsButton.vue";
 import {useAuthStore} from "@/stores/auth.store.ts";
-import PasswordPrompt from "@/components/dialogs/settings/game-hosts/PasswordPrompt.vue";
-import { onMounted } from "vue";
-import {useGameHostStore} from "@/stores/game-host.store.ts";
+import {useLoadingStore} from "@/stores/loading.store.ts";
+import LoadingDialog from "@/components/dialogs/LoadingDialog.vue";
+import {ref, watch} from "vue";
 
 const authStore = useAuthStore();
+const loadingStore = useLoadingStore();
+
+const isLoadingDialogShown = ref(false);
+const loadingDialog = ref<HTMLDialogElement | null>(null);
+
+watch(() => loadingStore.isLoading, (isLoading) => {
+  if (isLoading) {
+    if (!isLoadingDialogShown.value) {
+      isLoadingDialogShown.value = true;
+      loadingDialog.value?.showModal();
+    }
+  } else {
+    if (isLoadingDialogShown.value) {
+      isLoadingDialogShown.value = false;
+      loadingDialog.value?.close();
+    }
+  }
+});
 </script>
 
 <template>
   <div id="main">
-      <div class="content">
-        <div class="toolbar">
-          <SettingsButton v-if="authStore.isLoggedIn"/>
-        </div>
-        <RouterView/>
+    <div class="content">
+      <div class="toolbar">
+        <SettingsButton v-if="authStore.isLoggedIn"/>
       </div>
+      <RouterView/>
+    </div>
   </div>
+  <dialog ref="loadingDialog">
+    <LoadingDialog/>
+  </dialog>
 </template>
 <style scoped>
 
@@ -45,4 +65,10 @@ const authStore = useAuthStore();
   justify-content: flex-end;
 }
 
+dialog {
+  background: none;
+  border: none;
+  outline: none;
+  overflow: hidden;
+}
 </style>

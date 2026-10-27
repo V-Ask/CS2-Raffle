@@ -69,10 +69,10 @@ public class WorkshopPlaylistService(
 
     public async Task<ServiceResult<GetUserPlaylistsResultDto>> GetWorkshopPlaylists(string userId)
     {
-        var playlists = await workshopPlaylistDao.GetWorkshopPlaylistIndices(userId);
+        var playlistIndices = await workshopPlaylistDao.GetWorkshopPlaylistIndices(userId);
         return ServiceResult.Success.WithData(new GetUserPlaylistsResultDto
         {
-            WorkshopPlaylists = playlists
+            WorkshopPlaylists = playlistIndices
         });
     }
 
@@ -89,7 +89,6 @@ public class WorkshopPlaylistService(
 
     public async Task<ServiceResult<WorkshopPlaylistDto>> CreatePlaylist(User user, string collectionName)
     {
-        var time = DateTime.Now;
         var playlist = new WorkshopPlaylist
         {
             Author = user,
@@ -130,15 +129,20 @@ public class WorkshopPlaylistService(
     }
 
     public async Task<ServiceResult> IncreaseAllMapWeights(string userId, Guid workshopPlaylistId,
-        int increment, long[] exceptions, bool removeExceptions)
+        int incrementAllMaps, long[] exceptions, bool removeExceptions)
     {
         await unitOfWork.BeginTransactionAsync();
         try
         {
             var incrementedMaps =
-                await workshopPlaylistMapDao.IncreaseWeightsOfAllMaps(userId, workshopPlaylistId, increment,
+                await workshopPlaylistMapDao.IncreaseWeightsOfAllMaps(userId, workshopPlaylistId, incrementAllMaps,
                     exceptions);
-            if (!removeExceptions) return incrementedMaps > 0 ? ServiceResult.Success : ServiceResult.NoContent;
+            if (!removeExceptions)
+            {
+                await unitOfWork.CommitTransactionAsync();
+                return incrementedMaps > 0 ? ServiceResult.Success : ServiceResult.NoContent;
+            }
+
             foreach (var exceptionId in exceptions)
             {
                 var isDeleted = await DeleteMapFromPlaylistAndDeleteOrphan(userId, workshopPlaylistId, exceptionId);
@@ -157,10 +161,73 @@ public class WorkshopPlaylistService(
         }
     }
 
+    public async Task<ServiceResult> RateMap(string userId, Guid workshopPlaylistId, long workshopMapId, int rating)
+    {
+        await unitOfWork.BeginTransactionAsync();
+        try
+        {
+            var mapsRated = await workshopPlaylistMapDao.RateMap(userId, workshopPlaylistId, workshopMapId, rating);
+            switch (mapsRated)
+            {
+                case < 1:
+                    await unitOfWork.RollbackTransactionAsync();
+                    return ServiceResult.NotFound;
+                case > 1:
+                    await unitOfWork.RollbackTransactionAsync();
+                    return ServiceResult.Error;
+            }
+
+            await unitOfWork.CommitTransactionAsync();
+            return ServiceResult.Success;
+        }
+        catch
+        {
+            await unitOfWork.RollbackTransactionAsync();
+            return ServiceResult.Error;
+        }
+    }
+
+    public async Task<ServiceResult> MarkMapAsPlayed(string userId, Guid workshopPlaylistId, long workshopMapId)
+    {
+        await unitOfWork.BeginTransactionAsync();
+        var mapsModified = await workshopPlaylistMapDao.MarkMapAsPlayed(userId, workshopPlaylistId, workshopMapId, true);
+        switch (mapsModified)
+        {
+            case < 1:
+                await unitOfWork.CommitTransactionAsync();
+                return ServiceResult.NoContent;
+            case > 1:
+                await unitOfWork.RollbackTransactionAsync();
+                return ServiceResult.Error;
+        }
+
+        await unitOfWork.CommitTransactionAsync();
+        return ServiceResult.Success;
+    }
+    
+    public async Task<ServiceResult> MarkMapAsUnPlayed(string userId, Guid workshopPlaylistId, long workshopMapId)
+    {
+        await unitOfWork.BeginTransactionAsync();
+        var mapsModified = await workshopPlaylistMapDao.MarkMapAsPlayed(userId, workshopPlaylistId, workshopMapId, false);
+        switch (mapsModified)
+        {
+            case < 1:
+                await unitOfWork.CommitTransactionAsync();
+                return ServiceResult.NoContent;
+            case > 1:
+                await unitOfWork.RollbackTransactionAsync();
+                return ServiceResult.Error;
+        }
+
+        await unitOfWork.CommitTransactionAsync();
+        return ServiceResult.Success;
+    }
+
     private async Task<bool> DeleteMapFromPlaylistAndDeleteOrphan(string userId, Guid workshopPlaylistId,
         long workshopMapId)
     {
-        var anyDeleted = await workshopPlaylistMapDao.DeleteWorkshopPlaylistMap(userId, workshopMapId, workshopPlaylistId);
+        var anyDeleted =
+            await workshopPlaylistMapDao.DeleteWorkshopPlaylistMap(userId, workshopMapId, workshopPlaylistId);
         if (!anyDeleted) return false;
         await workshopMapDao.DeleteIfOrphaned(workshopMapId);
         return true;

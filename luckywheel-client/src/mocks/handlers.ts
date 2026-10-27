@@ -30,10 +30,10 @@ export default [
   http.get('/api/Playlist/all', () => {
     return HttpResponse.json({
       workshopPlaylists: [
-        new WorkshopPlaylistIndex("Collection 1", "id-1"),
-        new WorkshopPlaylistIndex("Collection 2", "id-2"),
-        new WorkshopPlaylistIndex("Collection 3", "id-3"),
-        new WorkshopPlaylistIndex("Collection 4", "id-4"),
+        new WorkshopPlaylistIndex("Collection 1", "id-1", 4, new Date(), new Date()),
+        new WorkshopPlaylistIndex("Collection 2", "id-2", 3, new Date(), new Date()),
+        new WorkshopPlaylistIndex("Collection 3", "id-3", 5, new Date(), new Date()),
+        new WorkshopPlaylistIndex("Collection 4", "id-4", 2, new Date(), new Date()),
       ]
     })
   }),
@@ -44,27 +44,27 @@ export default [
 
     const mockPlaylists: Record<string, WorkshopPlaylistViewDto> = {
       'id-1': new WorkshopPlaylistViewDto('Collection 1', 'id-1', [
-        new WorkshopPlaylistMapViewDto('Dust II', 'https://placehold.co/200x120', 'Classic competitive map', 'map-id-1', 'id-1', 3, false),
-        new WorkshopPlaylistMapViewDto('Mirage', 'https://placehold.co/200x120', 'Popular mid-centric map', 'map-id-2', 'id-1', 5, true),
-        new WorkshopPlaylistMapViewDto('Inferno', 'https://placehold.co/200x120', 'Tight corridors and apartments', 'map-id-3', 'id-1', 2, false),
-        new WorkshopPlaylistMapViewDto('Nuke', 'https://placehold.co/200x120', 'Vertical gameplay with two levels', 'map-id-4', 'id-1', 1, false),
-      ]),
+        new WorkshopPlaylistMapViewDto('Dust II', 'https://placehold.co/200x120', 'Classic competitive map', 'map-id-1', 'id-1', 3, false, 3),
+        new WorkshopPlaylistMapViewDto('Mirage', 'https://placehold.co/200x120', 'Popular mid-centric map', 'map-id-2', 'id-1', 5, true, 2),
+        new WorkshopPlaylistMapViewDto('Inferno', 'https://placehold.co/200x120', 'Tight corridors and apartments', 'map-id-3', 'id-1', 2, false, 4),
+        new WorkshopPlaylistMapViewDto('Nuke', 'https://placehold.co/200x120', 'Vertical gameplay with two levels', 'map-id-4', 'id-1', 1, false, 4),
+      ], new Date(), new Date()),
       'id-2': new WorkshopPlaylistViewDto('Collection 2', 'id-2', [
-        new WorkshopPlaylistMapViewDto('Ancient', 'https://placehold.co/200x120', 'Temple-themed competitive map', 'map-id-5', 'id-2', 4, false),
-        new WorkshopPlaylistMapViewDto('Anubis', 'https://placehold.co/200x120', 'Egyptian-themed bomb defusal', 'map-id-6', 'id-2', 2, true),
-        new WorkshopPlaylistMapViewDto('Overpass', 'https://placehold.co/200x120', 'Urban map with a park area', 'map-id-7', 'id-2', 3, false),
-      ]),
+        new WorkshopPlaylistMapViewDto('Ancient', 'https://placehold.co/200x120', 'Temple-themed competitive map', 'map-id-5', 'id-2', 4, false, 0),
+        new WorkshopPlaylistMapViewDto('Anubis', 'https://placehold.co/200x120', 'Egyptian-themed bomb defusal', 'map-id-6', 'id-2', 2, true, 0),
+        new WorkshopPlaylistMapViewDto('Overpass', 'https://placehold.co/200x120', 'Urban map with a park area', 'map-id-7', 'id-2', 3, false, 0),
+      ], new Date(), new Date()),
       'id-3': new WorkshopPlaylistViewDto('Collection 3', 'id-3', [
-        new WorkshopPlaylistMapViewDto('Vertigo', 'https://placehold.co/200x120', 'Rooftop construction site', 'map-id-8', 'id-3', 2, false),
-        new WorkshopPlaylistMapViewDto('Cache', 'https://placehold.co/200x120', 'Classic mid-heavy map', 'map-id-9', 'id-3', 5, false),
-        new WorkshopPlaylistMapViewDto('Train', 'https://placehold.co/200x120', 'Railyard with long sightlines', 'map-id-10', 'id-3', 1, true),
-        new WorkshopPlaylistMapViewDto('Cobblestone', 'https://placehold.co/200x120', 'Castle-themed outdoor map', 'map-id-11', 'id-3', 3, false),
-        new WorkshopPlaylistMapViewDto('Tuscan', 'https://placehold.co/200x120', 'Italian village layout', 'map-id-12', 'id-3', 2, false),
-      ]),
+        new WorkshopPlaylistMapViewDto('Vertigo', 'https://placehold.co/200x120', 'Rooftop construction site', 'map-id-8', 'id-3', 2, false, 0),
+        new WorkshopPlaylistMapViewDto('Cache', 'https://placehold.co/200x120', 'Classic mid-heavy map', 'map-id-9', 'id-3', 5, false, 0),
+        new WorkshopPlaylistMapViewDto('Train', 'https://placehold.co/200x120', 'Railyard with long sightlines', 'map-id-10', 'id-3', 1, true, 3),
+        new WorkshopPlaylistMapViewDto('Cobblestone', 'https://placehold.co/200x120', 'Castle-themed outdoor map', 'map-id-11', 'id-3', 3, false, 2),
+        new WorkshopPlaylistMapViewDto('Tuscan', 'https://placehold.co/200x120', 'Italian village layout', 'map-id-12', 'id-3', 2, false, 2),
+      ], new Date(), new Date()),
       'id-4': new WorkshopPlaylistViewDto('Collection 4', 'id-4', [
-        new WorkshopPlaylistMapViewDto('Office', 'https://placehold.co/200x120', 'Hostage rescue in an office', 'map-id-13', 'id-4', 1, false),
-        new WorkshopPlaylistMapViewDto('Italy', 'https://placehold.co/200x120', 'Classic hostage rescue map', 'map-id-14', 'id-4', 1, false),
-      ]),
+        new WorkshopPlaylistMapViewDto('Office', 'https://placehold.co/200x120', 'Hostage rescue in an office', 'map-id-13', 'id-4', 1, false, 2),
+        new WorkshopPlaylistMapViewDto('Italy', 'https://placehold.co/200x120', 'Classic hostage rescue map', 'map-id-14', 'id-4', 1, false, 1),
+      ], new Date(), new Date()),
     };
 
     const playlist = id ? mockPlaylists[id] : undefined;
@@ -81,11 +81,27 @@ export default [
   }),
 
   http.post('/api/Playlist', () => {
-    return HttpResponse.json(new WorkshopPlaylistView("id-5", "New Playlist", []));
+    return HttpResponse.json(new WorkshopPlaylistView("id-5", "New Playlist", [], new Date(), new Date()));
   }),
 
   http.put('/api/Playlist', () => {
     return HttpResponse.json(new WorkshopMapDto('Added Map', 'https://placehold.co/200x120', 'Mock added map', 'map-id-new'));
+  }),
+
+  http.put('/api/Playlist/rate-map', () => {
+    return successResponse();
+  }),
+
+  http.put('/api/Playlist/played', () => {
+    return successResponse();
+  }),
+
+  http.delete('/api/Playlist/map', () => {
+    return new HttpResponse(null, {status: 204});
+  }),
+
+  http.post('/api/Playlist/all/increase-weight', () => {
+    return successResponse();
   }),
 
 ]

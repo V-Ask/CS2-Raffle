@@ -3,7 +3,7 @@ import MapIcon from "@/components/spinner/icon/MapIcon.vue";
 import type {ReelMap} from "@/models/reel-map.ts";
 
 const props = defineProps<{
-  workshopMaps: Set<ReelMap>;
+  workshopMaps: ReelMap[];
 }>();
 </script>
 

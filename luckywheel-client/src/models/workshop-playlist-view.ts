@@ -43,26 +43,27 @@ export class WorkshopPlaylistView {
   }
 
   addNewMap(workshopMap: WorkshopMap) {
-    this.maps.push(new WorkshopPlaylistMapView(workshopMap.workshopName, workshopMap.imageUrl, workshopMap.description, workshopMap.mapId, this.playlistId, 1, false));
+    this.maps.push(new WorkshopPlaylistMapView(workshopMap.workshopName, workshopMap.imageUrl, workshopMap.description, workshopMap.mapId, 1, false, 0));
   }
 
-  async incrementAllOtherMaps(excludedMap: WorkshopMap, shouldRemove: boolean) {
+  incrementAllMaps() {
     this.maps.forEach((workshopMap) => {
       workshopMap.weight++;
     });
-    if (shouldRemove) {
-      this.removeMapFromArray(excludedMap);
-    }
-    return PlaylistService.incrementAllOtherMaps(this, excludedMap, shouldRemove)
-  }
-
-  async removeMap(removedMap: WorkshopMap) {
-    this.removeMapFromArray(removedMap);
-    return PlaylistService.removeMapFromPlaylist(removedMap, this);
   }
 
   removeMapFromArray(removedMap: WorkshopMap) {
     this.maps = this.maps.filter(map => map.mapId !== removedMap.mapId);
+  }
+
+  rateMap(map: WorkshopPlaylistMapView, rating: number) {
+    this.maps.filter(existingMap => existingMap.mapId === map.mapId)
+      .forEach(existingMap => existingMap.rating = rating);
+  }
+
+  markMapAsPlayed(mapId: string, played: boolean) {
+    this.maps.filter(existingMap => existingMap.mapId === mapId)
+      .forEach(existingMap => existingMap.hasPlayed = played);
   }
 
   toIndex() {

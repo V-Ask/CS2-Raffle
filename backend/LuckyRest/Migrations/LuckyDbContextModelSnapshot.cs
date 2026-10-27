@@ -157,6 +157,9 @@ namespace LuckyRest.Migrations
                     b.Property<bool>("HasPlayed")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Weight")
                         .HasColumnType("integer");
 

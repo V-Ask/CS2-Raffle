@@ -7,11 +7,13 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["LuckyRest/LuckyRest.csproj", "LuckyRest/"]
-COPY ["MapManager/MapManager.csproj", "MapManager/"]
-RUN dotnet restore "LuckyRest/LuckyRest.csproj"
+COPY ["backend/LuckyRest/LuckyRest.csproj", "backend/LuckyRest/"]
+COPY ["backend/MapManager/MapManager.csproj", "backend/MapManager/"]
+COPY ["backend/WorkshopScraper/WorkshopScraper.csproj", "backend/WorkshopScraper/"]
+COPY ["GameHostConveyer/GameHostConveyer.csproj", "GameHostConveyer/"]
+RUN dotnet restore "backend/LuckyRest/LuckyRest.csproj"
 COPY . .
-WORKDIR "/src/LuckyRest"
+WORKDIR "/src/backend/LuckyRest"
 RUN dotnet build "LuckyRest.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

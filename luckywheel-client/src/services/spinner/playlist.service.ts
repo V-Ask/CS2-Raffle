@@ -3,6 +3,7 @@ import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import {WorkshopMap} from "@/models/workshop-map.ts";
 import type {RouteLocationNormalizedLoaded, RouteLocationNormalizedLoadedGeneric} from "vue-router";
 import {WorkshopPlaylistViewDto} from "@/api/dto/views/workshop-playlist-view-dto.ts";
+import type {WorkshopPlaylistMapView} from "@/models/workshop-playlist-map-view.ts";
 
 export default {
   async fetchPlaylistIndices() {
@@ -47,29 +48,44 @@ export default {
 
   async removeMapFromPlaylist(workshopMap: WorkshopMap, playlist: WorkshopPlaylistView) {
     try {
-      const dto = await PlaylistApi.removeMapFromPlaylist(playlist.playlistId, workshopMap.mapId);
-      return WorkshopPlaylistView.fromDto(dto);
+      await PlaylistApi.removeMapFromPlaylist(playlist.playlistId, workshopMap.mapId);
     } catch (e) {
       console.error('Failed to remove map from playlist:', e)
+      throw e;
     }
   },
 
   /**
    * Increments the weight of all maps in a playlist except for a map by a given increment.
    * @param playlist
-   * @param workshopMap
    * @param removeMap
    * @param increment
    */
-  async incrementAllOtherMaps(playlist: WorkshopPlaylistView,
-                              workshopMap?: WorkshopMap,
-                              removeMap: boolean = false,
-                              increment: number = 1) {
-    const exceptions = workshopMap ? [ workshopMap.mapId ] : [];
+  async incrementAllMaps(playlist: WorkshopPlaylistView,
+                         removeMap: boolean = false,
+                         increment: number = 1) {
     try {
-      return PlaylistApi.incrementAll(playlist.playlistId, increment, exceptions, removeMap);
+      return PlaylistApi.incrementAll(playlist.playlistId, increment, [], removeMap);
     } catch (e) {
       console.error('Failed to increment maps weight:', e)
+    }
+  },
+
+  async rateMap(playlistId: string, mapId: string, rating: number) {
+    try {
+      await PlaylistApi.rateMap(playlistId, mapId, rating);
+    } catch (e) {
+      console.error('Failed to rate map:', e)
+      throw e;
+    }
+  },
+
+  async markMapAsPlayed(playlistId: string, mapId: string, played: boolean = true) {
+    try {
+      await PlaylistApi.markMapAsPlayed(playlistId, mapId, played);
+    } catch (e) {
+      console.error('Failed to mark map as played:', e)
+      throw e;
     }
   },
 
@@ -92,4 +108,6 @@ export default {
     }
     return this.fetchPlaylistView(id);
   },
+
+
 }

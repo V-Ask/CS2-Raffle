@@ -6,29 +6,30 @@ import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
 import {useGameHostStore} from "@/stores/game-host.store.ts";
 import type {WinningMapActionCallback} from "@/models/winning-map-action-callback.ts";
-import PlaylistService from "@/services/spinner/playlist.service.ts";
-import type {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import PasswordPrompt from "@/components/dialogs/settings/game-hosts/PasswordPrompt.vue";
 import ReadonlySingleLineTextField
   from "@/components/inputs/textfield/ReadonlySingleLineTextField.vue";
 import {InputTypes} from "@/models/input-types.ts";
+import {useSelectedPlaylistStore} from "@/stores/selected-playlist.store.ts";
+import RatingStars from "@/components/buttons/forms/RatingStars.vue";
+import {useLoadingStore} from "@/stores/loading.store.ts";
 
 const props = defineProps<{
   winningMap: ReelMap,
-  playlist: WorkshopPlaylistView
 }>();
 
 const emits = defineEmits<{
-  cancelWinningMap: [Promise<void>]
+  cancelWinningMap: []
 }>();
 
 const gameHostStore = useGameHostStore();
+const selectedPlaylistStore = useSelectedPlaylistStore();
+const loadingStore = useLoadingStore();
 
-const incrementWeight = ref<boolean>(true);
-const removeMap = ref<boolean>(false);
 const passwordPrompt = ref<HTMLDialogElement | null>(null);
 const isLaunchingMap = ref<boolean>(false);
 const playError = ref<boolean>(false);
+const rating = ref<number>(props.winningMap.rating ?? 0);
 
 const canPlayMap = computed(() => {
   return gameHostStore.isGameHostSetup() && !isLaunchingMap.value;
@@ -45,7 +46,7 @@ const playMapButtonTooltip = computed(() => {
 })
 
 function cancel() {
-  emits('cancelWinningMap', Promise.resolve());
+  emits('cancelWinningMap');
 }
 
 function playMap() {
@@ -65,18 +66,21 @@ async function onPasswordConfirmed() {
 }
 
 async function havePlayed() {
-  if (incrementWeight.value) {
-    emits('cancelWinningMap', props.playlist.incrementAllOtherMaps(props.winningMap, removeMap.value).then())
-  } else if (removeMap.value) {
-    emits('cancelWinningMap', props.playlist.removeMap(props.winningMap).then());
+  const stopLoadingCallback = loadingStore.startLoading();
+  try {
+    await selectedPlaylistStore.incrementAllMaps();
+    await selectedPlaylistStore.markMapAsPlayed(props.winningMap);
+    if(rating.value !== props.winningMap.rating) {
+      await selectedPlaylistStore.rateMap(props.winningMap, rating.value);
+    }
+  } finally {
+    stopLoadingCallback();
   }
+  cancel();
 }
 
-function emptyCallback(): WinningMapActionCallback {
-  return {
-    shiftOtherWeights: false,
-    removeMap: false,
-  }
+function onRated(newRating: number) {
+  rating.value = newRating;
 }
 </script>
 
@@ -85,11 +89,18 @@ function emptyCallback(): WinningMapActionCallback {
     <div class="content-wrapper">
       <div class="winning-map-wrapper">
         <div class="icon-wrapper">
-          <MapIcon :map="props.winningMap"/>
+          <MapIcon :map="props.winningMap"
+                   :enable-overlay-buttons="false"
+          />
         </div>
         <ReadonlySingleLineTextField :text-field-value="`${props.winningMap.mapId}`"
                                      :input-type="InputTypes.TEXT"
                                      :show-copy-to-clipboard-button="true"/>
+      </div>
+      <div class="rate-row">
+        <RatingStars :starting-rating="props.winningMap.rating"
+                     @rated="onRated"
+        />
       </div>
       <div class="button-row">
         <ConfirmButton :disabled="!canPlayMap"
@@ -106,20 +117,6 @@ function emptyCallback(): WinningMapActionCallback {
         </RegButton>
 
 
-      </div>
-      <div class="checkbox-col">
-        <label>
-          Increment other map's weights?
-          <input type="checkbox"
-                 v-model="incrementWeight"
-          />
-        </label>
-        <label>
-          Remove map from playlist?
-          <input type="checkbox"
-                 v-model="removeMap"
-          />
-        </label>
       </div>
       <p class="play-error" v-show="playError">
         There was an error playing the map. Please check your settings or manually insert the map
@@ -158,12 +155,6 @@ function emptyCallback(): WinningMapActionCallback {
 .button-row {
   display: flex;
   gap: 1rem;
-}
-
-.checkbox-col {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.8rem;
 }
 
 .play-error {

@@ -1,8 +1,10 @@
 <script setup lang="ts">
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   type?: "button" | "submit" | "reset" | undefined,
   disabled?: boolean | undefined,
-}>();
+}>(), {
+  type: "button"
+});
 
 const emit = defineEmits<{
   clicked: []

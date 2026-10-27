@@ -38,15 +38,14 @@ namespace LuckyRest.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
-            var playlists = await workshopPlaylistService.GetWorkshopPlaylists(user.Id);
-            if (playlists.Data == null) return StatusCode(StatusCodes.Status500InternalServerError);
-            return playlists.Data;
+            var playlistIndices = await workshopPlaylistService.GetWorkshopPlaylists(user.Id);
+            if (playlistIndices.Data == null) return StatusCode(StatusCodes.Status500InternalServerError);
+            return playlistIndices.Data;
         }
 
         // POST: api/Playlist
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
-        [EnableRateLimiting("steam")]
         public async Task<ActionResult<WorkshopMapDto>> AddMapToWorkshopPlaylist(
             [FromBody] AddWorkshopMapDto addWorkshopMapDto)
         {
@@ -139,6 +138,64 @@ namespace LuckyRest.Controllers
             {
                 ServiceResultStatus.NoContent => NoContent(),
                 ServiceResultStatus.Success => Ok(),
+                ServiceResultStatus.NotFound => NotFound(),
+                ServiceResultStatus.Error => StatusCode(StatusCodes.Status500InternalServerError),
+                _ => throw new InvalidOperationException()
+            };
+        }
+
+        [HttpPut("rate-map")]
+        public async Task<ActionResult> RateMap(
+            [FromBody] RateMapActionDto rateMapActionDto)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+            if (rateMapActionDto.Rating is < 0 or > 5) return BadRequest();
+
+            var result = await workshopPlaylistService.RateMap(user.Id,
+                rateMapActionDto.PlaylistId,
+                rateMapActionDto.MapId,
+                rateMapActionDto.Rating
+            );
+            return result.Status switch
+            {
+                ServiceResultStatus.Success => Ok(),
+                ServiceResultStatus.NotFound => NotFound(),
+                ServiceResultStatus.Error => StatusCode(StatusCodes.Status500InternalServerError),
+                _ => throw new InvalidOperationException()
+            };
+        }
+
+        [HttpPut("played")]
+        public async Task<ActionResult> MarkMapAsPlayed(
+            [FromBody] MarkMapAsPlayedActionDto markMapAsPlayedDto)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+            
+            ServiceResult result;
+            if (markMapAsPlayedDto.Played)
+            {
+                result = await workshopPlaylistService.MarkMapAsPlayed(
+                    user.Id,
+                    markMapAsPlayedDto.PlaylistId,
+                    markMapAsPlayedDto.MapId
+                );
+            }
+            else
+            {
+                result = await workshopPlaylistService.MarkMapAsUnPlayed(
+                    user.Id,
+                    markMapAsPlayedDto.PlaylistId,
+                    markMapAsPlayedDto.MapId
+                );
+            }
+
+            return result.Status switch
+            {
+                ServiceResultStatus.Success => Ok(),
+                ServiceResultStatus.NoContent => NoContent(),
+                ServiceResultStatus.Error => throw new Exception("Failed to mark map"),
                 _ => throw new InvalidOperationException()
             };
         }

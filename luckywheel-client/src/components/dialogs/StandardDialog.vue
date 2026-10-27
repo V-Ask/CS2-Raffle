@@ -1,24 +1,25 @@
 <script setup lang="ts">
-import {useLoadingStore} from "@/stores/loading.store.ts";
 import {DialogWidths} from "@/models/dialog-widths.ts";
-
-const loadingStore = useLoadingStore();
 
 const props = withDefaults(defineProps<{
   headerText: string,
   width?: DialogWidths,
+  useFooter?: boolean,
 }>(), {
   width: DialogWidths.DIALOG_600
 });
 
 </script>
 <template>
-  <div class="dialog" :class="props.width" v-if="!loadingStore.isLoading">
+  <div class="dialog" :class="props.width">
     <div class="header-box">
       <h1>{{ props.headerText }}</h1>
     </div>
     <div class="content">
-      <slot></slot>
+      <slot name="content"></slot>
+    </div>
+    <div class="footer" v-if="props.useFooter">
+      <slot name="footer-content"></slot>
     </div>
   </div>
 </template>
@@ -38,6 +39,10 @@ const props = withDefaults(defineProps<{
 }
 
 .content {
+  padding: 20px 40px;
+}
+
+.footer {
   padding: 20px 40px;
 }
 </style>
