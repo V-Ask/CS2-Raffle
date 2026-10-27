@@ -67,15 +67,13 @@ async function getMapFromPlaylist(playlistId: string, mapId: string): Promise<Wo
   })
 }
 
-async function removeMapFromPlaylist(playlistId: string, mapId: string): Promise<WorkshopPlaylistViewDto> {
-  return API.delete('/api/Playlist/map', {
+async function removeMapFromPlaylist(playlistId: string, mapId: string): Promise<void> {
+  await API.delete('/api/Playlist/map', {
     params: {
       collectionId: playlistId,
       mapId
     }
-  }).then(response => {
-    return response.data;
-  })
+  });
 }
 
 async function incrementAll(playlistId: string,
@@ -92,6 +90,26 @@ async function incrementAll(playlistId: string,
   })
 }
 
+async function rateMap(playlistId: string, mapId: string, rating: number): Promise<void> {
+  return API.put(`/api/Playlist/rate-map`, {
+    playlistId,
+    mapId,
+    rating
+  }).then(response => {
+    return response.data;
+  });
+}
+
+async function markMapAsPlayed(playlistId: string, mapId: string, played: boolean): Promise<void> {
+  return API.put(`/api/Playlist/played`, {
+    playlistId,
+    mapId,
+    played
+  }).then(response => {
+    return response.data;
+  });
+}
+
 export default {
   getAllPlaylistIndex,
   addMapToPlaylist,
@@ -99,5 +117,7 @@ export default {
   getMapFromPlaylist,
   getPlaylistView,
   removeMapFromPlaylist,
-  incrementAll
+  incrementAll,
+  rateMap,
+  markMapAsPlayed,
 }

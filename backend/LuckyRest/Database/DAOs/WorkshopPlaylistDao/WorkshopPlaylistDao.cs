@@ -17,13 +17,13 @@ public class WorkshopPlaylistDao(LuckyDbContext dbContext) : IWorkshopPlaylistDa
 
     public async Task<List<WorkshopPlaylistIndexDto>> GetWorkshopPlaylistIndices(string userId)
     {
-        var playlists = await dbContext.Playlists
+        var playlistIndices = await dbContext.Playlists
             .Include(p => p.PlaylistMaps)
             .ThenInclude(pm => pm.WorkshopMap)
             .Where(x => x.AuthorId == userId)
             .Select(playlist => WorkshopPlaylistIndexDto.FromEntity(playlist))
             .ToListAsync();
-        return playlists;
+        return playlistIndices;
     }
 
     public async Task<bool> PutWorkshopPlaylist(string userId, Guid workshopPlaylistId,

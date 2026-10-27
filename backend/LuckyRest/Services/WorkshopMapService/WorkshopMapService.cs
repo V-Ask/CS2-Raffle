@@ -11,6 +11,8 @@ namespace LuckyRest.Services.WorkshopMapService;
 
 public class WorkshopMapService(IWorkshopMapDao workshopMapDao, IHttpClientFactory httpClientFactory) : IWorkshopMapService
 {
+    private const string WorkshopUrlFormat = "https://steamcommunity.com/workshop/filedetails/?id={0}";
+
     private readonly LimitedScraper<string> _scraper = new(new WebScraper());
 
     public async Task<ServiceResult<WorkshopMapDto>> GetWorkshopMap(long workshopMapId)
@@ -28,7 +30,8 @@ public class WorkshopMapService(IWorkshopMapDao workshopMapDao, IHttpClientFacto
             return await GetWorkshopMap(workshopMapId);
         }
         
-        var workshopExplorer = new SteamWorkshopExplorer(await _scraper.LoadAsync(workshopMapId.ToString()));
+        var workshopUrl = string.Format(WorkshopUrlFormat, workshopMapId);
+        var workshopExplorer = new SteamWorkshopExplorer(await _scraper.LoadAsync(workshopUrl));
         var name = workshopExplorer.GetTitle();
         var description = workshopExplorer.GetDescription();
         var imageUrl = workshopExplorer.GetImageUrl();

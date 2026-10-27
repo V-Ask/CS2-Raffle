@@ -4,7 +4,7 @@ import SingleLineTextField from "@/components/inputs/textfield/SingleLineTextFie
 import {ref} from "vue";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
-import {useSpinnerStore} from "@/stores/spinner.store.ts";
+import {usePlaylistStore} from "@/stores/spinner.store.ts";
 import PlaylistService from "@/services/spinner/playlist.service.ts";
 import {InputTypes} from "@/models/input-types.ts";
 import type {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
@@ -14,22 +14,19 @@ const emits = defineEmits<{
 }>();
 
 
-const spinnerStore = useSpinnerStore();
+const playlistStore = usePlaylistStore();
 
 const input = ref("");
-const isLoading = ref(false);
 const validName = ref(true);
 
 
 function createPlaylist() {
   validName.value = isValidName();
-  if (!validName.value || isLoading.value) return;
-  isLoading.value = true;
-  PlaylistService.createNewPlaylist(input.value).then(playlist => {
-    emitPlaylist(playlist);
-    isLoading.value = false;
+  if (!validName.value) return;
+  playlistStore.createNewPlaylist(input.value).then((result) => {
     input.value = "";
-  }, _ => emitPlaylist());
+    emitPlaylist(result);
+  });
 }
 
 function isValidName() {
@@ -37,7 +34,7 @@ function isValidName() {
 }
 
 function doesPlaylistExist() {
-  return spinnerStore.playlistWithNameExists(input.value);
+  return playlistStore.playlistWithNameExists(input.value);
 }
 
 function emitPlaylist(playlist?: WorkshopPlaylistView) {
@@ -54,11 +51,10 @@ function cancelCreate() {
     <div class="form-wrapper">
       <div class="input-wrapper">
         <SingleLineTextField :max-length="50"
-                             :disabled="isLoading"
                              :input-type="InputTypes.TEXT"
                              v-model="input"/>
-        <ConfirmButton :disabled="isLoading" @click="createPlaylist()">Create</ConfirmButton>
-        <RegButton :disabled="isLoading" @click="cancelCreate()">Cancel</RegButton>
+        <ConfirmButton @click="createPlaylist()">Create</ConfirmButton>
+        <RegButton @click="cancelCreate()">Cancel</RegButton>
       </div>
       <p :class="{ 'error-hidden': validName }" class="error text">Playlist with this name is
         unavailable</p>

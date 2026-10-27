@@ -3,17 +3,19 @@ import MapIcon from "@/components/spinner/icon/MapIcon.vue";
 import { ref, onMounted } from "vue";
 import type { ReelMap } from "@/models/reel-map.ts";
 import ReelService from "@/services/spinner/reel.service.ts";
+import {useSelectedPlaylistStore} from "@/stores/selected-playlist.store.ts";
+
+const selectedPlaylistStore = useSelectedPlaylistStore();
 
 const props = defineProps<{
   reelSize: number,
-  reelMaps: Set<ReelMap>,
 }>();
 
 const emits = defineEmits<{
   mapSelected: [value: ReelMap]
 }>();
 
-const filledReel = ReelService.buildRandomReel(props.reelSize, props.reelMaps);
+const filledReel = ReelService.buildRandomReel(props.reelSize, selectedPlaylistStore.coloredMaps);
 const winningIndex = calcWinningMapIndex(props.reelSize);
 const winningMap = filledReel[winningIndex];
 

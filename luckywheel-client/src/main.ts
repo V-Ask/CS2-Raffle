@@ -8,7 +8,7 @@ import API from './router'
 import EnvironmentService from "@/services/environment/environment.service.ts";
 
 async function prepareApp() {
-  const shouldUseMocks = !EnvironmentService.isAspireDevelopment();
+  const shouldUseMocks = EnvironmentService.isDevelopment() && !EnvironmentService.isAspireDevelopment();
 
   if (shouldUseMocks) {
     const {worker} = await import('@/mocks/browser');

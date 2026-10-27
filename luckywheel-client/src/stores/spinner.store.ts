@@ -2,16 +2,15 @@
 import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import PlaylistService from "@/services/spinner/playlist.service.ts";
 import {WorkshopPlaylistIndex} from "@/api/dto/indices/workshop-playlist-index.ts";
-import type {RouteLocationNormalizedLoaded} from "vue-router";
-import type {ReelMap} from "@/models/reel-map.ts";
+import {useLoadingStore} from "@/stores/loading.store.ts";
+import {useSelectedPlaylistStore} from "@/stores/selected-playlist.store.ts";
 
-export const useSpinnerStore = defineStore('spinner', {
+export const usePlaylistStore = defineStore('spinner', {
   state: () => ({
     playlistIndices: [] as WorkshopPlaylistIndex[],
     playlistIndicesLoaded: false,
     playlistViewCache: new Map<string, WorkshopPlaylistView>(),
     spinnerStatus: SpinnerStatus.VIEWING as SpinnerStatus,
-    selectedMap: null as ReelMap | null,
   }),
   getters: {
     getPlaylists: (state) => state.playlistIndices,
@@ -60,13 +59,26 @@ export const useSpinnerStore = defineStore('spinner', {
 
     updateViewCache(playlistView: WorkshopPlaylistView) {
       this.playlistViewCache.set(playlistView.playlistId, playlistView);
-    }
-  }
-});
+    },
 
-function playlistContainsReelMap(playlist: WorkshopPlaylistView, reelMap: ReelMap) {
-  return playlist.maps.map(map => map.mapId).includes(reelMap.workshopId);
-}
+    async createNewPlaylist(playlistName: string) {
+      const loadingStore = useLoadingStore();
+      const selectedPlaylistStore = useSelectedPlaylistStore();
+      const stopLoadingCallback = loadingStore.startLoading();
+      try {
+        const newPlaylist = await PlaylistService.createNewPlaylist(playlistName);
+        this.addPlaylistIndex(newPlaylist!.toIndex());
+        this.playlistViewCache.set(newPlaylist!.playlistId, newPlaylist!);
+        await selectedPlaylistStore.selectPlaylistById(newPlaylist!.playlistId);
+        return newPlaylist!;
+      } catch (e) {
+        throw new Error('Failed to create new playlist: ' + e);
+      } finally {
+        stopLoadingCallback();
+      }
+    }
+  },
+});
 
 export enum SpinnerStatus {
   VIEWING,

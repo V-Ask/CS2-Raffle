@@ -1,17 +1,11 @@
-import {
-  createWebHistory,
-} from 'vue-router'
-import {
-  EDIT_PLAYLIST_VIEW,
-  LOGIN_NAME, NOT_FOUND_NAME, PLAYLIST_VIEW
-} from "@/helpers/constants/routing.ts";
+import {createWebHistory,} from 'vue-router'
+import {LOGIN_NAME, NOT_FOUND_NAME, PLAYLIST_VIEW} from "@/helpers/constants/routing.ts";
 import {GuardedRouter} from "@/router/guarded-router.ts";
 import {authGuardFn} from "@/guards/auth-guard.ts";
 import {useLoadingStore} from "@/stores/loading.store.ts";
 import LoginView from "@/components/views/LoginView.vue";
-import PlaylistPreviewView from "@/components/views/PlaylistPreviewView.vue";
+import MainPageView from "@/components/views/main-page/MainPageView.vue";
 import NotFoundView from "@/components/views/NotFoundView.vue";
-import EditPlaylistsView from "@/components/views/edit-playlists/EditPlaylistsView.vue";
 
 const routes = [
   {
@@ -22,7 +16,7 @@ const routes = [
   {
     path: '/',
     name: PLAYLIST_VIEW,
-    component: PlaylistPreviewView,
+    component: MainPageView,
   },
   // {
   //   path: '/playlists',

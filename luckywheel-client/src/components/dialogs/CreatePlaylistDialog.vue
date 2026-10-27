@@ -15,7 +15,9 @@ function onFormClosed(playlistView?: WorkshopPlaylistView) {
 
 <template>
   <StandardDialog header-text="Create Playlist">
-    <CreatePlaylistForm @playlistCallback="onFormClosed($event)"/>
+    <template v-slot:content>
+      <CreatePlaylistForm @playlistCallback="onFormClosed($event)"/>
+    </template>
   </StandardDialog>
 </template>
 

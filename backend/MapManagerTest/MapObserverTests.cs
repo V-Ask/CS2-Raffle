@@ -47,7 +47,7 @@ public class MapObserverTests
         _mapObserver = new MapObserver(_mockRarityColorStrategy.Object, _weightIncrementStrategy.Object);
     }
 
-    [Test(Author = "VAJ", Description = "Manager should notify all subscribers and use increment strategies")]
+    [Test(Author = "VAJ", Description = "Manager should notify all subscribers and use incrementAllMaps strategies")]
     public void TestNotifySubscriberIncrement()
     {
         // arrange

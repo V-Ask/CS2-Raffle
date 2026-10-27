@@ -7,9 +7,9 @@ export class WorkshopPlaylistMapView extends WorkshopMap {
     public imageUrl: string,
     public description: string,
     public mapId: string,
-    public playlistId: string,
     public weight: number,
     public hasPlayed: boolean,
+    public rating: number,
     public terroristSpawns?: number,
     public counterTerroristSpawns?: number,
   ) {
@@ -22,12 +22,12 @@ export class WorkshopPlaylistMapView extends WorkshopMap {
       dto.imageUrl,
       dto.description,
       dto.mapId,
-      dto.playlistId,
       dto.weight,
       dto.hasPlayed,
+      dto.rating,
       dto.terroristSpawns,
       dto.counterTerroristSpawns,
-    )
+    );
   }
 
 

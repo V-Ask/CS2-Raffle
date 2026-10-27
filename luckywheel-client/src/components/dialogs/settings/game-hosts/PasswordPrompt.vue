@@ -21,11 +21,13 @@ function confirmPassword() {
 
 <template>
   <StandardDialog header-text="Enter password...">
-    <div class="form-wrapper">
-      <SingleLineTextField :input-type="InputTypes.PASSWORD" v-model="gameStore.savedPassword"/>
-      <ConfirmSubmitButton @click="confirmPassword">Confirm</ConfirmSubmitButton>
-    </div>
-    <p class="flavor">This is saved until you refresh.</p>
+    <template v-slot:content>
+      <div class="form-wrapper">
+        <SingleLineTextField :input-type="InputTypes.PASSWORD" v-model="gameStore.savedPassword"/>
+        <ConfirmSubmitButton @click="confirmPassword">Confirm</ConfirmSubmitButton>
+      </div>
+      <p class="flavor">This is saved until you refresh.</p>
+    </template>
   </StandardDialog>
 </template>
 
