@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LuckyRest.Migrations
 {
     [DbContext(typeof(LuckyDbContext))]
-    [Migration("20260930092915_AddedSpawnCounts")]
+    [Migration("20261027161103_AddedSpawnCounts")]
     partial class AddedSpawnCounts
     {
         /// <inheritdoc />
@@ -165,6 +165,9 @@ namespace LuckyRest.Migrations
 
                     b.Property<bool>("HasPlayed")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Weight")
                         .HasColumnType("integer");
