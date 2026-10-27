@@ -94,6 +94,9 @@ namespace LuckyRest.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("WorkshopMapId"));
 
+                    b.Property<int?>("CounterTerroristSpawns")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(600)
@@ -108,6 +111,9 @@ namespace LuckyRest.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<int?>("TerroristSpawns")
+                        .HasColumnType("integer");
 
                     b.HasKey("WorkshopMapId");
 

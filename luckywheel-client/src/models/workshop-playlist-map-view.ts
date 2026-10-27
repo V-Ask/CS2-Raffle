@@ -10,6 +10,8 @@ export class WorkshopPlaylistMapView extends WorkshopMap {
     public weight: number,
     public hasPlayed: boolean,
     public rating: number,
+    public terroristSpawns?: number,
+    public counterTerroristSpawns?: number,
   ) {
     super(name, imageUrl, description, mapId);
   }
@@ -22,7 +24,9 @@ export class WorkshopPlaylistMapView extends WorkshopMap {
       dto.mapId,
       dto.weight,
       dto.hasPlayed,
-      dto.rating
+      dto.rating,
+      dto.terroristSpawns,
+      dto.counterTerroristSpawns,
     );
   }
 

@@ -11,7 +11,9 @@ export class ReelMap extends WorkshopMap {
               public weight: number,
               public color: Color,
               public hasPlayed: boolean,
-              public rating: number) {
+              public rating: number,
+              public terroristSpawns?: number,
+              public counterTerroristSpawns?: number) {
     super(mapName, imageUrl, description, workshopId);
   }
 
@@ -23,7 +25,9 @@ export class ReelMap extends WorkshopMap {
       this.mapId,
       this.weight,
       this.hasPlayed,
-      this.rating
+      this.rating,
+      this.terroristSpawns,
+      this.counterTerroristSpawns
     )
   }
 

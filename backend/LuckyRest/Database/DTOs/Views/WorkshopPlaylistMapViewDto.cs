@@ -12,6 +12,8 @@ public class WorkshopPlaylistMapViewDto
     public int Weight { get; set; }
     public bool HasPlayed { get; set; }
     public int Rating { get; set; }
+    public int? TerroristSpawns { get; set; }
+    public int? CounterTerroristSpawns { get; set; }
 
     public static WorkshopPlaylistMapViewDto FromEntity(WorkshopPlaylistMap? entity)
     {
@@ -27,6 +29,8 @@ public class WorkshopPlaylistMapViewDto
             Weight = entity.Weight,
             HasPlayed = entity.HasPlayed,
             Rating = entity.Rating,
+            TerroristSpawns = workshopMap.TerroristSpawns,
+            CounterTerroristSpawns = workshopMap.CounterTerroristSpawns,
         };
     }
 }

@@ -9,7 +9,9 @@ export class WorkshopPlaylistMapViewDto {
     public playlistId: string,
     public weight: number,
     public hasPlayed: boolean,
-    public rating: number
+    public rating: number,
+    public terroristSpawns?: number,
+    public counterTerroristSpawns?: number,
   ) {
   }
 

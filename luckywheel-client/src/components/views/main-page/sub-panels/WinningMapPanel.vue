@@ -96,6 +96,9 @@ function onRated(newRating: number) {
         <ReadonlySingleLineTextField :text-field-value="`${props.winningMap.mapId}`"
                                      :input-type="InputTypes.TEXT"
                                      :show-copy-to-clipboard-button="true"/>
+        <p v-if="props.winningMap.terroristSpawns != null">
+          Spawns: {{ props.winningMap.terroristSpawns }} T / {{ props.winningMap.counterTerroristSpawns }} CT
+        </p>
       </div>
       <div class="rate-row">
         <RatingStars :starting-rating="props.winningMap.rating"
