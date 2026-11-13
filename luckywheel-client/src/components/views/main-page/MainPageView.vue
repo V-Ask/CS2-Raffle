@@ -1,14 +1,11 @@
 ﻿<script setup lang="ts">
 import {usePlaylistStore} from "@/stores/spinner.store.ts";
 import {computed, onMounted, ref} from "vue";
-import SingleLineTextField from "@/components/inputs/textfield/SingleLineTextField.vue";
-import {InputTypes} from "@/models/input-types.ts";
 import type {ReelMap} from "@/models/reel-map.ts";
 import ConfirmButton from "@/components/buttons/ConfirmButton.vue";
 import RegButton from "@/components/buttons/RegButton.vue";
 import CreatePlaylistDialog from "@/components/dialogs/CreatePlaylistDialog.vue";
 import DialogService from "@/services/dialog.service.ts";
-import {WorkshopPlaylistView} from "@/models/workshop-playlist-view.ts";
 import AddMapDialog from "@/components/dialogs/AddMapDialog.vue";
 import WinningMapPanel from "@/components/views/main-page/sub-panels/WinningMapPanel.vue";
 import SpinningReelPanel from "@/components/views/main-page/sub-panels/SpinningReelPanel.vue";
@@ -130,7 +127,7 @@ function handleCreateDialogClosed() {
       </div>
       <ConfirmButton
         v-if="isBrowsing"
-        :disabled="!selectedPlaylistStore.isPlaylistSelectedAndLoaded"
+        :disabled="!selectedPlaylistStore.unplayedColoredMaps.size"
         @clicked="startSpin()">
         SPIN
       </ConfirmButton>

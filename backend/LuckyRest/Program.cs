@@ -42,6 +42,8 @@ services.AddAuthorization();
 services.AddAuthentication()
     .AddCookie(IdentityConstants.ApplicationScheme, options =>
     {
+        options.ExpireTimeSpan = TimeSpan.FromHours(4);
+        options.SlidingExpiration = true;
         options.Events.OnRedirectToLogin = context =>
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -103,4 +105,3 @@ app.MapIdentityApi<User>();
 app.MapControllers();
 
 app.Run();
-

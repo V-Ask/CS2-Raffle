@@ -15,7 +15,8 @@ export class WorkshopPlaylistView {
 
   getSorted(sortOptions: SortOptions) {
     let comparator = this.getComparator(sortOptions);
-    const sorted = this.maps.sort(comparator);
+    // Sort a copy: this runs inside computeds, and reversing this.maps in place flips the order of equal weights on every run
+    const sorted = [...this.maps].sort(comparator);
     if (sortOptions.ascending) {
       return sorted;
     }
@@ -29,10 +30,10 @@ export class WorkshopPlaylistView {
         comparator = (a, b) => a.name.localeCompare(b.name);
         break;
       case "weight":
-        comparator = (a, b) => a.weight - b.weight;
+        comparator = (a, b) => a.weight - b.weight || a.mapId.localeCompare(b.mapId);
         break;
       default:
-        comparator = (a, b) => a.weight - b.weight;
+        comparator = (a, b) => a.weight - b.weight || a.mapId.localeCompare(b.mapId);
         break;
     }
     return comparator;
@@ -68,6 +69,10 @@ export class WorkshopPlaylistView {
 
   toIndex() {
     return new WorkshopPlaylistIndex(this.collectionName, this.playlistId, this.maps.length, this.created, this.modified);
+  }
+
+  asUnplayed() {
+    return new WorkshopPlaylistView(this.playlistId, this.collectionName, this.maps.filter(map => !map.hasPlayed), this.created, this.modified);
   }
 
   public static fromDto(dto: WorkshopPlaylistViewDto): WorkshopPlaylistView {

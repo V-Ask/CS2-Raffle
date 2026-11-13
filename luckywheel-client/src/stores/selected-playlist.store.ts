@@ -34,6 +34,10 @@ export const useSelectedPlaylistStore = defineStore('selectedPlaylist', () => {
     }
     return ReelService.colorPlaylist(selectedPlaylist.value);
   });
+  // The maps eligible for the reel. Independent of the browse view's show state
+  const unplayedColoredMaps = computed(() => {
+    return new Set(Array.from(coloredMaps.value).filter(map => !map.hasPlayed));
+  });
   // The selected playlist's maps, sorted by the selected sorting option
   const sortedColoredMaps = computed(() => {
     if (!selectedPlaylist.value) {
@@ -198,6 +202,7 @@ export const useSelectedPlaylistStore = defineStore('selectedPlaylist', () => {
 
   return {
     coloredMaps,
+    unplayedColoredMaps,
     sortedColoredMaps,
     selectedPlaylist,
     isPlaylistSelected,

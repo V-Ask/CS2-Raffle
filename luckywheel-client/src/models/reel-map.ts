@@ -2,6 +2,7 @@
 import {WorkshopMap} from "@/models/workshop-map.ts";
 import {WorkshopPlaylistMapView} from "@/models/workshop-playlist-map-view.ts";
 import {SortOptions} from "@/stores/sorting-options.store.ts";
+import {COLOR_RARITY_PAIRS} from "@/helpers/constants/colors.ts";
 
 export class ReelMap extends WorkshopMap {
   constructor(public mapName: string,
@@ -39,7 +40,7 @@ export class ReelMap extends WorkshopMap {
         return (a, b) => {
           if (a.hasPlayed && !b.hasPlayed) return 1;
           if (!a.hasPlayed && b.hasPlayed) return -1;
-          return a.weight - b.weight
+          return a.weight - b.weight;
         }
       case SortOptions.RATING:
         return (a, b) => a.rating - b.rating;
