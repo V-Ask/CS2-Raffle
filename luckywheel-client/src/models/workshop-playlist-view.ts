@@ -30,10 +30,10 @@ export class WorkshopPlaylistView {
         comparator = (a, b) => a.name.localeCompare(b.name);
         break;
       case "weight":
-        comparator = (a, b) => a.weight - b.weight || a.mapId.localeCompare(b.mapId);
+        comparator = (a, b) => a.weight - b.weight;
         break;
       default:
-        comparator = (a, b) => a.weight - b.weight || a.mapId.localeCompare(b.mapId);
+        comparator = (a, b) => a.weight - b.weight;
         break;
     }
     return comparator;
