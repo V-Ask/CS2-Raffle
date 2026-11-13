@@ -15,7 +15,7 @@ const emits = defineEmits<{
   mapSelected: [value: ReelMap]
 }>();
 
-const filledReel = ReelService.buildRandomReel(props.reelSize, selectedPlaylistStore.coloredMaps);
+const filledReel = ReelService.buildRandomReel(props.reelSize, selectedPlaylistStore.unplayedColoredMaps);
 const winningIndex = calcWinningMapIndex(props.reelSize);
 const winningMap = filledReel[winningIndex];
 
